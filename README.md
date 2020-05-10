@@ -6,7 +6,7 @@ import {
   assert,
   assertIsString,
   forceString,
-} from "@wilfred/react-utils"
+} from "@wilfredlopez/react-utils"
 
 const error = new AssertionError("message")
 
@@ -26,7 +26,7 @@ function sendMessage(message: any) {
 ## assertNever
 
 ```ts
-import { assertNever } from "@wilfred/react-utils"
+import { assertNever } from "@wilfredlopez/react-utils"
 enum AppActions {
   "SET_STATE",
   "ADD",

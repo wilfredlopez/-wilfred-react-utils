@@ -1,3 +1,5 @@
-*
-!dist
-!package.json
+config/
+scripts/
+src/
+otherpossible-dev-deps.json
+.env
