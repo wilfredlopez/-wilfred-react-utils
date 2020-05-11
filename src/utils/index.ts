@@ -5,8 +5,10 @@ export {
   assertNever,
   forceString,
 } from "./assetion"
-export {
-  turnSecondsToFormatedMinutes as turnSecondsToMinutes,
-  formatDuration,
-} from "./numbers"
+export { turnSecondsToFormatedMinutes, formatDuration } from "./numbers"
 export { downloadToFile } from "./downloadToFile"
+export { createResource } from "./createResource"
+export { DateFormatter, getMonthFromInt } from "./dates"
+export { throttle } from "./multyuse"
+export { autoscroll } from "./scroll"
+export { reduceLongString } from "./strings"
