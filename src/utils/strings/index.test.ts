@@ -1,6 +1,6 @@
 import { reduceLongString } from "./index"
 
-describe("reduceLongString", () => {
+describe.skip("reduceLongString", () => {
   it("returns the same string if its less than the maxLength", () => {
     const str = "hello"
     const s = reduceLongString(str, 10)

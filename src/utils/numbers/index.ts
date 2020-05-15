@@ -21,3 +21,9 @@ export function turnSecondsToFormatedMinutes(s: number) {
 export function formatDuration(seconds: number) {
   return new Date(seconds * 1000).toISOString().substr(11, 8)
 }
+
+export const formatCentsToDollars = function (value: any) {
+  value = (value + "").replace(/[^\d.-]/g, "")
+  value = parseFloat(value)
+  return value ? value / 100 : 0
+}

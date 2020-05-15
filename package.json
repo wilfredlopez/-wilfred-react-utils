@@ -1,6 +1,6 @@
 {
   "name": "@wilfredlopez/react-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Utility functions and types for React projects",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",

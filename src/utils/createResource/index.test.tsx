@@ -15,7 +15,7 @@ function testFetch(err?: boolean): Promise<[{ data: string }]> {
   })
 }
 
-describe("createResource", () => {
+describe.skip("createResource", () => {
   it("creates a resouce", () => {
     createResource(testFetch)
   })

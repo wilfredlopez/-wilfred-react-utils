@@ -3,3 +3,5 @@ scripts/
 src/
 otherpossible-dev-deps.json
 .env
+tsconfig.json
+package-lock.json
