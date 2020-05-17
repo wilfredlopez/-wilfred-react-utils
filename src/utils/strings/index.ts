@@ -13,3 +13,36 @@ export function reduceLongString(
     return value
   }
 }
+
+// /**
+//  * Returns the string with proper case and also *trims the white space.
+//  * @param str string to add proper case
+//  * @example toProperCase(" hello world") // "Hello World"
+//  */
+// function toProperCaseOld(str: string) {
+//   // str = str.trim()
+//   const words = str.match(/\w+(.)?/gim)
+
+//   //base case. one single word
+//   let proper = str.replace(/^\w/g, str[0].toUpperCase())
+
+//   //if there is an array of words
+//   if (words) {
+//     proper = ""
+//     for (const w of words) {
+//       proper += ` ${w.trim().replace(/^\w/g, w[0].toUpperCase())}`
+//     }
+//   }
+//   return proper.trim()
+// }
+
+/**
+ * Returns the string with proper case.
+ * @param str string to add proper case
+ * @example toProperCase(" hello world") // " Hello World"
+ */
+export function toProperCase(str: string) {
+  return str.replace(/\w\S*/g, function (txt) {
+    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+  })
+}

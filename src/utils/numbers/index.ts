@@ -22,7 +22,12 @@ export function formatDuration(seconds: number) {
   return new Date(seconds * 1000).toISOString().substr(11, 8)
 }
 
-export const formatCentsToDollars = function (value: any) {
+/**
+ *
+ * @param value Total cents.
+ * @example formatCentsToDollars(50759) // 507.59
+ */
+export const formatCentsToDollars = function (value: string | number) {
   value = (value + "").replace(/[^\d.-]/g, "")
   value = parseFloat(value)
   return value ? value / 100 : 0
