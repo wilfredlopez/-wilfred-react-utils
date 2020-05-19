@@ -7,11 +7,11 @@
  *
  */
 export function turnSecondsToFormatedMinutes(s: number) {
-  const rountedMinutes = (s - (s %= 60)) / 60
-  const isLessThan9 = 9 < Math.round(s)
-  const roundedSeconds = Math.round(s)
-  const spacer = isLessThan9 ? ":" : ":0"
-  return rountedMinutes + spacer + roundedSeconds
+  const rountedMinutes = (s - (s %= 60)) / 60;
+  const isLessThan9 = 9 < Math.round(s);
+  const roundedSeconds = Math.round(s);
+  const spacer = isLessThan9 ? ":" : ":0";
+  return rountedMinutes + spacer + roundedSeconds;
 }
 
 /**
@@ -19,7 +19,7 @@ export function turnSecondsToFormatedMinutes(s: number) {
  * @param seconds total seconds
  */
 export function formatDuration(seconds: number) {
-  return new Date(seconds * 1000).toISOString().substr(11, 8)
+  return new Date(seconds * 1000).toISOString().substr(11, 8);
 }
 
 /**
@@ -28,7 +28,11 @@ export function formatDuration(seconds: number) {
  * @example formatCentsToDollars(50759) // 507.59
  */
 export const formatCentsToDollars = function (value: string | number) {
-  value = (value + "").replace(/[^\d.-]/g, "")
-  value = parseFloat(value)
-  return value ? value / 100 : 0
+  value = (value + "").replace(/[^\d.-]/g, "");
+  value = parseFloat(value);
+  return value ? value / 100 : 0;
+};
+
+export function addUpTo(n: number) {
+  return n * (n + 1) / 2;
 }
