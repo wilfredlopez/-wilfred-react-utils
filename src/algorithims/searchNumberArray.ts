@@ -48,12 +48,12 @@ export function getSortedNumberArrayIndex(
   //   return data[middle];
 }
 
-const dataAsc = [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
-const dataDes = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4];
+// const dataAsc = [0, 2, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+// const dataDes = [14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4];
 
-const indexInAsc = getSortedNumberArrayIndex(dataAsc, 12);
-const indexInDesc = getSortedNumberArrayIndex(dataDes, 12);
-console.log(indexInAsc);
-console.log(dataAsc[indexInAsc]);
-console.log(indexInDesc);
-console.log(dataDes[indexInDesc]);
+// const indexInAsc = getSortedNumberArrayIndex(dataAsc, 12);
+// const indexInDesc = getSortedNumberArrayIndex(dataDes, 12);
+// console.log(indexInAsc);
+// console.log(dataAsc[indexInAsc]);
+// console.log(indexInDesc);
+// console.log(dataDes[indexInDesc]);
