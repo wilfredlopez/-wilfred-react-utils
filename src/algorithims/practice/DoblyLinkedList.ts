@@ -217,30 +217,30 @@ export class DoublyLinkedList<T extends any> {
   }
 }
 
-const list = new DoublyLinkedList<string | number>();
-//adding
-list.push("Wilfred");
-list.push("yanna");
-list.push("Austria");
-list.push("Catalina");
-list.push("Pablo");
+// const list = new DoublyLinkedList<string | number>();
+// //adding
+// list.push("Wilfred");
+// list.push("yanna");
+// list.push("Austria");
+// list.push("Catalina");
+// list.push("Pablo");
 
-console.log(list.print());
-//get
-console.log(list.get(0)?.value);
-console.log(list.get(4)?.value);
+// console.log(list.print());
+// //get
+// console.log(list.get(0)?.value);
+// console.log(list.get(4)?.value);
 
-//removing
-// console.log(list.remove(4));
-list.printReverse();
-// console.log(list.head);
-list.reverse();
-list.printReverse();
-console.log(list.pop());
+// //removing
+// // console.log(list.remove(4));
+// list.printReverse();
+// // console.log(list.head);
+// list.reverse();
+// list.printReverse();
+// console.log(list.pop());
 
-console.log(list.shift()?.value);
-console.log(list.shift()?.value);
-console.log(list.shift()?.value);
-console.log(list.shift()?.value);
-console.log(list.shift()?.value);
-console.log(list.shift()?.value);
+// console.log(list.shift()?.value);
+// console.log(list.shift()?.value);
+// console.log(list.shift()?.value);
+// console.log(list.shift()?.value);
+// console.log(list.shift()?.value);
+// console.log(list.shift()?.value);

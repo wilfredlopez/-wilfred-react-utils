@@ -1,4 +1,4 @@
-import { BiNode } from "./BiNode";
+import { BiNode } from "../BiNode";
 /**
  * Fist in First Out aproach. different from Stacks.
  * Usefull for processing tasks, using methods dequeue and enqueue.

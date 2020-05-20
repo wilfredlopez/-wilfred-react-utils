@@ -1,4 +1,4 @@
-import { BiNode } from "./BiNode";
+import { BiNode } from "../BiNode";
 
 /**
  *  Keeps a Collection of data. Where the first is the last value pushed. and the last is the first value pushed.
