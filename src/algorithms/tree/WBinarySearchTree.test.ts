@@ -29,14 +29,14 @@ describe.skip("BinarySearchTree", () => {
       2       50
       */
   });
-  it("Doesnt add if the priority is the same and 2nd parameter is not passed or set to false", () => {
+  it("Doesnt add if the priority is the same and 2nd parameter set to false", () => {
     /* TREE SKETCH
       *      20
       1        21 
       2       50
       */
     expect(bst.insert({ priority: 50, data: "NEW 50" }, false)).toBeFalsy();
-    expect(bst.insert({ priority: 50, data: "NEW 50" })).toBeFalsy();
+    expect(bst.insert({ priority: 50, data: "NEW 50" }, false)).toBeFalsy();
     expect(bst.right.right.value).toEqual({ priority: 50, data: "50" });
   });
   it("Replaces the value if the priority is the same and 2nd parameter is true", () => {

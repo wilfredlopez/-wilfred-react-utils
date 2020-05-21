@@ -10,6 +10,7 @@ export {
   formatDuration,
   formatCentsToDollars,
   addUpTo,
+  fib,
 } from "./numbers";
 export { downloadToFile } from "./downloadToFile";
 export { createResource, wrapPromise } from "./createResource";

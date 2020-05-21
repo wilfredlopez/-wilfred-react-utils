@@ -1,5 +1,24 @@
 # React Utilify Functions and Types
 
+#### Install
+
+###### NPM
+
+```
+npm install @wilfredlopez/react-utils
+```
+
+###### Script Tag
+
+```html
+<script src="https://unpkg.com/@wilfredlopez/react-utils@0.0.6/dist/index.umd.js"></script>
+<script type="text/javascript">
+  console.log(ReactUtils.Cipher)
+</script>
+```
+
+### ES
+
 ```ts
 import {
   AssertionError,

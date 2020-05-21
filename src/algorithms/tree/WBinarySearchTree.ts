@@ -4,25 +4,26 @@ type BSTValues<D extends {}> = {
 };
 
 /**
- * Binary Tree class. doesnt add values if the priority is already taken.
+ * Binary Tree class. Organizes the data by priority for easy access. Each priority should be unique.
+ * @note It replaces the value if the priority is already taken unless you pass false as the 2nd parameter for insert.
  */
 export class WBinarySearchTree<T extends BSTValues<any>> {
   value: T;
   left: WBinarySearchTree<T> | null = null;
   right: WBinarySearchTree<T> | null = null;
-  constructor(value: T) {
-    this.value = value;
+  constructor(rootValue: T) {
+    this.value = rootValue;
   }
 
   /**
    * Adds a node to the tree. 
-   * If priority already exist it will not added and will return false if the second argument (replace) was not passed.
+   * If priority already exist it will be replaced unless the second argument (replace) was set to false.
    * @param value value to add. 
-   * @param replace true or false if you want to replace if the priority already exist.
+   * @param replace true or false if you want to replace if the priority already exist. @default true
    * @example
    * insert({ priority: 21, data: "My Data" })
    */
-  insert(value: T, replace: boolean = false): boolean {
+  insert(value: T, replace: boolean = true): boolean {
     if (value.priority === this.value.priority) {
       if (replace) {
         //replacing

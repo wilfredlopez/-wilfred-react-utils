@@ -1,3 +1,3 @@
-export * from "./utils"
-export * from "./algorithims/index"
-export { combineClasses } from "./combineClasses"
+export * from "./utils";
+export * from "./algorithms/index";
+export { combineClasses } from "./combineClasses";

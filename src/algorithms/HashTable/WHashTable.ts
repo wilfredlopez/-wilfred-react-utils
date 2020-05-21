@@ -42,16 +42,17 @@ export class WHasTable<T = any> {
   }
 
   private _hash(key: string) {
+    if (key.length === 0) return 0;
     let total = 0;
     let PRIME_NUMBER = 31;
     for (let i = 0; i < key.length; i++) {
-      total += key.charCodeAt(i);
-      // total = (total * PRIME_NUMBER + (key.charCodeAt(i) - 96)) %
-      //   this.bucketSize;
+      // total += key.charCodeAt(i);
+      total = (total * PRIME_NUMBER + (key.charCodeAt(i) - 96)) %
+        this.bucketSize;
     }
     //a number from 0 to the total number of buckets
-    return total % this.bucketSize;
-    // return total;
+    // return total % this.bucketSize;
+    return total;
   }
 
   get(key: string): T | null {
@@ -64,6 +65,7 @@ export class WHasTable<T = any> {
         currentNode = currentNode.next;
       }
       //if not found. but this should never be the case
+
       return null;
     }
   }
