@@ -5,3 +5,8 @@ otherpossible-dev-deps.json
 .env
 tsconfig.json
 package-lock.json
+webpack.config.js
+rollup.config.js
+.gitignore
+.babelrc
+.vscode

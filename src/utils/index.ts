@@ -4,21 +4,23 @@ export {
   assertIsString,
   assertNever,
   forceString,
-} from "./assetion";
+} from "./assetion"
 export {
   turnSecondsToFormatedMinutes,
   formatDuration,
   formatCentsToDollars,
   addUpTo,
   fib,
-} from "./numbers";
-export { downloadToFile } from "./downloadToFile";
-export { createResource, wrapPromise } from "./createResource";
-export { DateFormatter, getMonthFromInt } from "./dates";
-export { throttle } from "./multyuse";
-export { autoscroll } from "./scroll";
-export { reduceLongString, toProperCase } from "./strings";
-export { Cipher } from "./code";
+  idGenetaror,
+  PatternGenerator,
+} from "./numbers"
+export { downloadToFile } from "./downloadToFile"
+export { createResource, wrapPromise } from "./createResource"
+export { DateFormatter, getMonthFromInt } from "./dates"
+export { throttle } from "./multyuse"
+export { autoscroll } from "./scroll"
+export { reduceLongString, toProperCase } from "./strings"
+export { Cipher } from "./code"
 export {
   bubleSort,
   insertionSort,
@@ -31,4 +33,4 @@ export {
   getDigit,
   mostDigits,
   radixSort,
-} from "./arrays";
+} from "./arrays"
