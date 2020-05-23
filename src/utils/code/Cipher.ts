@@ -153,22 +153,22 @@ export class Cipher {
   }
 }
 
-const password = "5555555"
+// const password = "5555555"
 
-const secret = Cipher.Encoder(password, [
-  {
-    name: "Wilfred",
-  },
-  { name: "Austria" },
-])
+// const secret = Cipher.Encoder(password, [
+//   {
+//     name: "Wilfred",
+//   },
+//   { name: "Austria" },
+// ])
 
-const decodedSecret = Cipher.Decoder<{ name: string }[]>(password, secret)
-console.log(decodedSecret[0]) // 7c15795a4350156c5a4014
-console.log(decodedSecret[0].name) // Wilfred
+// const decodedSecret = Cipher.Decoder<{ name: string }[]>(password, secret)
+// console.log(decodedSecret[0]) // 7c15795a4350156c5a4014
+// console.log(decodedSecret[0].name) // Wilfred
 
-const secret2 = Cipher.Encoder("wilfredlopez", { me: "loco" })
-const wrongPassword = "wilfredl"
-//I Have to make it better because this wrong password get's it.
-const decodedSecret2 = Cipher.Decoder<string>(wrongPassword, secret2)
+// const secret2 = Cipher.Encoder("wilfredlopez", { me: "loco" })
+// const wrongPassword = "wilfredl"
+// //I Have to make it better because this wrong password get's it.
+// const decodedSecret2 = Cipher.Decoder<string>(wrongPassword, secret2)
 
-console.log(decodedSecret2)
+// console.log(decodedSecret2)

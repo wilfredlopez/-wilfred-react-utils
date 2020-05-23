@@ -1,54 +1,61 @@
-import { BiNode } from "../BiNode";
+import { BiNode } from "../BiNode"
 /**
  * Fist in First Out aproach. different from Stacks.
  * Usefull for processing tasks, using methods dequeue and enqueue.
- * @complexity 
+ * @complexity
  * Insert O(1)
  * Remove O(1)
  * Search O(n)
  * Access O(n)
- * @related Queues work the opposite way
+ * @related Stack works the opposite way
  */
 export class Queue<T extends any> {
-  fist: BiNode<T> | null = null;
-  last: BiNode<T> | null = null;
-  size: number = 0;
+  fist: BiNode<T> | null = null
+  last: BiNode<T> | null = null
+  size: number = 0
 
   /**
-     * Adds to the end and returns the size of the queue.
-     * @param value value to add
-     */
+   * Adds to the end and returns the size of the queue.
+   * @param value value to add
+   */
   enqueue(val: T) {
-    const node = new BiNode<T>(val);
+    const node = new BiNode<T>(val)
     if (!this.fist) {
-      this.fist = node;
-      this.last = this.fist;
+      this.fist = node
+      this.last = this.fist
     } else {
-      this.last!.next = node;
-      node.previous = this.last;
-      this.last = node;
+      this.last!.next = node
+      node.previous = this.last
+      this.last = node
     }
-    this.size++;
-    return this.size;
+    this.size++
+    return this.size
   }
 
   /**
-     * removes the first element and returns the value
-     */
+   * Allows you to peek at the next element to go out of the Queue.
+   * Basically the first element or null if Queue is empty.
+   */
+  peek() {
+    return this.fist ? this.fist.value : null
+  }
+  /**
+   * removes the first element and returns the value
+   */
   dequeue() {
-    if (!this.fist || this.size === 0) return null;
-    let current = this.fist;
-    this.fist = this.fist.next;
+    if (!this.fist || this.size === 0) return null
+    let current = this.fist
+    this.fist = this.fist.next
     if (this.fist) {
-      this.fist.previous = null;
+      this.fist.previous = null
     }
     if (this.size === 1) {
-      this.last = null;
-      this.fist = null;
+      this.last = null
+      this.fist = null
     }
-    this.size--;
-    current.next = null;
-    return current.value;
+    this.size--
+    current.next = null
+    return current.value
   }
 
   /**
@@ -64,29 +71,31 @@ export class Queue<T extends any> {
      */
   get(index: number) {
     if (
-      index < 0 || index >= this.size || this.fist === null ||
+      index < 0 ||
+      index >= this.size ||
+      this.fist === null ||
       this.size === 0
     ) {
-      return null;
+      return null
     }
     //Is the index closer to the tail or the head?
-    const isCloserToTail = index > this.size / 2;
+    const isCloserToTail = index > this.size / 2
     if (isCloserToTail) {
-      let count = this.size - 1;
-      let current = this.last;
+      let count = this.size - 1
+      let current = this.last
       while (count !== index) {
-        current = current!.previous;
-        count--;
+        current = current!.previous
+        count--
       }
-      return current;
+      return current
     } else {
-      let current: BiNode<T> | null = this.fist;
-      let count = 0;
+      let current: BiNode<T> | null = this.fist
+      let count = 0
       while (count !== index) {
-        current = current!.next;
-        count++;
+        current = current!.next
+        count++
       }
-      return current;
+      return current
     }
   }
   /**

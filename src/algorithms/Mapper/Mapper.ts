@@ -20,6 +20,10 @@
     lastnames.map((val, key, index) => {
     console.log(val, key, index);
     });
+    let data = []
+    for (const ln of lastnames) {
+        data.push(ln)
+    }
  */
 
 export class Mapper<T extends any> {
@@ -33,6 +37,25 @@ export class Mapper<T extends any> {
    */
   get size() {
     return this.#_size
+  }
+
+  /**
+   * Iterator function. allows you to use for(const element of mapper){}
+   * @example
+   * const numbers = new Mapper<number>()
+   *  numbers.set("first", 111)
+      numbers.set("second", 222)
+      numbers.set("last", 0)
+      let data = []
+      for (const n of numbers) {
+        data.push(n)
+      }
+   */
+  *[Symbol.iterator]<R>() {
+    const keys = Object.keys(this.#_data)
+    for (const key of keys) {
+      yield this.get(key)
+    }
   }
 
   /**
@@ -78,7 +101,7 @@ export class Mapper<T extends any> {
    * @param key key of the value
    */
   get(key: string) {
-    return this.#_data[key] || null
+    return this.#_data[key] !== undefined ? this.#_data[key] : null
   }
 
   /**

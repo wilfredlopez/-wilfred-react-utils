@@ -12,14 +12,21 @@ export {
   addUpTo,
   fib,
   idGenetaror,
-  PatternGenerator,
 } from "./numbers"
 export { downloadToFile } from "./downloadToFile"
 export { createResource, wrapPromise } from "./createResource"
 export { DateFormatter, getMonthFromInt } from "./dates"
-export { throttle } from "./multyuse"
+export { throttle, memoize } from "./multyuse"
 export { autoscroll } from "./scroll"
-export { reduceLongString, toProperCase } from "./strings"
+export {
+  reduceLongString,
+  toProperCase,
+  reverseWords,
+  reverseString,
+  isAnagram,
+  PatternGenerator,
+  StringHelper,
+} from "./strings"
 export { Cipher } from "./code"
 export {
   bubleSort,
