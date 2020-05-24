@@ -1,4 +1,5 @@
 export { idGenetaror } from "./idGenerator"
+export { NumberHelper } from "./NumberHelper"
 /**
  * Turns the seconds into formatted minutes to display.
  * This function only returns minutes. not hours. for hours please consirer using the formatDuration function.
@@ -152,46 +153,3 @@ export function addUpTo(n: number) {
 //   memo[n] = res;
 //   return res;
 // }
-
-export class NumberHelper {
-  /**
-   * Formats seconds into duration. eg. formatDuration(60000) => '00:06:00'
-   * @param seconds total seconds
-   */
-  static formatDuration(seconds: number) {
-    return new Date(seconds * 1000).toISOString().substr(11, 8)
-  }
-
-  /**
-   * calculate fibonacci numbers.
-   * Uses Memoization for speed improvemnts.
-   * @complexity O(n)
-   */
-  static fib(n: number) {
-    if (n <= 2) return 1
-    let fivNums = [0, 1, 1]
-    for (let i = 3; i <= n; i++) {
-      fivNums[i] = fivNums[i - 1] + fivNums[i - 2]
-    }
-    return fivNums[n]
-  }
-
-  static addUpTo(n: number) {
-    return (n * (n + 1)) / 2
-    // return (n / 2) * (1 + n); //the same
-  }
-
-  static fibRecursive(
-    n: number,
-    memo: { [key: string]: number } = { "0": 1, "1": 1, "2": 1 },
-  ): number {
-    if (memo[n] !== undefined) return memo[n]
-    //base case. alredy included in memo but leaving here anyways
-    if (n <= 2) return 1
-    let res =
-      NumberHelper.fibRecursive(n - 1, memo) +
-      NumberHelper.fibRecursive(n - 2, memo)
-    memo[n] = res
-    return res
-  }
-}

@@ -1,4 +1,5 @@
-import { splitArray } from "./util"
+import { ArrayHelper } from "./ArrayHelper"
+
 /*******************************************
  * BASIC sort algorithims
  ****************************************/
@@ -43,6 +44,19 @@ export function bubleSort(
   return arr
 }
 
+// function bubbleSort2(arr: any[]) {
+//   for (let i = 0; i < arr.length; i++) {
+//     for (let j = 0; j < arr.length - 1 - i; j++) {
+//       if (arr[j + 1] < arr[j]) {
+//         let temp = arr[j + 1]
+//         arr[j + 1] = arr[j]
+//         arr[j] = temp
+//       }
+//     }
+//   }
+//   return arr
+// }
+
 /**
  * Sorts and array of numbers
  * Performs better with nearly sorted data and small datasets. not recommended for very unsorted data.
@@ -83,7 +97,7 @@ export function mergeSort<T extends string | number>(data: T[]): T[] {
   //   let mid = Math.floor(data.length / 2);
   //   let left = mergeSort(data.slice(0, mid));
   //   let right = mergeSort(data.slice(mid));
-  const [p1, p2] = splitArray(data)
+  const [p1, p2] = ArrayHelper.splitArray(data)
   let left = mergeSort(p1)
   let right = mergeSort(p2)
   return mergeArr(left, right)
@@ -117,20 +131,67 @@ export function mergeArr<T extends any, D extends any>(two: T[], one: D[]) {
 }
 
 /**
- * Returns an array with the input array splitted by the specified size.
- * @param arr any array
- * @param size max size of arrays inside the array to return.
+ * Acepts and integer N and returns an NxN spiral Matrix
  * @example
- * console.log(chunkArr([1, 2, 3, 4, 5], 2)) //[ [ 1, 2 ], [ 3, 4 ], [ 5 ] ]
+ * spiralMatrix(2)
+ * // returns [
+ * //          [1,2]
+ * //         [4,3]
+ * //              ]
+ * spiralMatrix(3)
+ * // returns [
+ * //          [1,2,3]
+ * //         [8,9,4]
+ * //         [7.6,5]
+ * //              ]
  */
-export function chunkArr(arr: any[], size: number) {
-  const chunked: any[][] = []
-  let index = 0
+//eslint-disable-next-line
+function spiralMatrix(n: number) {
+  const result: number[][] = []
+  let counter = 1
+  let start_column = 0
+  let end_column = n - 1
+  let start_row = 0
+  let end_row = n - 1
 
-  while (index < arr.length) {
-    chunked.push(arr.slice(index, index + size))
-    index += size
+  for (let i = 0; i < n; i++) {
+    result.push([])
+  }
+  while (start_column <= end_column && start_row <= end_row) {
+    //Top Row
+    for (let i = start_column; i <= end_column; i++) {
+      result[start_row][i] = counter
+      counter++
+    }
+
+    start_row++
+
+    //Right Colum
+    for (let j = start_row; j <= end_row; j++) {
+      result[j][end_column] = counter
+      counter++
+    }
+    end_column--
+    //End Column
+    for (let i = end_column; i >= start_column; i--) {
+      result[end_row][i] = counter
+      counter++
+    }
+    end_row--
+    //Start Column
+    for (let i = end_row; i >= start_row; i--) {
+      result[i][start_column] = counter
+      counter++
+    }
+    start_column++
   }
 
-  return chunked
+  return result
 }
+
+// console.log(spiralMatrix(2)) //[ [ 1, 2 ], [ 4, 3 ] ]
+// console.log(spiralMatrix(3))
+/*  [[1,2,3]
+      [8,9,4]
+      [7.6,5]]
+    */

@@ -1,16 +1,3 @@
-export {
-  bubleSort,
-  insertionSort,
-  mergeArr,
-  mergeSort,
-  chunkArr,
-} from "./basic"
-export {
-  splitArray,
-  swap,
-  getDigit,
-  arraysEqual,
-  digitCount,
-  mostDigits,
-} from "./util"
+export { bubleSort, insertionSort, mergeArr, mergeSort } from "./basic"
 export { radixSort } from "./radixSort"
+export { ArrayHelper } from "./ArrayHelper"

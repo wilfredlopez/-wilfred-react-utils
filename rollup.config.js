@@ -4,7 +4,6 @@ import babel from "@rollup/plugin-babel"
 import pkg from "./package.json"
 import rollupTypescript from "@rollup/plugin-typescript"
 const extensions = [".js", ".jsx", ".ts", ".tsx"]
-
 const name = "ReactUtils"
 
 export default {
@@ -12,16 +11,24 @@ export default {
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
   // https://rollupjs.org/guide/en#external-e-external
-  external: [],
+  external: ["fs", "regeneratorRuntime"],
 
   plugins: [
     // Allows node_modules resolution
-    resolve({ extensions }),
+    resolve({
+      extensions,
+      customResolveOptions: {
+        // pass custom options to the resolve plugin
+        moduleDirectory: "node_modules",
+      },
+    }),
     // Allow bundling cjs modules. Rollup doesn't understand cjs
     commonjs(),
-
     // Compile TypeScript/JavaScript files
-    babel({ extensions, include: ["src/**/*"] }),
+    babel({
+      extensions,
+      include: ["src/**/*"],
+    }),
   ],
 
   output: [
@@ -50,7 +57,11 @@ export default {
       name,
 
       // https://rollupjs.org/guide/en#output-globals-g-globals
-      globals: {},
+      globals: {
+        fs: "require('fs')",
+        regeneratorRuntime: "require('regenerator-runtime')",
+        "@babel/runtime/regenerator": "regeneratorRuntime",
+      },
     },
   ],
 }

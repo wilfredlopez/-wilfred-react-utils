@@ -31,7 +31,19 @@ export class Stack<T extends any> {
     return this.size
   }
 
-  peek() {
+  *[Symbol.iterator]<T>() {
+    let current = this.fist
+    while (current) {
+      yield current
+      current = current.next
+    }
+  }
+
+  /**
+   * Peeks at the next node that will go out when you call the pop method.
+   * Returns null if empty.
+   */
+  peek(): BiNode<T> | null {
     return this.fist ? this.fist : null
   }
 

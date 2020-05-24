@@ -1,22 +1,19 @@
-import { combineClasses } from "./combineClasses";
+import { combineClasses } from "./combineClasses"
 
 class Logger {
   log() {
-    console.log(this);
+    console.log(this)
   }
 }
 
-describe.skip(
-  "combineClasses",
-  () => {
-    it("combines two classes", () => {
-      const CombinedArray = combineClasses<string[], Logger>(Array, Logger);
-      const arrayAndLogger = CombinedArray();
-      arrayAndLogger.push("wilfred");
-      arrayAndLogger.push("austria");
-      arrayAndLogger.log();
-      expect(arrayAndLogger).toHaveProperty("log");
-      expect(arrayAndLogger).toHaveProperty("push");
-    });
-  },
-);
+describe.skip("combineClasses", () => {
+  it("combines two classes", () => {
+    const CombinedArray = combineClasses<string[], Logger>(Array, Logger)
+    const arrayAndLogger = CombinedArray()
+    arrayAndLogger.push("wilfred")
+    arrayAndLogger.push("austria")
+    arrayAndLogger.log()
+    expect(arrayAndLogger).toHaveProperty("log")
+    expect(arrayAndLogger).toHaveProperty("push")
+  })
+})

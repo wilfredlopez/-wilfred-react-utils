@@ -32,6 +32,14 @@ export class Queue<T extends any> {
     return this.size
   }
 
+  *[Symbol.iterator]<T>() {
+    let current = this.fist
+    while (current) {
+      yield current
+      current = current.next
+    }
+  }
+
   /**
    * Allows you to peek at the next element to go out of the Queue.
    * Basically the first element or null if Queue is empty.
@@ -59,11 +67,10 @@ export class Queue<T extends any> {
   }
 
   /**
-     * Returns the node at index or null.
-     * Added as an extra method. Not recommended to use because its not as fast as the other method.
+     * Returns the node at index or null. 
+     * @note Added as an extra method. Not recommended to use because its not as fast as the other method.
      * @complexity O(n) maybe faster
-     * Returns the value at the specified index or null if not found.
-     * @param index index of the value
+     * @param index index of the value (0 based index)
      * @example
      *    queue.get(2).value
           queue.get(2).next

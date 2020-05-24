@@ -1,108 +1,21 @@
-/**
- * returns the string as it was if its not greater than the max Length. otherwise it will return three dots at the end keeping the specified length.
- * @param value the string value you need to make sure doesnt go over the maxlenght
- * @param maxLength the max length that the string should have. @default 20.
- */
-export function reduceLongString(
-  value: string,
-  maxLength: number = 20,
-): string {
-  if (value.length > maxLength) {
-    return value.substr(0, maxLength - 3) + "..."
-  } else {
-    return value
-  }
-}
-
-// /**
-//  * Returns the string with proper case and also *trims the white space.
-//  * @param str string to add proper case
-//  * @example toProperCase(" hello world") // "Hello World"
-//  */
-// function toProperCaseOld(str: string) {
-//   // str = str.trim()
-//   const words = str.match(/\w+(.)?/gim)
-
-//   //base case. one single word
-//   let proper = str.replace(/^\w/g, str[0].toUpperCase())
-
-//   //if there is an array of words
-//   if (words) {
-//     proper = ""
-//     for (const w of words) {
-//       proper += ` ${w.trim().replace(/^\w/g, w[0].toUpperCase())}`
-//     }
-//   }
-//   return proper.trim()
-// }
-
-/**
- * Returns the string with proper case.
- * @param str string to add proper case
- * @example toProperCase(" hello world") // " Hello World"
- */
-export function toProperCase(str: string) {
-  return str.replace(/\w\S*/g, function (txt) {
-    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-  })
-}
-
-export function reverseString(text: string) {
-  return text.split("").reduce((acc, current) => current + acc, "")
-}
-
-export function reverseWords(str: string) {
-  const revWords = str.split(" ")
-  let output: string[] = []
-  for (let letter of revWords) {
-    // output.push(letter.split("").reverse().join(""))
-    output.push(reverseString(letter))
-  }
-  return output.join(" ")
-}
-
-// function isAnagram2(str1: string, str2: string) {
-//   //not the best solution even tho looks easier.
-//   //sort iterrates over the entire string, so we have to go over both twice no matter what.
-//   // in the other solution we only iterrate over both strings if it is a match. overwise we return before doing so.
-//   str1 = str1.replace(/[^\w]/g, "").toLowerCase().split("").sort().join("")
-//   str2 = str2.replace(/[^\w]/g, "").toLowerCase().split("").sort().join("")
-//   return str1 === str2
-// }
-
-export function isAnagram(str1: string, str2: string) {
-  str1 = str1.replace(/[^\w]/g, "").toLowerCase()
-  str2 = str2.replace(/[^\w]/g, "").toLowerCase()
-  if (str1.length !== str2.length) {
-    return false
-  }
-  const charMap: { [key: string]: number } = {}
-  for (const c of str1) {
-    if (charMap[c] !== undefined) charMap[c]++
-    else charMap[c] = 1
-  }
-
-  for (const d of str2) {
-    if (!charMap[d]) {
-      return false
-    } else {
-      if (charMap[d] === 0) {
-        delete charMap[d]
-      } else charMap[d]--
-    }
-  }
-  return true
-}
-
-// console.log(isAnagram("rail Safety", "fairy tales")) //true
-// console.log(isAnagram("Rail Safety!!!!", "fairy tales")) // true
-// console.log(isAnagram("bad credit", "debit card")) // true
-// console.log(isAnagram("conversation", "voice rants on")) // true
-// console.log(isAnagram("Hi There", "Bye There")) // false
-// console.log(isAnagram("Hi There", "ni There")) // false
-// console.log(isAnagram("Wilfred &*(*)_()", "wcxckj 82fs d")) // false
-
 export class StringHelper {
+  /**
+   * Returns the string with proper case.
+   * @param str string to add proper case
+   * @example toProperCase(" hello world") // " Hello World"
+   */
+  static toProperCase(str: string) {
+    return str.replace(/\w\S*/g, function (txt) {
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
+    })
+  }
+
+  static isPalindrome(text: string) {
+    text = text.toLowerCase()
+    return text.split("").reduce((acc, current) => current + acc, "") === text
+    // return text.split("").reverse().join("") === text;
+  }
+
   /**
  * Creates a Pattern Generator that returns random strings with the especified pattern.
  * If you would like to use reserved characters in you pattern you can quote it with single quotes, for example:
@@ -125,17 +38,6 @@ export class StringHelper {
     return new PatternGenerator(pattern)
   }
 
-  /**
-   * Returns the string with proper case.
-   * @param str string to add proper case
-   * @example toProperCase(" hello world") // " Hello World"
-   */
-  static toProperCase(str: string) {
-    return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-    })
-  }
-
   static reverseString(text: string) {
     return text.split("").reduce((acc, current) => current + acc, "")
   }
@@ -145,7 +47,7 @@ export class StringHelper {
     let output: string[] = []
     for (let letter of revWords) {
       // output.push(letter.split("").reverse().join(""))
-      output.push(reverseString(letter))
+      output.push(StringHelper.reverseString(letter))
     }
     return output.join(" ")
   }
@@ -321,6 +223,45 @@ export class PatternGenerator {
     return combinations
   }
 }
+
+// /**
+//  * Returns the string with proper case and also *trims the white space.
+//  * @param str string to add proper case
+//  * @example toProperCase(" hello world") // "Hello World"
+//  */
+// function toProperCaseOld(str: string) {
+//   // str = str.trim()
+//   const words = str.match(/\w+(.)?/gim)
+
+//   //base case. one single word
+//   let proper = str.replace(/^\w/g, str[0].toUpperCase())
+
+//   //if there is an array of words
+//   if (words) {
+//     proper = ""
+//     for (const w of words) {
+//       proper += ` ${w.trim().replace(/^\w/g, w[0].toUpperCase())}`
+//     }
+//   }
+//   return proper.trim()
+// }
+
+// function isAnagram2(str1: string, str2: string) {
+//   //not the best solution even tho looks easier.
+//   //sort iterrates over the entire string, so we have to go over both twice no matter what.
+//   // in the other solution we only iterrate over both strings if it is a match. overwise we return before doing so.
+//   str1 = str1.replace(/[^\w]/g, "").toLowerCase().split("").sort().join("")
+//   str2 = str2.replace(/[^\w]/g, "").toLowerCase().split("").sort().join("")
+//   return str1 === str2
+// }
+
+// console.log(StringHelper.isAnagram("rail Safety", "fairy tales")) //true
+// console.log(StringHelper.isAnagram("Rail Safety!!!!", "fairy tales")) // true
+// console.log(StringHelper.isAnagram("bad credit", "debit card")) // true
+// console.log(StringHelper.isAnagram("conversation", "voice rants on")) // true
+// console.log(StringHelper.isAnagram("Hi There", "Bye There")) // false
+// console.log(StringHelper.isAnagram("Hi There", "ni There")) // false
+// console.log(StringHelper.isAnagram("Wilfred &*(*)_()", "wcxckj 82fs d")) // false
 
 // const pg = new PatternGenerator("'WL'-XXXXX")
 

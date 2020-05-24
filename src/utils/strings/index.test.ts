@@ -1,5 +1,5 @@
-import { reduceLongString, toProperCase } from "./index"
-
+import { StringHelper } from "./index"
+const { reduceLongString, toProperCase } = StringHelper
 describe.skip("String Methods", () => {
   describe("reduceLongString", () => {
     it("returns the same string if its less than the maxLength", () => {
