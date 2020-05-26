@@ -1,53 +1,53 @@
-import { dropRightWhile } from "../../lodash/dropRightWhile";
-import { map } from "../../lodash/map";
-import last from "../../lodash/last";
+import { dropRightWhile } from "../../lodash/dropRightWhile"
+import { map } from "../../lodash/map"
+import last from "../../lodash/last"
 
 export class ArrayHelper {
   static reverseArray<T extends any>(arr: T[]) {
-    const unmutated = [...arr];
-    const output = [];
+    const unmutated = [...arr]
+    const output = []
     while (unmutated.length) {
-      output.push(unmutated.pop());
+      output.push(unmutated.pop())
     }
 
-    return output;
+    return output
   }
 
   static last<T extends any>(array: T[]) {
-    return last(array);
+    return last(array)
   }
 
   /**
    * Creates an array of values by running each element of array thru iteratee. The iteratee is invoked with three arguments: (value, index, array).
-   * @param {Array} array The array to iterate over. 
-   * @param {Function} iteratee The function invoked per iteration. 
+   * @param {Array} array The array to iterate over.
+   * @param {Function} iteratee The function invoked per iteration.
    * @returns {Array} Returns the new mapped array.
    */
   static map<T extends any>(
     array: T[],
     iteratee: (value: T, index: number, array: T[]) => void,
   ): Array<T> {
-    return map(array, iteratee);
+    return map(array, iteratee)
   }
 
   /**
    * Creates a slice of array excluding elements dropped from the end. Elements are dropped until predicate returns falsey. The predicate is invoked with three arguments: (value, index, array).
-   * @param array 
-   * @param predicate The function invoked per iteration. 
+   * @param array
+   * @param predicate The function invoked per iteration.
    * @returns a new array
    */
   static dropRightWhile<T extends any>(
     array: T[],
     predicate: (value: T) => boolean,
   ) {
-    return dropRightWhile(array, predicate);
+    return dropRightWhile(array, predicate)
   }
   static splitArray<T extends any>(array: Array<T>): [T[], T[]] {
-    const unmutated = [...array];
+    const unmutated = [...array]
     return [
       unmutated.splice(0, unmutated.length / 2),
       unmutated.splice(unmutated.length / 2 - 1),
-    ];
+    ]
   }
 
   /**
@@ -62,25 +62,25 @@ export class ArrayHelper {
  */
   static quickSort(inputArr: any[], left = 0, right = inputArr.length - 1) {
     if (left < right) {
-      let pivotIndex = ArrayHelper._pivot(inputArr, left);
-      ArrayHelper.quickSort(inputArr, left, pivotIndex - 1);
-      ArrayHelper.quickSort(inputArr, pivotIndex + 1, right);
+      let pivotIndex = ArrayHelper._pivot(inputArr, left)
+      ArrayHelper.quickSort(inputArr, left, pivotIndex - 1)
+      ArrayHelper.quickSort(inputArr, pivotIndex + 1, right)
     }
-    return inputArr;
+    return inputArr
   }
 
   private static _pivot(arr: any[], startI: number = 0) {
-    let pivot = arr[startI];
-    let swapIdx = startI;
+    let pivot = arr[startI]
+    let swapIdx = startI
     //   for (let i = startI + 1; i < endI +1; i++) {
     for (let i = startI + 1; i < arr.length; i++) {
       if (pivot > arr[i]) {
-        swapIdx++;
-        ArrayHelper.swap(arr, swapIdx, i);
+        swapIdx++
+        ArrayHelper.swap(arr, swapIdx, i)
       }
     }
-    ArrayHelper.swap(arr, startI, swapIdx);
-    return swapIdx;
+    ArrayHelper.swap(arr, startI, swapIdx)
+    return swapIdx
   }
 
   /**
@@ -91,16 +91,16 @@ export class ArrayHelper {
    * console.log(chunkArr([1, 2, 3, 4, 5], 2)) //[ [ 1, 2 ], [ 3, 4 ], [ 5 ] ]
    */
   static chunkArr(arr: any[], size: number) {
-    const unmutated = [...arr];
-    const chunked: any[][] = [];
-    let index = 0;
+    const unmutated = [...arr]
+    const chunked: any[][] = []
+    let index = 0
 
     while (index < unmutated.length) {
-      chunked.push(unmutated.slice(index, index + size));
-      index += size;
+      chunked.push(unmutated.slice(index, index + size))
+      index += size
     }
 
-    return chunked;
+    return chunked
   }
 
   /**
@@ -111,7 +111,7 @@ export class ArrayHelper {
    * @param idx2 index to be swapped with target index
    */
   static swap(arr: Array<any>, idx1: number, idx2: number): void {
-    [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
+    ;[arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]]
     //ES5
     //   let temp = arr[idx1];
     //   arr[idx1] = arr[idx2];
@@ -135,17 +135,17 @@ export class ArrayHelper {
     if (a instanceof Array && b instanceof Array) {
       if (a.length !== b.length) {
         // assert same length
-        return false;
+        return false
       }
       for (var i = 0; i < a.length; i++) {
         // assert each element equal
         if (!ArrayHelper.arraysEqual(a[i], b[i])) {
-          return false;
+          return false
         }
       }
-      return true;
+      return true
     } else {
-      return a === b; // if not both arrays, should be the same
+      return a === b // if not both arrays, should be the same
     }
   }
 
@@ -157,8 +157,8 @@ export class ArrayHelper {
    * digitCount(1) // 1
    */
   static digitCount(num: number) {
-    if (num === 0) return 1;
-    return Math.floor(Math.log10(Math.abs(num))) + 1;
+    if (num === 0) return 1
+    return Math.floor(Math.log10(Math.abs(num))) + 1
   }
 
   /**
@@ -168,15 +168,85 @@ export class ArrayHelper {
    *  mostDigits([22, 403, 12345678]); // 8
    */
   static mostDigits(arr: number[]) {
-    let maxDigits = 0;
+    let maxDigits = 0
 
     for (const n of arr) {
-      maxDigits = Math.max(ArrayHelper.digitCount(n), maxDigits);
+      maxDigits = Math.max(ArrayHelper.digitCount(n), maxDigits)
     }
-    return maxDigits;
+    return maxDigits
     //this would do it but we iterate twice on the array. one for the map and another one spreading the array into Math.max
     //the one on top only goes one time by the array
     //   return Math.max(...arr.map((d) => digitCount(d)));
+  }
+
+  /**
+   * Sort array in asc order using merge-sort
+   * @example
+   *    ArrayHelper.mergeSort([3, 2, 1]) => [1, 2, 3]
+   *    ArrayHelper.mergeSort([3]) => [3]
+   *    ArrayHelper.mergeSort([3, 2]) => [2, 3]
+   * @param {array} array
+   * @param compareFn function to decide whether to change how the array is sorted.
+   * @example
+   * console.log(
+   * ArrayHelper.mergeSort(
+   * ["A", "Z", "B", "a", "b", "D", "H", "G"],
+   *     function compare(value1, value2) {
+   *     return value2 ? value1.toLowerCase() >= value2.toLowerCase() : false
+   *     },
+   * ),
+   * ) // [ 'A', 'B', 'D', 'G', 'H', 'b', 'Z', 'a' ]
+   */
+  static mergeSort<T extends any>(
+    array: T[] = [],
+    compareFn?: (value1: T, value2: T | undefined) => boolean,
+  ): T[] {
+    let compare = (value1: T, value2: T | undefined): boolean => {
+      if (value2) {
+        return value1 > value2
+      } else {
+        return false
+      }
+    }
+
+    if (compareFn) {
+      compare = compareFn
+    }
+
+    function merge(array1: any[] = [], array2: any[] = []): T[] {
+      const merged: T[] = []
+      let array1Index = 0
+      let array2Index = 0
+      while (array1Index < array1.length || array2Index < array2.length) {
+        if (
+          array1Index >= array1.length ||
+          //   array1[array1Index] > array2[array2Index]
+          compare(array1[array1Index], array2[array2Index])
+        ) {
+          merged.push(array2[array2Index])
+          array2Index += 1
+        } else {
+          merged.push(array1[array1Index])
+          array1Index += 1
+        }
+      }
+      return merged
+    }
+    const size = array.length
+    // base case
+    if (size < 2) {
+      return array
+    }
+    if (size === 2) {
+      return array[0] > array[1] ? [array[1], array[0]] : array
+    }
+    // slit and merge
+    // const mid = parseInt(size / 2, 10);
+    const mid = Math.floor(size / 2)
+    return merge(
+      ArrayHelper.mergeSort(array.slice(0, mid)),
+      ArrayHelper.mergeSort(array.slice(mid)),
+    )
   }
 }
 
