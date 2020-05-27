@@ -11,7 +11,7 @@ npm install @wilfredlopez/react-utils
 ###### Script Tag
 
 ```html
-<script src="https://unpkg.com/@wilfredlopez/react-utils@0.0.8/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@wilfredlopez/react-utils@1.0.1/dist/index.js"></script>
 <script type="text/javascript">
   console.log(ReactUtils.Cipher)
 </script>
@@ -25,7 +25,7 @@ import {
   assert,
   assertIsString,
   forceString,
-} from "@wilfredlopez/react-utils/dist"
+} from "@wilfredlopez/react-utils"
 
 const error = new AssertionError("message")
 
