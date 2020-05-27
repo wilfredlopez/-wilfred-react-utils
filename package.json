@@ -6,9 +6,14 @@
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "typings": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
+    "build:new": "npm run build:ts && npm run roll2 && tsc --outDir dist --emitDeclarationOnly",
     "build": "rimraf dist && npm run build:types && rollup -c",
-    "build:ts": "rimraf dist && tsc -p tsconfig.json",
+    "build:ts": "rimraf tsbuild && tsc -p tsconfig.json",
+    "roll2": "rimraf dist && rollup -c rollup2.config.js",
     "start": "node scripts/start.js",
     "build:react": "node scripts/build.js",
     "test": "node scripts/test.js",

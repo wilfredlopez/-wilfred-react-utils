@@ -12,3 +12,5 @@ rollup.config.js
 .vscode
 test.js
 testdata.csv
+tsbuild
+test.html

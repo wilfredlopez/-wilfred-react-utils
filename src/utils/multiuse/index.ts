@@ -1,4 +1,4 @@
-export { memoize } from "./memoize"
+export { memoize, memoizeSimple } from "./memoize"
 
 /**
  * Doesnt allow the function to execute more than 1 before the threshold is met. like a debounce function.

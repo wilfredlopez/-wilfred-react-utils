@@ -117,7 +117,9 @@ export class ArrayHelper {
     //   arr[idx1] = arr[idx2];
     //   arr[idx2] = temp;
   }
-
+  static isArray<T extends any>(arg: any): arg is Array<T> {
+    return arg instanceof Array
+  }
   static arraysEqual(a: any[], b: any[]): boolean {
     /******This would do it too*******/
     //   if (!Array.isArray(a) || !Array.isArray(b)) return false;

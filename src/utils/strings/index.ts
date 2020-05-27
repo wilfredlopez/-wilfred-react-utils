@@ -10,6 +10,10 @@ export class StringHelper {
     })
   }
 
+  static isString(arg: any): arg is string {
+    return typeof arg === "string"
+  }
+
   static isPalindrome(text: string) {
     text = text.toLowerCase()
     return text.split("").reduce((acc, current) => current + acc, "") === text

@@ -114,6 +114,9 @@ export class NumberHelper {
     return fivNums.slice(1)
   }
 
+  static isNumber(arg: any): arg is number {
+    return typeof arg === "number"
+  }
   static addUpTo(n: number) {
     return (n * (n + 1)) / 2
     // return (n / 2) * (1 + n); //the same

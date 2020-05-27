@@ -40,6 +40,44 @@ export function assert(condition: any, msg?: string): asserts condition {
   }
 }
 
+export type TypeOfConditions =
+  | "bigint"
+  | "boolean"
+  | "function"
+  | "number"
+  | "object"
+  | "string"
+  | "symbol"
+  | "undefined"
+export function isTypeof(value: any, condition: TypeOfConditions): boolean {
+  return typeof value === condition
+}
+
+export function isString(arg: any): arg is string {
+  return typeof arg === "string"
+}
+
+export function isBoolean(arg: any): arg is boolean {
+  return typeof arg === "boolean"
+}
+export function isNumber(arg: any): arg is number {
+  return typeof arg === "number"
+}
+
+export function isArray<T extends any>(arg: any): arg is Array<T> {
+  return arg instanceof Array
+}
+export function isFunction<T extends Function>(arg: any): arg is T {
+  return typeof arg === "function"
+}
+
+export function isUndefined(arg: any): arg is undefined {
+  return typeof arg === "undefined"
+}
+export function isObject(arg: any): arg is object {
+  return typeof arg === "object"
+}
+
 /**
  * asserts the value is a string. Will throw an error if that is not the case.
  * @param val the value expected to be string
