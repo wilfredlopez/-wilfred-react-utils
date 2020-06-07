@@ -57,8 +57,13 @@ export function isString(arg: any): arg is string {
   return typeof arg === "string"
 }
 
-export function isBoolean(arg: any): arg is boolean {
-  return typeof arg === "boolean"
+export function isBoolean(val: any): val is boolean {
+  return (
+    val instanceof Boolean ||
+    val === true ||
+    val === false ||
+    typeof val === "boolean"
+  )
 }
 export function isNumber(arg: any): arg is number {
   return typeof arg === "number"

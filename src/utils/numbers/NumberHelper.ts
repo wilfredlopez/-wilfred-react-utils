@@ -1,10 +1,79 @@
+export type ResultOf<T> = {
+  success: true;
+  value: T;
+} | {
+  success: false;
+  error: string;
+};
+
 export class NumberHelper {
+  /**
+   * Returns true or false if the number is prime or not.
+   * @param n number to verify
+   * @complexity O(log n) :)
+   */
+  static isPrime(n: number) {
+    //base cases
+    if (n < 2) return false;
+    if (n === 2) return true;
+
+    for (let i = 2; i < Math.sqrt(n); i++) {
+      if (n % i === 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Get random integer.
+   * @param from - number to start from. Defaults to 0.
+   * @param upTo - number to end. Defaults to 100.
+   */
+  static getRandomInt(from = 0, upTo = 100) {
+    return from + Math.floor(Math.random() * (upTo - from));
+  }
+
+  /**
+   * Parse text to int.
+   * @param text - Text to parse to int.
+   * returns {success:true, value: number} if can parse it.
+   * returns {success:false, error: 'Invalid number format'} if cant parse it.
+   * @param radix - A value between 2 and 36 that specifies the base of the number in numString. If this argument is not supplied, strings with a prefix of '0x' are considered hexadecimal. 
+   * All other strings are considered decimal. DEFAULT=10. 
+   */
+  static tryParseInt(text: string, radix = 10): ResultOf<number> {
+    if (/^-?\d+$/.test(text)) {
+      return {
+        success: true,
+        value: parseInt(text, radix),
+      };
+    } else {
+      return {
+        success: false,
+        error: "Invalid number format",
+      };
+    }
+  }
+
+  /**
+   * Determines if number is power of 2
+   * @param number 
+   * @complexity O(1) Constant time.
+   * @example
+   * console.log(NumberHelper.isPowerOfTwo(16)) //true
+   */
+  static isPowerOfTwo(number: number): boolean {
+    if (number < 1) return false;
+    return (number & (number - 1)) === 0;
+  }
+
   /**
    * Formats seconds into duration. eg. formatDuration(60000) => '00:06:00'
    * @param seconds total seconds
    */
   static formatDuration(seconds: number) {
-    return new Date(seconds * 1000).toISOString().substr(11, 8)
+    return new Date(seconds * 1000).toISOString().substr(11, 8);
   }
 
   /**
@@ -12,7 +81,15 @@ export class NumberHelper {
    * @return {boolean}
    */
   static isEven(number: number) {
-    return (number & 1) === 0
+    //could also be (number % 2) === 0
+    //Using & bitwise operator.
+    return (number & 1) === 0;
+  }
+
+  static isOdd(number: number) {
+    //but could also be (number % 2) !== 0
+    //Using & instead of % here. & represents a bitwise operation.
+    return (number & 1) !== 0;
   }
 
   /**
@@ -22,11 +99,11 @@ export class NumberHelper {
   static isPositive(number: number) {
     // Zero is neither a positive nor a negative number.
     if (number === 0) {
-      return false
+      return false;
     }
 
     // The most significant 32nd bit can be used to determine whether the number is positive.
-    return ((number >> 31) & 1) === 0
+    return ((number >> 31) & 1) === 0;
   }
 
   /**
@@ -35,7 +112,7 @@ export class NumberHelper {
    * @return {number}
    */
   static switchSign(number: number) {
-    return ~number + 1
+    return ~number + 1;
   }
 
   /**
@@ -56,7 +133,7 @@ export class NumberHelper {
    * getDigit(1, 4) // 0 (there's no fourth place in this case returns 0)
    */
   static getDigit(number: number, place: number): number {
-    return Math.floor(Math.abs(number) / Math.pow(10, place)) % 10
+    return Math.floor(Math.abs(number) / Math.pow(10, place)) % 10;
   }
 
   /**
@@ -65,12 +142,12 @@ export class NumberHelper {
    * @complexity O(n)
    */
   static fibonacci(n: number) {
-    if (n <= 2) return 1
-    let fivNums = [0, 1, 1]
+    if (n <= 2) return 1;
+    let fivNums = [0, 1, 1];
     for (let i = 3; i <= n; i++) {
-      fivNums[i] = fivNums[i - 1] + fivNums[i - 2]
+      fivNums[i] = fivNums[i - 1] + fivNums[i - 2];
     }
-    return fivNums[n]
+    return fivNums[n];
   }
 
   /**
@@ -81,23 +158,24 @@ export class NumberHelper {
    * @return {number}
    */
   static fibonacciClosedForm(position: number) {
-    const topMaxValidPosition = 70
+    const topMaxValidPosition = 70;
 
     // Check that position is valid.
     if (position < 1 || position > topMaxValidPosition) {
       throw new Error(
         `Can't handle position smaller than 1 or greater than ${topMaxValidPosition}`,
-      )
+      );
     }
 
     // Calculate √5 to re-use it in further formulas. (≈ 2.23606)
-    const sqrt5 = Math.sqrt(5)
+    const sqrt5 = Math.sqrt(5);
     // Calculate φ constant (≈ 1.618033).
-    const phi = (1 + sqrt5) / 2
+    const phi = (1 + sqrt5) / 2;
 
     // Calculate fibonacci number using Binet's formula.
-    return Math.floor(phi ** position / sqrt5 + 0.5)
+    return Math.floor(phi ** position / sqrt5 + 0.5);
   }
+
   /**
    * Return a fibonacci sequence as an array.
    *
@@ -105,48 +183,58 @@ export class NumberHelper {
    * @return {number[]}
    */
   static fibonacciSequence(n: number) {
-    if (n <= 1) return [1]
-    let fivNums = [0, 1, 1]
+    if (n <= 1) return [1];
+    let fivNums = [0, 1, 1];
     for (let i = 3; i <= n; i++) {
-      fivNums[i] = fivNums[i - 1] + fivNums[i - 2]
+      fivNums[i] = fivNums[i - 1] + fivNums[i - 2];
     }
 
-    return fivNums.slice(1)
+    return fivNums.slice(1);
+  }
+
+  /**
+   * 
+   * @param n number to calculate.
+   * @deprecated callstack can be a problem. please use NumberHelper.fibonacci
+   */
+  static fibRecursive(
+    n: number,
+    memo: { [key: string]: number } = { "0": 1, "1": 1, "2": 1 },
+  ): number {
+    if (memo[n] !== undefined) return memo[n];
+    //base case. alredy included in memo but leaving here anyways
+    if (n <= 2) return 1;
+    let res = NumberHelper.fibRecursive(n - 1, memo) +
+      NumberHelper.fibRecursive(n - 2, memo);
+    memo[n] = res;
+    return res;
   }
 
   static isNumber(arg: any): arg is number {
-    return typeof arg === "number"
+    return typeof arg === "number";
   }
   static addUpTo(n: number) {
-    return (n * (n + 1)) / 2
+    return (n * (n + 1)) / 2;
     // return (n / 2) * (1 + n); //the same
   }
 
   /**
    * @param {number} number
    * @return {number}
+   * @complexity O(n)
    */
   static factorial(number: number) {
-    let result = 1
+    let result = 1;
 
     for (let i = 2; i <= number; i += 1) {
-      result *= i
+      result *= i;
     }
 
-    return result
+    return result;
   }
 
-  static fibRecursive(
-    n: number,
-    memo: { [key: string]: number } = { "0": 1, "1": 1, "2": 1 },
-  ): number {
-    if (memo[n] !== undefined) return memo[n]
-    //base case. alredy included in memo but leaving here anyways
-    if (n <= 2) return 1
-    let res =
-      NumberHelper.fibRecursive(n - 1, memo) +
-      NumberHelper.fibRecursive(n - 2, memo)
-    memo[n] = res
-    return res
+  static factorialRecursive(number: number): number {
+    if (number === 1) return 1;
+    return number * NumberHelper.factorialRecursive(number - 1);
   }
 }

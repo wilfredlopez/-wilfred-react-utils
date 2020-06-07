@@ -26,17 +26,18 @@
     }
  */
 
-export class Mapper<T extends any> {
+export class Mapper<T extends any, K extends string | number = string> {
   //private properties
-  #_data: { [key: string]: T } = {}
-  #_size = 0
+  //   sss: Record<K,T> = {}
+  #_data: Record<K, T> = {} as Record<K, T>;
+  #_size = 0;
 
   /**
    * Length of the keys stored.
    * cannot be set from outside.
    */
   get size() {
-    return this.#_size
+    return this.#_size;
   }
 
   /**
@@ -52,10 +53,19 @@ export class Mapper<T extends any> {
       }
    */
   *[Symbol.iterator]<R>() {
-    const keys = Object.keys(this.#_data)
+    const keys = Object.keys(this.#_data) as K[];
     for (const key of keys) {
-      yield this.get(key)
+      yield this.get(key);
     }
+  }
+
+  toArray(): T[] {
+    const arr: T[] = [];
+    const keys = Object.keys(this.#_data) as K[];
+    for (const key of keys) {
+      arr.push(this.get(key)!);
+    }
+    return arr;
   }
 
   /**
@@ -63,7 +73,7 @@ export class Mapper<T extends any> {
    * this cannot be set from the outside
    */
   get data() {
-    return this.#_data
+    return this.#_data;
   }
 
   /**
@@ -71,9 +81,9 @@ export class Mapper<T extends any> {
    * @see Not recommended. Better call delete with the key you want to delete.
    */
   pop() {
-    if (this.size === 0) return null
-    const lastKey = this.keys()[this.size - 1]
-    return this.delete(lastKey)
+    if (this.size === 0) return null;
+    const lastKey = this.keys()[this.size - 1];
+    return this.delete(lastKey);
   }
 
   /**
@@ -81,9 +91,9 @@ export class Mapper<T extends any> {
    * @see Not recommended. Better call delete with the key you want to delete.
    */
   unshift() {
-    if (this.size === 0) return null
-    const fistKey = this.keys()[0]
-    return this.delete(fistKey)
+    if (this.size === 0) return null;
+    const fistKey = this.keys()[0] as K;
+    return this.delete(fistKey);
   }
 
   /**
@@ -91,65 +101,69 @@ export class Mapper<T extends any> {
    * @param key key to use for the value
    * @param value value to save
    */
-  set(key: string, value: T) {
-    this.#_data[key] = value
-    this.#_size++
+  set(key: K, value: T) {
+    this.#_data[key] = value;
+    this.#_size++;
   }
 
   /**
    * Returns the value or null if it doesnt exist.
    * @param key key of the value
    */
-  get(key: string) {
-    return this.#_data[key] !== undefined ? this.#_data[key] : null
+  get(key: K) {
+    return this.#_data[key] !== undefined ? this.#_data[key] : null;
+  }
+
+  has(key: K) {
+    return this.#_data[key] !== undefined;
   }
 
   /**
    * Returns the value if delete was success. null if the value was not found.
    * @param key key of the value
    */
-  delete(key: string) {
-    let temp = this.#_data[key]
+  delete(key: K) {
+    let temp = this.#_data[key];
     if (this.#_data[key] !== undefined) {
-      delete this.#_data[key]
-      this.#_size--
-      return temp
+      delete this.#_data[key];
+      this.#_size--;
+      return temp;
     }
-    return null
+    return null;
   }
 
   /**
    * Returns an array that contains all the keys
    */
   keys() {
-    return Object.keys(this.#_data)
+    return Object.keys(this.#_data) as K[];
   }
 
   /**
    * Maps overeach value, key and index of the key.
    * @param callback Iterator function. takes tha value, key, index (in that order).
    */
-  map<R extends any>(callback: (value: T, key: string, index: number) => R) {
+  map<R extends any>(callback: (value: T, key: K, index: number) => R) {
     return Object.keys(this.#_data).map<R>((key, index) => {
-      return callback(this.get(key) as T, key, index)
-    })
+      return callback(this.get(key as K) as T, key as K, index);
+    });
   }
 
   /**
    * Calls the callback function for each value, key and index of the key.
    * @param callback Iterator function. takes tha value, key, index (in that order).
    */
-  forEach(callback: (value: T, key: string, index: number) => void) {
+  forEach(callback: (value: T, key: K, index: number) => void) {
     return Object.keys(this.#_data).forEach((key, index) => {
-      return callback(this.get(key) as T, key, index)
-    })
+      return callback(this.get(key as K) as T, key as K, index);
+    });
   }
 
   /**
    * Resets the map. deletes all the key value pairs.
    */
   reset() {
-    this.#_data = {}
-    this.#_size = 0
+    this.#_data = {} as any;
+    this.#_size = 0;
   }
 }

@@ -3,10 +3,32 @@ import { map } from "../../lodash/map"
 import last from "../../lodash/last"
 
 export class ArrayHelper {
+
+  /**
+   * Returns a shuffle version of the array
+   * @param array
+   * @complexity O(n)
+   */
+  static shuffle<T>(array: T[]): T[] {
+    array = array.slice()
+
+    function getRandomInt(from = 0, upTo = 100): number {
+      return from + Math.floor(Math.random() * (upTo - from))
+    }
+    for (let i = 0; i < array.length; i++)
+    {
+      const randomIndex = getRandomInt(i, array.length) as number
+      [array[i], array[randomIndex]] = [array[randomIndex], array[i]]
+
+    }
+
+    return array
+  }
   static reverseArray<T extends any>(arr: T[]) {
     const unmutated = [...arr]
     const output = []
-    while (unmutated.length) {
+    while (unmutated.length)
+    {
       output.push(unmutated.pop())
     }
 
@@ -61,7 +83,8 @@ export class ArrayHelper {
     console.log(p); // [ -6, -5, 1, 2, 3, 4, 5, 6, 7, 8, 200, 1000, 3000 ]
  */
   static quickSort(inputArr: any[], left = 0, right = inputArr.length - 1) {
-    if (left < right) {
+    if (left < right)
+    {
       let pivotIndex = ArrayHelper._pivot(inputArr, left)
       ArrayHelper.quickSort(inputArr, left, pivotIndex - 1)
       ArrayHelper.quickSort(inputArr, pivotIndex + 1, right)
@@ -73,8 +96,10 @@ export class ArrayHelper {
     let pivot = arr[startI]
     let swapIdx = startI
     //   for (let i = startI + 1; i < endI +1; i++) {
-    for (let i = startI + 1; i < arr.length; i++) {
-      if (pivot > arr[i]) {
+    for (let i = startI + 1; i < arr.length; i++)
+    {
+      if (pivot > arr[i])
+      {
         swapIdx++
         ArrayHelper.swap(arr, swapIdx, i)
       }
@@ -95,7 +120,8 @@ export class ArrayHelper {
     const chunked: any[][] = []
     let index = 0
 
-    while (index < unmutated.length) {
+    while (index < unmutated.length)
+    {
       chunked.push(unmutated.slice(index, index + size))
       index += size
     }
@@ -134,19 +160,24 @@ export class ArrayHelper {
             elements are pairwise == to each other recursively under this
             definition.
         */
-    if (a instanceof Array && b instanceof Array) {
-      if (a.length !== b.length) {
+    if (a instanceof Array && b instanceof Array)
+    {
+      if (a.length !== b.length)
+      {
         // assert same length
         return false
       }
-      for (var i = 0; i < a.length; i++) {
+      for (var i = 0; i < a.length; i++)
+      {
         // assert each element equal
-        if (!ArrayHelper.arraysEqual(a[i], b[i])) {
+        if (!ArrayHelper.arraysEqual(a[i], b[i]))
+        {
           return false
         }
       }
       return true
-    } else {
+    } else
+    {
       return a === b // if not both arrays, should be the same
     }
   }
@@ -172,7 +203,8 @@ export class ArrayHelper {
   static mostDigits(arr: number[]) {
     let maxDigits = 0
 
-    for (const n of arr) {
+    for (const n of arr)
+    {
       maxDigits = Math.max(ArrayHelper.digitCount(n), maxDigits)
     }
     return maxDigits
@@ -189,6 +221,7 @@ export class ArrayHelper {
    *    ArrayHelper.mergeSort([3, 2]) => [2, 3]
    * @param {array} array
    * @param compareFn function to decide whether to change how the array is sorted.
+   * @timecomplexity O(n * log n)
    * @example
    * console.log(
    * ArrayHelper.mergeSort(
@@ -204,14 +237,17 @@ export class ArrayHelper {
     compareFn?: (value1: T, value2: T | undefined) => boolean,
   ): T[] {
     let compare = (value1: T, value2: T | undefined): boolean => {
-      if (value2) {
+      if (value2)
+      {
         return value1 > value2
-      } else {
+      } else
+      {
         return false
       }
     }
 
-    if (compareFn) {
+    if (compareFn)
+    {
       compare = compareFn
     }
 
@@ -219,15 +255,18 @@ export class ArrayHelper {
       const merged: T[] = []
       let array1Index = 0
       let array2Index = 0
-      while (array1Index < array1.length || array2Index < array2.length) {
+      while (array1Index < array1.length || array2Index < array2.length)
+      {
         if (
           array1Index >= array1.length ||
           //   array1[array1Index] > array2[array2Index]
           compare(array1[array1Index], array2[array2Index])
-        ) {
+        )
+        {
           merged.push(array2[array2Index])
           array2Index += 1
-        } else {
+        } else
+        {
           merged.push(array1[array1Index])
           array1Index += 1
         }
@@ -236,10 +275,12 @@ export class ArrayHelper {
     }
     const size = array.length
     // base case
-    if (size < 2) {
+    if (size < 2)
+    {
       return array
     }
-    if (size === 2) {
+    if (size === 2)
+    {
       return array[0] > array[1] ? [array[1], array[0]] : array
     }
     // slit and merge
@@ -257,3 +298,6 @@ export class ArrayHelper {
 // console.log(splitArray(testArr))
 // console.log(reverseArray(testArr))
 // console.log(chunkArr(testArr, 2))
+
+
+

@@ -25,7 +25,7 @@ export {
 export { downloadToFile } from "./downloadToFile"
 export { createResource, wrapPromise } from "./createResource"
 export { DateFormatter, getMonthFromInt } from "./dates"
-export { throttle, memoize, memoizeSimple } from "./multiuse"
+export { throttle, memoize, memoizeSimple, BubleSorter } from "./multiuse"
 export { autoscroll } from "./scroll"
 export { PatternGenerator, StringHelper } from "./strings"
 export { Cipher } from "./code"
