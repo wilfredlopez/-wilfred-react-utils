@@ -1,42 +1,38 @@
-import { dropRightWhile } from "../../lodash/dropRightWhile"
-import { map } from "../../lodash/map"
-import last from "../../lodash/last"
+// import { dropRightWhile } from "../../lodash/dropRightWhile";
+// import { map } from "../../lodash/map";
+// import last from "../../lodash/last";
 
 export class ArrayHelper {
-
   /**
    * Returns a shuffle version of the array
    * @param array
    * @complexity O(n)
    */
   static shuffle<T>(array: T[]): T[] {
-    array = array.slice()
+    array = array.slice();
 
     function getRandomInt(from = 0, upTo = 100): number {
-      return from + Math.floor(Math.random() * (upTo - from))
+      return from + Math.floor(Math.random() * (upTo - from));
     }
-    for (let i = 0; i < array.length; i++)
-    {
-      const randomIndex = getRandomInt(i, array.length) as number
-      [array[i], array[randomIndex]] = [array[randomIndex], array[i]]
-
+    for (let i = 0; i < array.length; i++) {
+      const randomIndex = getRandomInt(i, array.length) as number;
+      [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
     }
 
-    return array
+    return array;
   }
   static reverseArray<T extends any>(arr: T[]) {
-    const unmutated = [...arr]
-    const output = []
-    while (unmutated.length)
-    {
-      output.push(unmutated.pop())
+    const unmutated = [...arr];
+    const output = [];
+    while (unmutated.length) {
+      output.push(unmutated.pop());
     }
 
-    return output
+    return output;
   }
 
   static last<T extends any>(array: T[]) {
-    return last(array)
+    return last(array);
   }
 
   /**
@@ -49,7 +45,7 @@ export class ArrayHelper {
     array: T[],
     iteratee: (value: T, index: number, array: T[]) => void,
   ): Array<T> {
-    return map(array, iteratee)
+    return map(array, iteratee);
   }
 
   /**
@@ -62,14 +58,14 @@ export class ArrayHelper {
     array: T[],
     predicate: (value: T) => boolean,
   ) {
-    return dropRightWhile(array, predicate)
+    return dropRightWhile(array, predicate);
   }
   static splitArray<T extends any>(array: Array<T>): [T[], T[]] {
-    const unmutated = [...array]
+    const unmutated = [...array];
     return [
       unmutated.splice(0, unmutated.length / 2),
       unmutated.splice(unmutated.length / 2 - 1),
-    ]
+    ];
   }
 
   /**
@@ -83,29 +79,26 @@ export class ArrayHelper {
     console.log(p); // [ -6, -5, 1, 2, 3, 4, 5, 6, 7, 8, 200, 1000, 3000 ]
  */
   static quickSort(inputArr: any[], left = 0, right = inputArr.length - 1) {
-    if (left < right)
-    {
-      let pivotIndex = ArrayHelper._pivot(inputArr, left)
-      ArrayHelper.quickSort(inputArr, left, pivotIndex - 1)
-      ArrayHelper.quickSort(inputArr, pivotIndex + 1, right)
+    if (left < right) {
+      let pivotIndex = ArrayHelper._pivot(inputArr, left);
+      ArrayHelper.quickSort(inputArr, left, pivotIndex - 1);
+      ArrayHelper.quickSort(inputArr, pivotIndex + 1, right);
     }
-    return inputArr
+    return inputArr;
   }
 
   private static _pivot(arr: any[], startI: number = 0) {
-    let pivot = arr[startI]
-    let swapIdx = startI
+    let pivot = arr[startI];
+    let swapIdx = startI;
     //   for (let i = startI + 1; i < endI +1; i++) {
-    for (let i = startI + 1; i < arr.length; i++)
-    {
-      if (pivot > arr[i])
-      {
-        swapIdx++
-        ArrayHelper.swap(arr, swapIdx, i)
+    for (let i = startI + 1; i < arr.length; i++) {
+      if (pivot > arr[i]) {
+        swapIdx++;
+        ArrayHelper.swap(arr, swapIdx, i);
       }
     }
-    ArrayHelper.swap(arr, startI, swapIdx)
-    return swapIdx
+    ArrayHelper.swap(arr, startI, swapIdx);
+    return swapIdx;
   }
 
   /**
@@ -116,17 +109,16 @@ export class ArrayHelper {
    * console.log(chunkArr([1, 2, 3, 4, 5], 2)) //[ [ 1, 2 ], [ 3, 4 ], [ 5 ] ]
    */
   static chunkArr(arr: any[], size: number) {
-    const unmutated = [...arr]
-    const chunked: any[][] = []
-    let index = 0
+    const unmutated = [...arr];
+    const chunked: any[][] = [];
+    let index = 0;
 
-    while (index < unmutated.length)
-    {
-      chunked.push(unmutated.slice(index, index + size))
-      index += size
+    while (index < unmutated.length) {
+      chunked.push(unmutated.slice(index, index + size));
+      index += size;
     }
 
-    return chunked
+    return chunked;
   }
 
   /**
@@ -137,14 +129,14 @@ export class ArrayHelper {
    * @param idx2 index to be swapped with target index
    */
   static swap(arr: Array<any>, idx1: number, idx2: number): void {
-    ;[arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]]
+    [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
     //ES5
     //   let temp = arr[idx1];
     //   arr[idx1] = arr[idx2];
     //   arr[idx2] = temp;
   }
   static isArray<T extends any>(arg: any): arg is Array<T> {
-    return arg instanceof Array
+    return arg instanceof Array;
   }
   static arraysEqual(a: any[], b: any[]): boolean {
     /******This would do it too*******/
@@ -160,25 +152,20 @@ export class ArrayHelper {
             elements are pairwise == to each other recursively under this
             definition.
         */
-    if (a instanceof Array && b instanceof Array)
-    {
-      if (a.length !== b.length)
-      {
+    if (a instanceof Array && b instanceof Array) {
+      if (a.length !== b.length) {
         // assert same length
-        return false
+        return false;
       }
-      for (var i = 0; i < a.length; i++)
-      {
+      for (var i = 0; i < a.length; i++) {
         // assert each element equal
-        if (!ArrayHelper.arraysEqual(a[i], b[i]))
-        {
-          return false
+        if (!ArrayHelper.arraysEqual(a[i], b[i])) {
+          return false;
         }
       }
-      return true
-    } else
-    {
-      return a === b // if not both arrays, should be the same
+      return true;
+    } else {
+      return a === b; // if not both arrays, should be the same
     }
   }
 
@@ -190,8 +177,8 @@ export class ArrayHelper {
    * digitCount(1) // 1
    */
   static digitCount(num: number) {
-    if (num === 0) return 1
-    return Math.floor(Math.log10(Math.abs(num))) + 1
+    if (num === 0) return 1;
+    return Math.floor(Math.log10(Math.abs(num))) + 1;
   }
 
   /**
@@ -201,13 +188,12 @@ export class ArrayHelper {
    *  mostDigits([22, 403, 12345678]); // 8
    */
   static mostDigits(arr: number[]) {
-    let maxDigits = 0
+    let maxDigits = 0;
 
-    for (const n of arr)
-    {
-      maxDigits = Math.max(ArrayHelper.digitCount(n), maxDigits)
+    for (const n of arr) {
+      maxDigits = Math.max(ArrayHelper.digitCount(n), maxDigits);
     }
-    return maxDigits
+    return maxDigits;
     //this would do it but we iterate twice on the array. one for the map and another one spreading the array into Math.max
     //the one on top only goes one time by the array
     //   return Math.max(...arr.map((d) => digitCount(d)));
@@ -234,62 +220,57 @@ export class ArrayHelper {
    */
   static mergeSort<T extends any>(
     array: T[] = [],
-    compareFn?: (value1: T, value2: T | undefined) => boolean,
+    compareFn?: (value1: T, value2: T) => boolean,
   ): T[] {
-    let compare = (value1: T, value2: T | undefined): boolean => {
-      if (value2)
-      {
-        return value1 > value2
-      } else
-      {
-        return false
+    let compare = (value1: T, value2: T): boolean => {
+      if (value2) {
+        return value1 > value2;
+      } else {
+        return false;
       }
+    };
+
+    if (compareFn) {
+      compare = compareFn;
     }
 
-    if (compareFn)
-    {
-      compare = compareFn
-    }
-
-    function merge(array1: any[] = [], array2: any[] = []): T[] {
-      const merged: T[] = []
-      let array1Index = 0
-      let array2Index = 0
-      while (array1Index < array1.length || array2Index < array2.length)
-      {
+    function merge(leftArr: T[] = [], rightArr: T[] = []): T[] {
+      let merged: T[] = [];
+      let leftI = 0;
+      let rightI = 0;
+      while (leftI < leftArr.length && rightI < rightArr.length) {
         if (
-          array1Index >= array1.length ||
-          //   array1[array1Index] > array2[array2Index]
-          compare(array1[array1Index], array2[array2Index])
-        )
-        {
-          merged.push(array2[array2Index])
-          array2Index += 1
-        } else
-        {
-          merged.push(array1[array1Index])
-          array1Index += 1
+          compare(leftArr[leftI], rightArr[rightI])
+        ) {
+          merged.push(rightArr[rightI]);
+          rightI++;
+        } else {
+          merged.push(leftArr[leftI]);
+          leftI++;
         }
       }
-      return merged
+
+      if (leftI < leftArr.length) {
+        merged = merged.concat(leftArr.slice(leftI));
+      } else if (rightI < rightArr.length) {
+        merged = merged.concat(rightArr.slice(rightI));
+      }
+      return merged;
     }
-    const size = array.length
+    const size = array.length;
     // base case
-    if (size < 2)
-    {
-      return array
+    if (size < 2) {
+      return array;
     }
-    if (size === 2)
-    {
-      return array[0] > array[1] ? [array[1], array[0]] : array
+    if (size === 2) {
+      return compare(array[0], array[1]) ? [array[1], array[0]] : array;
     }
     // slit and merge
-    // const mid = parseInt(size / 2, 10);
-    const mid = Math.floor(size / 2)
+    const mid = Math.floor(size / 2);
     return merge(
-      ArrayHelper.mergeSort(array.slice(0, mid)),
-      ArrayHelper.mergeSort(array.slice(mid)),
-    )
+      ArrayHelper.mergeSort(array.slice(0, mid), compare),
+      ArrayHelper.mergeSort(array.slice(mid), compare),
+    );
   }
 }
 
@@ -299,5 +280,18 @@ export class ArrayHelper {
 // console.log(reverseArray(testArr))
 // console.log(chunkArr(testArr, 2))
 
-
-
+console.log(
+  ArrayHelper.mergeSort(
+    [
+      { name: "A" },
+      { name: "B" },
+      { name: "Z" },
+      { name: "D" },
+      { name: "F" },
+      { name: "Y" },
+    ],
+    function compare(value1, value2) {
+      return value1.name.toLowerCase() < value2.name.toLowerCase();
+    },
+  ),
+); // [ 'A', 'B', 'D', 'G', 'H', 'b', 'Z', 'a' ]

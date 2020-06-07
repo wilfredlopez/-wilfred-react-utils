@@ -104,6 +104,7 @@ export class Mapper<T extends any, K extends string | number = string> {
   set(key: K, value: T) {
     this.#_data[key] = value;
     this.#_size++;
+    return this;
   }
 
   /**
@@ -165,5 +166,6 @@ export class Mapper<T extends any, K extends string | number = string> {
   reset() {
     this.#_data = {} as any;
     this.#_size = 0;
+    return this;
   }
 }
