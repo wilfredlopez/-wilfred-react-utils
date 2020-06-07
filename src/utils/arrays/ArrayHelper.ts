@@ -1,6 +1,6 @@
-// import { dropRightWhile } from "../../lodash/dropRightWhile";
-// import { map } from "../../lodash/map";
-// import last from "../../lodash/last";
+import { dropRightWhile } from "../../lodash/dropRightWhile";
+import { map } from "../../lodash/map";
+import last from "../../lodash/last";
 
 export class ArrayHelper {
   /**
@@ -280,18 +280,18 @@ export class ArrayHelper {
 // console.log(reverseArray(testArr))
 // console.log(chunkArr(testArr, 2))
 
-console.log(
-  ArrayHelper.mergeSort(
-    [
-      { name: "A" },
-      { name: "B" },
-      { name: "Z" },
-      { name: "D" },
-      { name: "F" },
-      { name: "Y" },
-    ],
-    function compare(value1, value2) {
-      return value1.name.toLowerCase() < value2.name.toLowerCase();
-    },
-  ),
-); // [ 'A', 'B', 'D', 'G', 'H', 'b', 'Z', 'a' ]
+// console.log(
+//   ArrayHelper.mergeSort(
+//     [
+//       { name: "A" },
+//       { name: "B" },
+//       { name: "Z" },
+//       { name: "D" },
+//       { name: "F" },
+//       { name: "Y" },
+//     ],
+//     function compare(value1, value2) {
+//       return value1.name.toLowerCase() < value2.name.toLowerCase();
+//     },
+//   ),
+// ); // [ 'A', 'B', 'D', 'G', 'H', 'b', 'Z', 'a' ]
