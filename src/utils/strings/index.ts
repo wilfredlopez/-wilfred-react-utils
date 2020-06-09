@@ -2,21 +2,21 @@ export class StringHelper {
   /**
    * Returns the string with proper case.
    * @param str string to add proper case
-   * @example toProperCase(" hello world") // " Hello World"
+   * @example StringHelper.toProperCase(" hello world") // " Hello World"
    */
   static toProperCase(str: string) {
     return str.replace(/\w\S*/g, function (txt) {
-      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()
-    })
+      return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+    });
   }
 
   static isString(arg: any): arg is string {
-    return typeof arg === "string"
+    return typeof arg === "string";
   }
 
   static isPalindrome(text: string) {
-    text = text.toLowerCase()
-    return text.split("").reduce((acc, current) => current + acc, "") === text
+    text = text.toLowerCase();
+    return text.split("").reduce((acc, current) => current + acc, "") === text;
     // return text.split("").reverse().join("") === text;
   }
 
@@ -24,7 +24,7 @@ export class StringHelper {
  * Creates a Pattern Generator that returns random strings with the especified pattern.
  * If you would like to use reserved characters in you pattern you can quote it with single quotes, for example:
  * @example
- * const xmasCodes = NumberHelper.patternGenerator("'XMAS'-XXXXX")
+ * const xmasCodes = StringHelper.patternGenerator("'XMAS'-XXXXX")
  * console.log(xmasCodes.next) //XMAS-4K9LN
  * const codes = [];
     while (codes.length < 1000) {
@@ -39,21 +39,21 @@ export class StringHelper {
   console.log(pg.next) // LWR-88988 
  */
   static patternGenerator(pattern: string) {
-    return new PatternGenerator(pattern)
+    return new PatternGenerator(pattern);
   }
 
   static reverseString(text: string) {
-    return text.split("").reduce((acc, current) => current + acc, "")
+    return text.split("").reduce((acc, current) => current + acc, "");
   }
 
   static reverseWords(str: string) {
-    const revWords = str.split(" ")
-    let output: string[] = []
+    const revWords = str.split(" ");
+    let output: string[] = [];
     for (let letter of revWords) {
       // output.push(letter.split("").reverse().join(""))
-      output.push(StringHelper.reverseString(letter))
+      output.push(StringHelper.reverseString(letter));
     }
-    return output.join(" ")
+    return output.join(" ");
   }
 
   /**
@@ -63,9 +63,9 @@ export class StringHelper {
    */
   static reduceLongString(value: string, maxLength: number = 20): string {
     if (value.length > maxLength) {
-      return value.substr(0, maxLength - 3) + "..."
+      return value.substr(0, maxLength - 3) + "...";
     } else {
-      return value
+      return value;
     }
   }
 
@@ -75,38 +75,170 @@ export class StringHelper {
    * @param str1 word 1
    * @param str2 word 2
    * @example
-   * console.log(isAnagram("rail Safety", "fairy tales")) //true
-     console.log(isAnagram("Rail Safety!!!!", "fairy tales")) // true
-     console.log(isAnagram("bad credit", "debit card")) // true
-     console.log(isAnagram("conversation", "voice rants on")) // true
-     console.log(isAnagram("Hi There", "Bye There")) // false
+   * console.log(StringHelper.isAnagram("rail Safety", "fairy tales")) //true
+     console.log(StringHelper.isAnagram("Rail Safety!!!!", "fairy tales")) // true
+     console.log(StringHelper.isAnagram("bad credit", "debit card")) // true
+     console.log(StringHelper.isAnagram("conversation", "voice rants on")) // true
+     console.log(StringHelper.isAnagram("Hi There", "Bye There")) // false
    */
   static isAnagram(str1: string, str2: string) {
-    str1 = str1.replace(/[^\w]/g, "").toLowerCase()
-    str2 = str2.replace(/[^\w]/g, "").toLowerCase()
+    str1 = str1.replace(/[^\w]/g, "").toLowerCase();
+    str2 = str2.replace(/[^\w]/g, "").toLowerCase();
     if (str1.length !== str2.length) {
-      return false
+      return false;
     }
-    const charMap: { [key: string]: number } = {}
+    const charMap: { [key: string]: number } = {};
     for (const c of str1) {
-      if (charMap[c] !== undefined) charMap[c]++
-      else charMap[c] = 1
+      if (charMap[c] !== undefined) charMap[c]++;
+      else charMap[c] = 1;
     }
 
     for (const d of str2) {
       if (!charMap[d]) {
-        return false
+        return false;
       } else {
         if (charMap[d] === 0) {
-          delete charMap[d]
-        } else charMap[d]--
+          delete charMap[d];
+        } else charMap[d]--;
       }
     }
-    return true
+    return true;
+  }
+
+  static joinWidth(letter: string) {
+    return (s: string[]) => s.join(letter);
+  }
+
+  static splitWidth(width: string | RegExp) {
+    return (s: string) => s.split(width);
+  }
+
+  static lowerCase(s: string) {
+    return s.toLowerCase();
+  }
+
+  /**
+   * returns the slogified version. ex. my house => my-house
+   * @param a string. 
+   */
+  static slogify(a: string): string {
+    const map = <T, U>(cb: (value: T, index: number, array: T[]) => U) =>
+      (arr: Array<T>) => arr.map(cb);
+    const compose = (fn1: (a: any) => any, ...fns: Array<(a: any) => any>) =>
+      fns.reduce((prevFn, nextFn) => (value) => prevFn(nextFn(value)), fn1);
+
+    // const lowercase = (s: string) => s.toLowerCase();
+    const splitJoin = compose(
+      map(StringHelper.joinWidth("-")),
+      map(StringHelper.splitWidth(" ")),
+    );
+
+    return compose(
+      StringHelper.joinWidth("-"),
+      map(StringHelper.lowerCase),
+      splitJoin,
+      StringHelper.splitWidth(" "),
+    )(a.replace(/[^\s\w]/gi, ""));
+  }
+  static slogifyFromArray(a: string[]): string {
+    const map = <T, U>(cb: (value: T, index: number, array: T[]) => U) =>
+      (arr: Array<T>) => arr.map(cb);
+
+    const compose = (fn1: (a: any) => any, ...fns: Array<(a: any) => any>) =>
+      fns.reduce((prevFn, nextFn) => (value) => prevFn(nextFn(value)), fn1);
+
+    const splitJoin = compose(
+      map(StringHelper.joinWidth("-")),
+      map(StringHelper.splitWidth(" ")),
+    );
+
+    return compose(
+      StringHelper.joinWidth("-"),
+      map(StringHelper.lowerCase),
+      splitJoin,
+    )(a.map((a) => a.replace(/[\W]/gi, "")).filter((v) => v !== ""));
+  }
+
+  /**
+ * Turns the values separated with "-" into camelCase.
+ * @param {TemplateStringsArray}  template 
+ * @example
+ * console.log(StringHelper.camelCase`
+    background-color: red;
+    position: absolute;
+    flex-direction: column;
+    `); 
+    //backgroundColor: red; position: absolute; flexDirection: column;
+ */
+  static camelCase(template: TemplateStringsArray, ...values: any[]) {
+    function convert(string: string) {
+      return string.split("-").map((v, i) => {
+        if (i === 0) {
+          return v;
+        }
+        return v[0].toUpperCase() + v.slice(1);
+      })
+        .join("");
+    }
+    let ret = "";
+    for (let i = 0; i < template.length; i++) {
+      if (i > 0) {
+        if (values[i - 1]) {
+          ret += convert(`${String(values[i - 1])}`); //I COULD MODIFY THE DINAMIC VALUES HERE. ex. ${dynamic}
+        }
+      }
+      if (template[i]) {
+        ret += convert(template[i]); //Modifies only the non dynamic values on the template string. ex.`im not dynamic. ${imDynamic}`
+      }
+    }
+    return ret;
+  }
+
+  /**
+ * Turns regular css into a javascript css object.
+ * @param {TemplateStringsArray}  template 
+ * @example
+ * const clasOb = StringHelper.objectFromCSS`
+ *   background-color: red;
+ *   position: absolute;
+ *   flex-direction: column;
+ *   `
+ * console.log(clasOb) //{ backgroundColor: 'red', position: 'absolute',flexDirection: 'column' }
+ * console.log(clasOb.backgroundColor) //red
+ * 
+ */
+  static objectFromCSS(template: TemplateStringsArray, ...values: any[]) {
+    let ret = "";
+    for (let i = 0; i < template.length; i++) {
+      if (i > 0) {
+        if (values[i - 1]) {
+          ret += `$${String(values[i - 1])}`; //I COULD MODIFY THE DINAMIC VALUES HERE. ex. ${dynamic}
+        }
+      }
+      ret += template[i].split("-").map((v) => v[0].toUpperCase() + v.slice(1))
+        .join(""); //Modifies only the non dynamic values on the template string. ex.`im not dynamic. ${imDynamic}`
+    }
+    const data = ret.split(/[\n?]/).reduce((acc, current) => {
+      current.trim();
+      if (current.trim() !== "") {
+        return {
+          ...acc,
+          [current.split(":")[0].trim()]: current.split(":")[1].trim().replace(
+            ";",
+            "",
+          ),
+        };
+      } else {
+        return {
+          ...acc,
+        };
+      }
+    }, {});
+    return JSON.parse(JSON.stringify(data));
   }
 }
 
-type PatternGroup = "A" | "a" | 9 | "X" | "x" | "#"
+type PatternGroup = "A" | "a" | 9 | "X" | "x" | "#";
 /**
  * Creates a Pattern Generator that returns random strings with the especified pattern.
  * If you would like to use reserved characters in you pattern you can quote it with single quotes, for example:
@@ -124,8 +256,8 @@ type PatternGroup = "A" | "a" | 9 | "X" | "x" | "#"
   console.log(pg.next) // LWR-88988 
  */
 export class PatternGenerator {
-  pattern: string
-  #combinations: number
+  pattern: string;
+  #combinations: number;
   #placeholders = {
     A: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
     a: "abcdefghijklmnopqrstuvwxyz",
@@ -133,9 +265,9 @@ export class PatternGenerator {
     X: "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789",
     x: "abcdefghijklmnopqrstuvwxyz0123456789",
     "#": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789",
-  } as const
-  #cache: { [key: string]: boolean } = {}
-  #maxAttempts = 0xbad
+  } as const;
+  #cache: { [key: string]: boolean } = {};
+  #maxAttempts = 0xbad;
   /**
    *
    * @param pattern a string containing the accepted patterns. for exampe AAA-99999. this would generate something like EGX-78797
@@ -147,86 +279,89 @@ export class PatternGenerator {
    * @#	for uppercase and lowercase letters + digits
    */
   constructor(pattern: string) {
-    this.pattern = pattern
-    this.#combinations = this.countCombinations(this.pattern)
+    this.pattern = pattern;
+    this.#combinations = this.countCombinations(this.pattern);
   }
 
   get maxAttempts() {
-    return this.#maxAttempts
+    return this.#maxAttempts;
   }
 
   get next() {
-    let attempt = 0
-    let code: string
+    let attempt = 0;
+    let code: string;
     do {
-      code = this.randomCode(this.pattern)
-    } while (this.#cache[code] && ++attempt < this.#maxAttempts)
+      code = this.randomCode(this.pattern);
+    } while (this.#cache[code] && ++attempt < this.#maxAttempts);
 
-    this.#cache[code] = true
+    this.#cache[code] = true;
 
     if (attempt === this.#maxAttempts) {
-      throw new Error("PatternGenerator: cannot generate next unique code.")
+      throw new Error("PatternGenerator: cannot generate next unique code.");
     }
 
-    return code
+    return code;
   }
   reset() {
-    this.#cache = {}
+    this.#cache = {};
   }
   get combinations() {
-    return this.#combinations
+    return this.#combinations;
   }
 
   private randomInt(max: number) {
-    return Math.floor(Math.random() * max)
+    return Math.floor(Math.random() * max);
   }
 
   private randomElem(array: string) {
-    return array[this.randomInt(array.length)]
+    return array[this.randomInt(array.length)];
   }
 
   private randomCode(pattern: string) {
-    var code = ""
-    var quote = "'"
-    var quoteOpen = false
+    var code = "";
+    var quote = "'";
+    var quoteOpen = false;
     pattern.split("").forEach((c) => {
       if (!quoteOpen) {
         if (this.#placeholders[c as PatternGroup]) {
-          code += this.randomElem(this.#placeholders[c as PatternGroup])
+          code += this.randomElem(this.#placeholders[c as PatternGroup]);
         } else if (c === quote) {
-          quoteOpen = true
+          quoteOpen = true;
         } else {
-          code += c
+          code += c;
         }
       } else {
         if (c === quote) {
-          quoteOpen = false
+          quoteOpen = false;
         } else {
-          code += c
+          code += c;
         }
       }
-    })
-    return code
+    });
+    return code;
   }
 
   private countCombinations(pattern: string) {
-    var combinations = 1
-    var quote = "'"
-    var quoteOpen = false
+    var combinations = 1;
+    var quote = "'";
+    var quoteOpen = false;
     pattern.split("").forEach((c) => {
       if (!quoteOpen) {
         if (this.#placeholders[c as PatternGroup]) {
-          combinations *= this.#placeholders[c as PatternGroup].length
+          combinations *= this.#placeholders[c as PatternGroup].length;
         } else if (c === quote) {
-          quoteOpen = true
+          quoteOpen = true;
         }
       } else if (c === quote) {
-        quoteOpen = false
+        quoteOpen = false;
       }
-    })
-    return combinations
+    });
+    return combinations;
   }
 }
+
+// console.log(StringHelper.slogifyFromArray(["simple", "param", ",", "are"]));
+// console.log(StringHelper.slogify("wilfred lopez castillo"));
 
 // /**
 //  * Returns the string with proper case and also *trims the white space.

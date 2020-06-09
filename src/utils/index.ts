@@ -12,7 +12,7 @@ export {
   isString,
   isTypeof,
   isUndefined,
-} from "./assetion"
+} from "./assetion";
 export {
   turnSecondsToFormatedMinutes,
   formatDuration,
@@ -21,14 +21,21 @@ export {
   fib,
   idGenetaror,
   NumberHelper,
-} from "./numbers"
-export { downloadToFile } from "./downloadToFile"
-export { createResource, wrapPromise } from "./createResource"
-export { DateFormatter, getMonthFromInt } from "./dates"
-export { throttle, memoize, memoizeSimple, BubleSorter } from "./multiuse"
-export { autoscroll } from "./scroll"
-export { PatternGenerator, StringHelper } from "./strings"
-export { Cipher } from "./code"
+} from "./numbers";
+export { downloadToFile } from "./downloadToFile";
+export { createResource, wrapPromise } from "./createResource";
+export { DateFormatter, getMonthFromInt } from "./dates";
+export {
+  throttle,
+  memoize,
+  memoizeSimple,
+  BubleSorter,
+  compose,
+  pipe,
+} from "./multiuse";
+export { autoscroll } from "./scroll";
+export { PatternGenerator, StringHelper } from "./strings";
+export { Cipher } from "./code";
 export {
   bubleSort,
   insertionSort,
@@ -36,4 +43,4 @@ export {
   mergeSort,
   radixSort,
   ArrayHelper,
-} from "./arrays"
+} from "./arrays";

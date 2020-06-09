@@ -237,4 +237,29 @@ export class NumberHelper {
     if (number === 1) return 1;
     return number * NumberHelper.factorialRecursive(number - 1);
   }
+
+  /**
+   * Returns a generator returning the numbers from start to end.
+   * @param {Object} config configuration object with start, end(inclusive) and step.
+   * @default config {start: 0, end:10, step:1}
+   * @example
+   * for (let n of NumberHelper.range({end: 20, step: 2})) {
+        console.log(n); // 0,2, 4, 5, 8, 10, 12, 14, 16, 18, 20
+    }
+
+      const arr = [...NumberHelper.range({start: 0, end: 10})];
+      console.log(arr); /
+   */
+  static *range({ start = 0, end = 10, step = 1 } = {}) {
+    for (let i = start; i <= end; i = i + step) {
+      yield i;
+    }
+  }
 }
+
+// for (let n of NumberHelper.range({ end: 20, step: 2 })) {
+//   console.log(n); // 0,2, 4, 5, 8, 10, 12, 14, 16, 18, 20
+// }
+
+// const arr = [...NumberHelper.range({ start: 0, end: 10 })];
+// console.log(arr); // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
