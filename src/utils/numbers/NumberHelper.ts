@@ -17,7 +17,7 @@ export class NumberHelper {
     if (n < 2) return false;
     if (n === 2) return true;
 
-    for (let i = 2; i < Math.sqrt(n); i++) {
+    for (let i = 2; i < n; i++) {
       if (n % i === 0) {
         return false;
       }
