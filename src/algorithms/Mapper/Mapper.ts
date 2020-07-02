@@ -60,11 +60,14 @@ export class Mapper<V extends any, K extends string | number = string> {
   }
 
   /**
-   * @returns { Array<V> } Array of the values. V[ ]
-   * Same as toArray Method.
+   * @returns { IterableIterator<V> } Array of the values. V[ ]
+   * 
    */
-  values() {
-    return this.toArray;
+  *values(): IterableIterator<V> {
+    // return this.toArray;
+    for (const key of this.keys()) {
+      yield this.get(key)!;
+    }
   }
 
   /**
@@ -214,3 +217,5 @@ export class Mapper<V extends any, K extends string | number = string> {
     return this;
   }
 }
+
+const m = new Map();
