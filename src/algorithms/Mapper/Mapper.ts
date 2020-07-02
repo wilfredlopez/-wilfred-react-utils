@@ -59,6 +59,10 @@ export class Mapper<V extends any, K extends string | number = string> {
     }
   }
 
+  /**
+   * 
+   * @returns { Array<V> } Array of the values. V[ ]
+   */
   toArray(): V[] {
     const arr: V[] = [];
     const keys = Object.keys(this.#_data) as K[];
@@ -102,6 +106,20 @@ export class Mapper<V extends any, K extends string | number = string> {
    * @param value value to save
    */
   set(key: K, value: V) {
+    this.#_data[key] = value;
+    this.#_size++;
+    return this;
+  }
+
+  /**
+   * Sets the key value pair only if the key doesnt exist already.
+   * @param key key of the value
+   * @param value value to save if key doesnt exist.
+   */
+  setIfUndefined(key: K, value: V) {
+    if (this.#_data[key]) {
+      return this;
+    }
     this.#_data[key] = value;
     this.#_size++;
     return this;
