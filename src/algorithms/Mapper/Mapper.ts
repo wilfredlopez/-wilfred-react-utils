@@ -26,10 +26,10 @@
     }
  */
 
-export class Mapper<T extends any, K extends string | number = string> {
+export class Mapper<V extends any, K extends string | number = string> {
   //private properties
   //   sss: Record<K,T> = {}
-  #_data: Record<K, T> = {} as Record<K, T>;
+  #_data: Record<K, V> = {} as Record<K, V>;
   #_size = 0;
 
   /**
@@ -59,8 +59,8 @@ export class Mapper<T extends any, K extends string | number = string> {
     }
   }
 
-  toArray(): T[] {
-    const arr: T[] = [];
+  toArray(): V[] {
+    const arr: V[] = [];
     const keys = Object.keys(this.#_data) as K[];
     for (const key of keys) {
       arr.push(this.get(key)!);
@@ -101,7 +101,7 @@ export class Mapper<T extends any, K extends string | number = string> {
    * @param key key to use for the value
    * @param value value to save
    */
-  set(key: K, value: T) {
+  set(key: K, value: V) {
     this.#_data[key] = value;
     this.#_size++;
     return this;
@@ -111,8 +111,27 @@ export class Mapper<T extends any, K extends string | number = string> {
    * Returns the value or null if it doesnt exist.
    * @param key key of the value
    */
-  get(key: K) {
-    return this.#_data[key] !== undefined ? this.#_data[key] : null;
+  get(key: K, fallback: V): V;
+  get(key: K): V | null;
+  get(key: K, fallback?: V): V | null {
+    return this.#_data[key] !== undefined
+      ? this.#_data[key]
+      : fallback
+      ? fallback
+      : null;
+  }
+
+  /**
+   * Returns the value or the fallback if the value doenst exist.
+   * @param  { K } key the key of the value.
+   * @param {any} fallback fallback return type.
+   * @example
+   * const map = new Mapper<string, number>();
+   * map.set(1, "One");
+   * const stringOrError = map.getOrFallback<Error>(1, new Error("Doest exist"));
+   */
+  getOrFallback<D extends any>(key: K, fallback: D) {
+    return this.#_data[key] !== undefined ? this.#_data[key] : fallback;
   }
 
   has(key: K) {
@@ -144,9 +163,9 @@ export class Mapper<T extends any, K extends string | number = string> {
    * Maps overeach value, key and index of the key.
    * @param callback Iterator function. takes tha value, key, index (in that order).
    */
-  map<R extends any>(callback: (value: T, key: K, index: number) => R) {
+  map<R extends any>(callback: (value: V, key: K, index: number) => R) {
     return Object.keys(this.#_data).map<R>((key, index) => {
-      return callback(this.get(key as K) as T, key as K, index);
+      return callback(this.get(key as K) as V, key as K, index);
     });
   }
 
@@ -154,9 +173,9 @@ export class Mapper<T extends any, K extends string | number = string> {
    * Calls the callback function for each value, key and index of the key.
    * @param callback Iterator function. takes tha value, key, index (in that order).
    */
-  forEach(callback: (value: T, key: K, index: number) => void) {
+  forEach(callback: (value: V, key: K, index: number) => void) {
     return Object.keys(this.#_data).forEach((key, index) => {
-      return callback(this.get(key as K) as T, key as K, index);
+      return callback(this.get(key as K) as V, key as K, index);
     });
   }
 

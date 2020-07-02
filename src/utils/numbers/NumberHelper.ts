@@ -250,14 +250,29 @@ export class NumberHelper {
       const arr = [...NumberHelper.range({start: 0, end: 10})];
       console.log(arr); /
    */
-  static *range({ start = 0, end = 10, step = 1 } = {}) {
+  static *range({ start = 1, end = 10, step = 1 } = {}) {
     for (let i = start; i <= end; i = i + step) {
       yield i;
     }
   }
+
+  /**
+ * Returns a function that sums over the first parameters sum.
+ * @param x at least one number but up to an infinite number arguments. (1,3,5,6...)
+ * @example
+ * const acc3M4 = NumberHelper.accumulator(3, -4)
+ * console.log(acc3M4(1.5,5)) // 5.5
+ */
+  static accumulator(...x: number[]) {
+    let sum = x.reduce((acc, curr) => acc += curr, 0);
+    return (...y: number[]) => {
+      let plus = y.reduce((acc, curr) => acc += curr, 0);
+      return sum += plus;
+    };
+  }
 }
 
-// for (let n of NumberHelper.range({ end: 20, step: 2 })) {
+// for (let n of NumberHelper.range()) {
 //   console.log(n); // 0,2, 4, 5, 8, 10, 12, 14, 16, 18, 20
 // }
 
