@@ -60,6 +60,14 @@ export class Mapper<V extends any, K extends string | number = string> {
   }
 
   /**
+   * @returns { Array<V> } Array of the values. V[ ]
+   * Same as toArray Method.
+   */
+  values() {
+    return this.toArray;
+  }
+
+  /**
    * 
    * @returns { Array<V> } Array of the values. V[ ]
    */
