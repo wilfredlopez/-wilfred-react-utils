@@ -145,48 +145,50 @@ export default class Comparator<T> {
   }
 }
 
-const hasLeftBracket: Comparator<string> = new Comparator<string>((
-  str: string,
-) => str[0] === "{");
-const hasRightBracket: Comparator<string> = new Comparator((str: string) =>
-  str[str.length - 1] === "}"
-);
-const has10Chars: Comparator<string> = new Comparator((str: string) =>
-  str.length === 10
-);
+//@Example Code
 
-const isClosed = hasLeftBracket.and(hasRightBracket).or(has10Chars);
-console.log(isClosed.test("{short:2{")); //false
-console.log(isClosed.test("{short:2}")); //true
-console.log(isClosed.test("{number:2{")); //true (because length === 10)
-console.log(isClosed.test("{number:2}")); //true
+// const hasLeftBracket: Comparator<string> = new Comparator<string>((
+//   str: string,
+// ) => str[0] === "{");
+// const hasRightBracket: Comparator<string> = new Comparator((str: string) =>
+//   str[str.length - 1] === "}"
+// );
+// const has10Chars: Comparator<string> = new Comparator((str: string) =>
+//   str.length === 10
+// );
 
-const x = 1;
-const y = 2;
-const isSameNumber: Comparator<number> = Comparator.isEqual<number>(x);
-console.log(isSameNumber.test(x)); // true
-console.log(isSameNumber.test(y)); // true
+// const isClosed = hasLeftBracket.and(hasRightBracket).or(has10Chars);
+// console.log(isClosed.test("{short:2{")); //false
+// console.log(isClosed.test("{short:2}")); //true
+// console.log(isClosed.test("{number:2{")); //true (because length === 10)
+// console.log(isClosed.test("{number:2}")); //true
 
-interface User {
-  name: string;
-  email: string;
-}
-const userComparator = new Comparator<{ user: User; otherUser: User }>((
-  { user, otherUser },
-) => user.name === otherUser.name && user.email === otherUser.email);
+// const x = 1;
+// const y = 2;
+// const isSameNumber: Comparator<number> = Comparator.isEqual<number>(x);
+// console.log(isSameNumber.test(x)); // true
+// console.log(isSameNumber.test(y)); // true
 
-const user1: User = {
-  email: "wil@test.com",
-  name: "wilfred",
-};
+// interface User {
+//   name: string;
+//   email: string;
+// }
+// const userComparator = new Comparator<{ user: User; otherUser: User }>((
+//   { user, otherUser },
+// ) => user.name === otherUser.name && user.email === otherUser.email);
 
-console.log(
-  userComparator.test(
-    { user: user1, otherUser: { email: "wil@test.com", name: "wilfred" } },
-  ),
-); //true;
-console.log(
-  userComparator.test(
-    { user: user1, otherUser: { email: "other", name: "some" } },
-  ),
-); //false;
+// const user1: User = {
+//   email: "wil@test.com",
+//   name: "wilfred",
+// };
+
+// console.log(
+//   userComparator.test(
+//     { user: user1, otherUser: { email: "wil@test.com", name: "wilfred" } },
+//   ),
+// ); //true;
+// console.log(
+//   userComparator.test(
+//     { user: user1, otherUser: { email: "other", name: "some" } },
+//   ),
+// ); //false;
