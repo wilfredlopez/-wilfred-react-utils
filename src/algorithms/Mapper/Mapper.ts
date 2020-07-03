@@ -52,10 +52,10 @@ export class Mapper<V extends any, K extends string | number = string> {
         data.push(n)
       }
    */
-  *[Symbol.iterator]<R>() {
+  *[Symbol.iterator]() {
     const keys = Object.keys(this.#_data) as K[];
     for (const key of keys) {
-      yield this.get(key);
+      yield this.get(key)!;
     }
   }
 
@@ -217,5 +217,3 @@ export class Mapper<V extends any, K extends string | number = string> {
     return this;
   }
 }
-
-const m = new Map();
