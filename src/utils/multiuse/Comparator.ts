@@ -173,18 +173,25 @@ export default class Comparator<T> {
 //   name: string;
 //   email: string;
 // }
-// const userComparator = new Comparator<{ user: User; otherUser: User }>((
-//   { user, otherUser },
-// ) => user.name === otherUser.name && user.email === otherUser.email);
+// interface CompareUser {
+//   user: User;
+//   otherUser: User;
+// }
+// const userComparator = new Comparator<CompareUser>((
+//   data,
+// ) =>
+//   data.user.name === data.otherUser.name &&
+//   data.user.email === data.otherUser.email
+// );
 
 // const user1: User = {
-//   email: "wil@test.com",
+//   email: "email.com",
 //   name: "wilfred",
 // };
 
 // console.log(
 //   userComparator.test(
-//     { user: user1, otherUser: { email: "wil@test.com", name: "wilfred" } },
+//     { user: user1, otherUser: { email: "email.com", name: "wilfred" } },
 //   ),
 // ); //true;
 // console.log(
@@ -192,3 +199,22 @@ export default class Comparator<T> {
 //     { user: user1, otherUser: { email: "other", name: "some" } },
 //   ),
 // ); //false;
+
+// console.log(
+//   userComparator.or(({ user, otherUser }) =>
+//     user.email === "email.com" || otherUser.email === "email.com"
+//   ).test(
+//     { user: user1, otherUser: { email: "other", name: "some" } },
+//   ),
+// );
+
+// console.log(
+//   userComparator.or((data) =>
+//     data.user.email === "email.com" && data.otherUser.email === "email.com"
+//   ).test(
+//     {
+//       user: { email: "oneuser", name: "some" },
+//       otherUser: { email: "2ndUser", name: "some" },
+//     },
+//   ),
+// );
