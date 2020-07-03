@@ -1,6 +1,7 @@
 export { memoize, memoizeSimple } from "./memoize";
 export { BubleSorter } from "./BubleSorter";
 export { default as Comparator } from "./Comparator";
+export { default as Stream } from "./Stream";
 /**
  * Doesnt allow the function to execute more than 1 before the threshold is met. like a debounce function.
  * @param fn 
