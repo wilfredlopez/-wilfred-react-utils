@@ -1,3 +1,4 @@
+export type ComparatorFunction<T> = (a: T) => boolean;
 /**
  * Represents a comparator (boolean-valued function).
  *
@@ -18,6 +19,26 @@
  * console.log(isClosed.test("{short:2}")); //true
  * console.log(isClosed.test("{number:2{")); //true (because length === 10)
  * console.log(isClosed.test("{number:2}")) //true;
+ * 
+ * @example
+ * interface User {
+ *   name: string;
+ *   email: string;
+ * }
+ * const userComparator = new Comparator<{ user: User; otherUser: User }>((
+ *   { user, otherUser },
+ *   ) => user.name === otherUser.name && user.email === otherUser.email);
+ * const user1 = {
+ * email: "email.com",
+ * name: "wilfred"
+ * };
+ * console.log(userComparator.test(
+ *    { user: user1, otherUser: 
+ *    { email: "email.com", name: "wilfred" } })); //true;
+ * console.log(userComparator.test(
+ *    { user: user1, otherUser: 
+ *    { email: "other", name: "some" } })); //false;
+ * 
  */
 export default class Comparator<T> {
   /**
@@ -26,10 +47,16 @@ export default class Comparator<T> {
        * @param {T} t the input argument
        * @returns {boolean} boolean
   */
-  test: (t: T) => boolean;
+  test: ComparatorFunction<T>;
 
-  constructor(test: (t: T) => boolean) {
-    this.test = test;
+  constructor(test: Comparator<T>);
+  constructor(test: ComparatorFunction<T>);
+  constructor(test: Comparator<T> | ComparatorFunction<T>) {
+    if (test instanceof Comparator) {
+      this.test = test.test;
+    } else {
+      this.test = test;
+    }
   }
 
   /**
@@ -48,7 +75,15 @@ export default class Comparator<T> {
        * AND of this comparator and the {@code other} comparator
        * @throws NullPointerException if other is null
        */
-  and(other: Comparator<T>) {
+  and(other: Comparator<T>): Comparator<T>;
+  and(other: ComparatorFunction<T>): Comparator<T>;
+  and(other: Comparator<T> | ComparatorFunction<T>) {
+    if (other instanceof Comparator) return this._and(other);
+    const comp = new Comparator(other);
+    return this._and(comp);
+  }
+
+  private _and(other: Comparator<T>) {
     return new Comparator((t: T) => this.test(t) && other.test(t));
   }
 
@@ -76,10 +111,17 @@ export default class Comparator<T> {
        * OR of this comparator and the {@code other} comparator
        * @throws NullPointerException if other is null
        */
-  or(other: Comparator<T>) {
-    return new Comparator((t: T) => this.test(t) || other.test(t));
+  or(other: Comparator<T>): Comparator<T>;
+  or(other: ComparatorFunction<T>): Comparator<T>;
+  or(other: Comparator<T> | ComparatorFunction<T>) {
+    if (other instanceof Comparator) return this._or(other);
+    const comp = new Comparator(other);
+    return this._or(comp);
   }
 
+  private _or(other: Comparator<T>) {
+    return new Comparator((t: T) => this.test(t) || other.test(t));
+  }
   /**
        * Returns a comparator that tests if two arguments are equal according
        * to strict equality ===.
@@ -103,24 +145,48 @@ export default class Comparator<T> {
   }
 }
 
-// const hasLeftBracket: Comparator<string> = new Comparator<string>((
-//   str: string,
-// ) => str[0] === "{");
-// const hasRightBracket: Comparator<string> = new Comparator((str: string) =>
-//   str[str.length - 1] === "}"
-// );
-// const has10Chars: Comparator<string> = new Comparator((str: string) =>
-//   str.length === 10
-// );
+const hasLeftBracket: Comparator<string> = new Comparator<string>((
+  str: string,
+) => str[0] === "{");
+const hasRightBracket: Comparator<string> = new Comparator((str: string) =>
+  str[str.length - 1] === "}"
+);
+const has10Chars: Comparator<string> = new Comparator((str: string) =>
+  str.length === 10
+);
 
-// const isClosed = hasLeftBracket.and(hasRightBracket).or(has10Chars);
-// console.log(isClosed.test("{short:2{")); //false
-// console.log(isClosed.test("{short:2}")); //true
-// console.log(isClosed.test("{number:2{")); //true (because length === 10)
-// console.log(isClosed.test("{number:2}")); //true
+const isClosed = hasLeftBracket.and(hasRightBracket).or(has10Chars);
+console.log(isClosed.test("{short:2{")); //false
+console.log(isClosed.test("{short:2}")); //true
+console.log(isClosed.test("{number:2{")); //true (because length === 10)
+console.log(isClosed.test("{number:2}")); //true
 
-// const x = 1;
-// const y = 2;
-// const isSameNumber: Comparator<number> = Comparator.isEqual<number>(x);
-// console.log(isSameNumber.test(x)); // true
-// console.log(isSameNumber.test(y)); // true
+const x = 1;
+const y = 2;
+const isSameNumber: Comparator<number> = Comparator.isEqual<number>(x);
+console.log(isSameNumber.test(x)); // true
+console.log(isSameNumber.test(y)); // true
+
+interface User {
+  name: string;
+  email: string;
+}
+const userComparator = new Comparator<{ user: User; otherUser: User }>((
+  { user, otherUser },
+) => user.name === otherUser.name && user.email === otherUser.email);
+
+const user1: User = {
+  email: "wil@test.com",
+  name: "wilfred",
+};
+
+console.log(
+  userComparator.test(
+    { user: user1, otherUser: { email: "wil@test.com", name: "wilfred" } },
+  ),
+); //true;
+console.log(
+  userComparator.test(
+    { user: user1, otherUser: { email: "other", name: "some" } },
+  ),
+); //false;
