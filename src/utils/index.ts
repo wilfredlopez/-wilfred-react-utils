@@ -12,6 +12,7 @@ export {
   isString,
   isTypeof,
   isUndefined,
+  isNullOrUndefined,
 } from "./assetion";
 export {
   turnSecondsToFormatedMinutes,

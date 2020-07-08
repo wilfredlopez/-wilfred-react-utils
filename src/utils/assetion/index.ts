@@ -3,10 +3,10 @@
  */
 export class AssertionError extends Error {
   constructor(text?: string) {
-    super(text)
-    this.name = "AssertionError"
+    super(text);
+    this.name = "AssertionError";
     if (process.env.NODE_ENV !== "test") {
-      console.error("AssertionError:", text)
+      console.error("AssertionError:", text);
     }
   }
 }
@@ -21,7 +21,7 @@ export function assertNever(
   _condition: never,
   msg?: string,
 ): asserts _condition {
-  throw new AssertionError(msg)
+  throw new AssertionError(msg);
 }
 
 /**
@@ -36,7 +36,7 @@ export function assertNever(
  */
 export function assert(condition: any, msg?: string): asserts condition {
   if (!condition) {
-    throw new AssertionError(msg)
+    throw new AssertionError(msg);
   }
 }
 
@@ -48,13 +48,13 @@ export type TypeOfConditions =
   | "object"
   | "string"
   | "symbol"
-  | "undefined"
+  | "undefined";
 export function isTypeof(value: any, condition: TypeOfConditions): boolean {
-  return typeof value === condition
+  return typeof value === condition;
 }
 
 export function isString(arg: any): arg is string {
-  return typeof arg === "string"
+  return typeof arg === "string";
 }
 
 export function isBoolean(val: any): val is boolean {
@@ -63,24 +63,28 @@ export function isBoolean(val: any): val is boolean {
     val === true ||
     val === false ||
     typeof val === "boolean"
-  )
+  );
 }
 export function isNumber(arg: any): arg is number {
-  return typeof arg === "number"
+  return typeof arg === "number";
 }
 
 export function isArray<T extends any>(arg: any): arg is Array<T> {
-  return arg instanceof Array
+  return arg instanceof Array;
 }
 export function isFunction<T extends Function>(arg: any): arg is T {
-  return typeof arg === "function"
+  return typeof arg === "function";
 }
 
 export function isUndefined(arg: any): arg is undefined {
-  return typeof arg === "undefined"
+  return typeof arg === "undefined";
+}
+
+export function isNullOrUndefined(arg: any): arg is undefined {
+  return typeof arg === "undefined" || arg === null;
 }
 export function isObject(arg: any): arg is object {
-  return typeof arg === "object"
+  return typeof arg === "object";
 }
 
 /**
@@ -94,7 +98,7 @@ export function isObject(arg: any): arg is object {
  */
 export function assertIsString(val: any): asserts val is string {
   if (typeof val !== "string") {
-    throw new AssertionError("Not a string!")
+    throw new AssertionError("Not a string!");
   }
 }
 
@@ -110,6 +114,6 @@ export function assertIsString(val: any): asserts val is string {
   }
  */
 export function forceString(str: string) {
-  assertIsString(str)
-  return true
+  assertIsString(str);
+  return true;
 }

@@ -1,6 +1,7 @@
 export { memoize, memoizeSimple } from "./memoize";
 export { BubleSorter } from "./BubleSorter";
 export { default as Comparator } from "./Comparator";
+export { default as StopWatch } from "./StopWatch";
 export { default as Stream } from "./Stream";
 /**
  * Doesnt allow the function to execute more than 1 before the threshold is met. like a debounce function.
@@ -92,8 +93,36 @@ export function compose<
   ) as (a: B, ...rest: any[]) => B;
 }
 
-// const repeat = (x: string, number: number = 2) => `${x} `.repeat(number);
-// const scream = (x: string) => `${x.toUpperCase()}`;
-// const exclaim = (x: string) => `${x}!`;
-// const sayit = compose(exclaim, scream, repeat);
-// console.log(sayit("Wil", 4)); //  WIL! WIL! WIL! WIL!
+/**
+ * finds if there are dupplicates in the arguments passed.
+ * @returns {boolean} returns true or false using regular javascript comparison. objects will be the same only if they point to the same reference in memory.
+ * @param  { ...any } args 
+ * @example
+ * console.log(areThereDuplicates(1, 2, 3)); // false
+ * console.log(areThereDuplicates(1, 2, 3, 2)); // true
+ * console.log(areThereDuplicates("name", "name", "noName")); // true
+ * console.log(areThereDuplicates(true, false, true)); // true
+ * const arr = [true, false, true];
+ * console.log(areThereDuplicates(arr, arr)); // true
+ * console.log(areThereDuplicates([1], [1])); // false
+ * const obj = { name: "wil" };
+ * console.log(areThereDuplicates({ name: "wil" }, { name: "wil" })); // false
+ * console.log(areThereDuplicates(obj, obj)); // true
+ * 
+ */
+export function areThereDuplicates(...args: any[]) {
+  //One Liner Solution
+  return new Set(arguments).size !== arguments.length;
+  // Two pointers
+  //   args.sort((a, b) => a > b);
+  //   let start = 0;
+  //   let next = 1;
+  //   while (next < args.length) {
+  //     if (args[start] === args[next]) {
+  //       return true;
+  //     }
+  //     start++;
+  //     next++;
+  //   }
+  //   return false;
+}

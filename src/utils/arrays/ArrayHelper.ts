@@ -1,6 +1,7 @@
 import { dropRightWhile } from "../../lodash/dropRightWhile";
 import { map } from "../../lodash/map";
 import last from "../../lodash/last";
+import { NumberHelper } from "../numbers";
 
 export class ArrayHelper {
   /**
@@ -81,9 +82,11 @@ export class ArrayHelper {
   }
 
   /**
- * Sorts the array from least to greatest
+ * Sorts the array from least to greatest.
+ * [uses recursion]
  * @param inputArr T array
  * @param  comparefn?: function to decide how to sort. Example: (v1,v2) => v1 < v2.
+ * https://www.toptal.com/developers/sorting-algorithms
  * @example
     const testData = [4, 8, -5, -6, 2, 1, 5, 3000, 1000, 200, 7, 6, 3];
     const p = quickSort(testData);
@@ -91,14 +94,20 @@ export class ArrayHelper {
  */
   static quickSort<T>(
     inputArr: T[],
-    comparefn?: (v1: T, v2: T) => boolean,
-    left = 0,
-    right = inputArr.length - 1,
+    {
+      left = 0,
+      right = inputArr.length - 1,
+      compare = (v1: T, v2: T) => v1 < v2,
+    } = {
+      left: 0,
+      right: inputArr.length - 1,
+      compare: (v1: T, v2: T) => v1 < v2,
+    },
   ): T[] {
     if (left < right) {
-      let pivotIndex = ArrayHelper._pivot(inputArr, left, comparefn);
-      ArrayHelper.quickSort(inputArr, comparefn, left, pivotIndex - 1);
-      ArrayHelper.quickSort(inputArr, comparefn, pivotIndex + 1, right);
+      let pivotIndex = ArrayHelper._pivot(inputArr, left, compare);
+      ArrayHelper.quickSort(inputArr, { left, right: pivotIndex - 1, compare });
+      ArrayHelper.quickSort(inputArr, { left: pivotIndex + 1, right, compare });
     }
     return inputArr;
 
@@ -128,13 +137,10 @@ export class ArrayHelper {
   private static _pivot<T>(
     arr: T[],
     startI: number = 0,
-    comparefn?: (v1: T, v2: T) => boolean,
+    compare = (v1: T, v2: T) => v1 < v2,
   ) {
     let pivot = arr[startI];
     let swapIdx = startI;
-    let compare = comparefn || function (v1: T, v2: T) {
-      return v1 < v2;
-    };
     //   for (let i = startI + 1; i < endI +1; i++) {
     for (let i = startI + 1; i < arr.length; i++) {
       if (compare(pivot, arr[i])) {
@@ -164,6 +170,27 @@ export class ArrayHelper {
     }
 
     return chunked;
+  }
+
+  /**
+   * Sorts an array using insertion Sort. Only recommended for nearly sorted data.
+   * use quickSort if the array is not randomly sorted.
+   * https://www.toptal.com/developers/sorting-algorithms
+   * @timeComplexity O(n^2)
+   * @param arr Array
+   */
+  static insertionSort<T extends any>(
+    arr: T[],
+    compare = (n1: T, n2: T) => n1 > n2,
+  ) {
+    for (let i = 1; i < arr.length; i++) {
+      const current = arr[i];
+      for (let j = i - 1; j >= 0 && compare(arr[j], current); j--) {
+        ArrayHelper.swap(arr, j + 1, j);
+      }
+    }
+
+    return arr;
   }
 
   /**
@@ -247,37 +274,31 @@ export class ArrayHelper {
   private static merge<T>(
     leftArr: T[] = [],
     rightArr: T[] = [],
-    compareFn?: (value1: T, value2: T) => boolean,
+    compare = (value1: T, value2: T) => value1 > value2,
   ): T[] {
-    let merged: T[] = [];
     let leftI = 0;
     let rightI = 0;
-    const compare = compareFn || function defaultCompare(value1: T, value2: T) {
-      if (value2) {
-        return value1 > value2;
-      } else {
-        return false;
-      }
-    };
-
+    let result = [];
     while (leftI < leftArr.length && rightI < rightArr.length) {
       if (
         compare(leftArr[leftI], rightArr[rightI])
       ) {
-        merged.push(rightArr[rightI]);
+        result.push(rightArr[rightI]);
         rightI++;
       } else {
-        merged.push(leftArr[leftI]);
+        result.push(leftArr[leftI]);
         leftI++;
       }
     }
-
-    if (leftI < leftArr.length) {
-      merged = merged.concat(leftArr.slice(leftI));
-    } else if (rightI < rightArr.length) {
-      merged = merged.concat(rightArr.slice(rightI));
+    while (leftI < leftArr.length) {
+      result.push(leftArr[leftI]);
+      leftI++;
     }
-    return merged;
+    while (rightI < rightArr.length) {
+      result.push(rightArr[rightI]);
+      rightI++;
+    }
+    return result;
   }
 
   /**
@@ -288,7 +309,7 @@ export class ArrayHelper {
    *    ArrayHelper.mergeSort([3, 2]) => [2, 3]
    * @param {array} array
    * @param compareFn function to decide whether to change how the array is sorted.
-   * @timecomplexity O(n * log n)
+   * @timecomplexity O(n log n)
    * @example
    * console.log(
    * ArrayHelper.mergeSort(
@@ -301,31 +322,17 @@ export class ArrayHelper {
    */
   static mergeSort<T extends any>(
     array: T[] = [],
-    compareFn?: (value1: T, value2: T) => boolean,
+    compare = (value1: T, value2: T) => value1 > value2,
   ): T[] {
-    const compare = compareFn || function defaultCompare(value1: T, value2: T) {
-      if (value2) {
-        return value1 > value2;
-      } else {
-        return false;
-      }
-    };
-
-    const size = array.length;
     // base case
-    if (size < 2) {
+    if (array.length <= 1) {
       return array;
     }
-    if (size === 2) {
-      return compare(array[0], array[1]) ? [array[1], array[0]] : array;
-    }
     // slit and merge
-    const mid = Math.floor(size / 2);
-    return ArrayHelper.merge(
-      ArrayHelper.mergeSort(array.slice(0, mid), compare),
-      ArrayHelper.mergeSort(array.slice(mid), compare),
-      compare,
-    );
+    const mid = Math.floor(array.length / 2);
+    const left = ArrayHelper.mergeSort(array.slice(0, mid), compare);
+    const right = ArrayHelper.mergeSort(array.slice(mid), compare);
+    return ArrayHelper.merge(left, right, compare);
   }
 
   /**

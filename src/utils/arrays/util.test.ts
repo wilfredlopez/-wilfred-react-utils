@@ -29,8 +29,10 @@ describe.skip("Get Digit and arraysEqual", () => {
     it("can sort strings with a custom compare function.", () => {
       const result = quickSort(
         ["A", "Z", "B", "a", "b", "D", "H", "G"],
-        function compare(value1, value2) {
-          return value1.toLowerCase() >= value2.toLowerCase();
+        {
+          compare: function compare(value1, value2) {
+            return value1.toLowerCase() >= value2.toLowerCase();
+          },
         },
       );
       expect(result).toStrictEqual(["a", "A", "b", "B", "D", "G", "H", "Z"]);

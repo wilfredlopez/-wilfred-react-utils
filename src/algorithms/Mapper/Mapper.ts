@@ -25,19 +25,39 @@
         data.push(ln)
     }
  */
-
 export class Mapper<V extends any, K extends string | number = string> {
   //private properties
   //   sss: Record<K,T> = {}
   #_data: Record<K, V> = {} as Record<K, V>;
   #_size = 0;
+  constructor(initialData?: Record<K, V>) {
+    this.#_data = initialData || {} as Record<K, V>;
+  }
 
   /**
    * Length of the keys stored.
    * cannot be set from outside.
    */
+  get length() {
+    return this.#_size;
+  }
+
+  /**
+   * @deprecated use .length
+   */
   get size() {
     return this.#_size;
+  }
+
+  isEmpty() {
+    return this.#_size === 0;
+  }
+
+  toString() {
+    if (this.isEmpty()) {
+      return "{}";
+    }
+    return JSON.stringify(this.data);
   }
 
   /**
@@ -52,7 +72,7 @@ export class Mapper<V extends any, K extends string | number = string> {
         data.push(n)
       }
    */
-  *[Symbol.iterator]() {
+  *[Symbol.iterator](): IterableIterator<V> {
     const keys = Object.keys(this.#_data) as K[];
     for (const key of keys) {
       yield this.get(key)!;
@@ -67,6 +87,12 @@ export class Mapper<V extends any, K extends string | number = string> {
     // return this.toArray;
     for (const key of this.keys()) {
       yield this.get(key)!;
+    }
+  }
+
+  *entries(): IterableIterator<[V, K]> {
+    for (const key of this.keys()) {
+      yield [this.get(key)!, key];
     }
   }
 
@@ -96,8 +122,8 @@ export class Mapper<V extends any, K extends string | number = string> {
    * @see Not recommended. Better call delete with the key you want to delete.
    */
   pop() {
-    if (this.size === 0) return null;
-    const lastKey = this.keys()[this.size - 1];
+    if (this.length === 0) return null;
+    const lastKey = this.keys()[this.length - 1];
     return this.delete(lastKey);
   }
 
@@ -106,9 +132,29 @@ export class Mapper<V extends any, K extends string | number = string> {
    * @see Not recommended. Better call delete with the key you want to delete.
    */
   unshift() {
-    if (this.size === 0) return null;
+    if (this.length === 0) return null;
     const fistKey = this.keys()[0] as K;
     return this.delete(fistKey);
+  }
+
+  /**
+   * returns a promise of an array with all the values.
+   * @example
+   * const map = new Mapper({ "wil": { name: "wilfred" } });
+   * async function init() {
+   *   const data = await map.promise;
+   *   console.log(data[0].name); // 'wilfred'
+   * }
+   * init();
+   * //OR
+   * map.promise.then((data) => {
+   *   console.log(data[0].name); // 'wilfred'
+   * })
+   */
+  get promise() {
+    return new Promise<V[]>((res, rej) => {
+      res(this.toArray());
+    });
   }
 
   /**
@@ -128,7 +174,7 @@ export class Mapper<V extends any, K extends string | number = string> {
    * @param value value to save if key doesnt exist.
    */
   setIfUndefined(key: K, value: V) {
-    if (this.#_data[key]) {
+    if (this.has(key)) {
       return this;
     }
     this.#_data[key] = value;
@@ -143,11 +189,7 @@ export class Mapper<V extends any, K extends string | number = string> {
   get(key: K, fallback: V): V;
   get(key: K): V | null;
   get(key: K, fallback?: V): V | null {
-    return this.#_data[key] !== undefined
-      ? this.#_data[key]
-      : fallback
-      ? fallback
-      : null;
+    return this.has(key) ? this.#_data[key] : fallback ? fallback : null;
   }
 
   /**
@@ -172,8 +214,8 @@ export class Mapper<V extends any, K extends string | number = string> {
    * @param key key of the value
    */
   delete(key: K) {
-    let temp = this.#_data[key];
-    if (this.#_data[key] !== undefined) {
+    if (this.has(key)) {
+      const temp = this.#_data[key];
       delete this.#_data[key];
       this.#_size--;
       return temp;

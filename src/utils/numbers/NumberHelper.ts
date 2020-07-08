@@ -234,6 +234,7 @@ export class NumberHelper {
   }
 
   static factorialRecursive(number: number): number {
+    if (number < 1) return 0;
     if (number === 1) return 1;
     return number * NumberHelper.factorialRecursive(number - 1);
   }
