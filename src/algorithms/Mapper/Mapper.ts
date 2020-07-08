@@ -90,9 +90,20 @@ export class Mapper<V extends any, K extends string | number = string> {
     }
   }
 
-  *entries(): IterableIterator<[V, K]> {
+  /**
+   * Returns an iterable of key, value pairs for every entry.
+   * same as the array method.
+   * @example
+   * const map = new Mapper({ 1: "one", 2: "two" });
+   * for (let [key, val] of map.entries()) {
+   *   console.log(key, val); // 1 'one', 2 'two'
+   * }
+   * //or 
+   * const data = [...map.entries()]; //  [[1,'one'], [2, 'two']]
+   */
+  *entries(): IterableIterator<[K, V]> {
     for (const key of this.keys()) {
-      yield [this.get(key)!, key];
+      yield [key, this.get(key)!];
     }
   }
 
