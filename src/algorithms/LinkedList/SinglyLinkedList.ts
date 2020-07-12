@@ -1,4 +1,7 @@
-class SingleNode<T extends any = any> {
+// import { findLinkedListMidPoint, isCircularLinkedList } from "./";
+import { INode, ILinkedList } from "../interfaces";
+
+export class SingleNode<T extends any = any> implements INode {
   constructor(public value: T, public next: SingleNode | null = null) {}
 }
 
@@ -8,10 +11,15 @@ class SingleNode<T extends any = any> {
  * Not good to get items/Access like arrays or object where you can use the index. O(n)
  * removing O(1) or O(n)
  */
-export class SinglyLinkedList<T extends any> {
+export class SinglyLinkedList<T extends any> implements ILinkedList {
   head: SingleNode<T> | null = null;
   tail: SingleNode<T> | null = null;
   length: number = 0;
+
+  /**
+   * Insert a the end.
+   * @param val 
+   */
   push(val: T) {
     const node = new SingleNode<T>(val);
     if (!this.head) {
@@ -25,6 +33,9 @@ export class SinglyLinkedList<T extends any> {
     return this;
   }
 
+  /**
+   * Removes from the end.
+   */
   pop() {
     if (!this.head) return null;
     let current = this.head;
@@ -43,6 +54,9 @@ export class SinglyLinkedList<T extends any> {
     return current;
   }
 
+  /**
+   * Remove from the begining (the head)
+   */
   shift() {
     if (!this.head) return null;
     let current = this.head;
@@ -54,6 +68,10 @@ export class SinglyLinkedList<T extends any> {
     return current;
   }
 
+  /**
+   * Insert at the begining
+   * @param val 
+   */
   unshift(val: T) {
     const newHead = new SingleNode<T>(val);
     if (!this.head) {
@@ -66,6 +84,7 @@ export class SinglyLinkedList<T extends any> {
     this.length++;
     return this;
   }
+
   get(index: number) {
     if (
       index < 0 || index >= this.length || this.head === null ||
@@ -81,6 +100,7 @@ export class SinglyLinkedList<T extends any> {
     }
     return current;
   }
+
   set(index: number, value: T) {
     let foundNode = this.get(index);
     if (foundNode) {
@@ -91,6 +111,12 @@ export class SinglyLinkedList<T extends any> {
     }
   }
 
+  /**
+   * Inserts value at index. 
+   * if index less than 0 or greater than the length of the linked list returns false.
+   * @param index index needs to be between 0 and the total length of the LinkedList.
+   * @param value value to insert.
+   */
   insert(index: number, value: T) {
     if (index < 0 || index > this.length) return false;
     if (index === this.length) {
@@ -122,6 +148,24 @@ export class SinglyLinkedList<T extends any> {
     return removed;
   }
 
+  /**
+   * Verifies if the linked list at some point has nodes refering to the same value in memory.
+   * @returns {boolean} true of the list is circular. false if not.
+   */
+  isCircular() {
+    if (this.length === 0) return false;
+    let slow = this.head;
+    let fast = this.head;
+
+    while (slow && slow.next && fast && fast.next && fast.next.next) {
+      slow = slow.next;
+      fast = fast.next.next;
+      //if equal at some point the list most be circular.
+      if (slow === fast) return true;
+    }
+    return false;
+  }
+
   revese() {
     let node = this.head;
     this.head = this.tail;
@@ -136,19 +180,39 @@ export class SinglyLinkedList<T extends any> {
     }
     return this;
   }
+
+  *[Symbol.iterator]() {
+    let current = this.head;
+    while (current) {
+      let temp = current;
+      current = current.next;
+      yield temp.value;
+    }
+  }
 }
 
 // const list = new SinglyLinkedList<string | number>();
-//adding
+// // adding
 // list.push("Wilfred");
 // list.push("yanna");
 // list.push("Austria");
 // list.push("Catalina");
 // list.push("Pablo");
+// console.log(list.findMidPoint());
+// console.log(findLinkedListMidPoint(list));
+// console.log(isCircularLinkedList(list));
+// //TEST IF CIRCULAR
+// //MAKE IT CIRCULAR IN PURPOSE IN ORDER TO TEST.
+// list.head?.next?.next = list.head
+// console.log(list.isCircular());
 // console.log(list.unshift("Mom"));
 // list.set(0, "mami");
 // list.insert(0, "NEW");
 // list.unshift("2");
+
+// for (let val of list) {
+//   console.log(val);
+// }
 
 // //get
 // console.log(list.get(0)?.value);

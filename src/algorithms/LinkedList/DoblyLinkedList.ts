@@ -1,4 +1,6 @@
-export class DoublyNode<T extends any = any> {
+import { ILinkedList, INode } from "../interfaces";
+
+export class DoublyNode<T extends any = any> implements INode {
   constructor(
     public value: T,
     public next: DoublyNode | null = null,
@@ -15,11 +17,11 @@ export class DoublyNode<T extends any = any> {
    * @complexity
    * removing O(1)
    * insertion O(1)
-   * Search O(n) but a little better than that. it depends how close to the end or begining is the valie
+   * Search O(n) but a little better than that. it depends how close to the end or begining is the value
    * Access O(n)
    * 
    */
-export class DoublyLinkedList<T extends any> {
+export class DoublyLinkedList<T extends any> implements ILinkedList {
   head: DoublyNode<T> | null = null;
   tail: DoublyNode<T> | null = null;
   length: number = 0;
@@ -42,6 +44,9 @@ export class DoublyLinkedList<T extends any> {
     return this;
   }
 
+  /**
+   * remove from the end
+   */
   pop() {
     if (!this.head || this.length === 0) return null;
     let current = this.tail;
@@ -109,9 +114,9 @@ export class DoublyLinkedList<T extends any> {
     const isCloserToTail = index > this.length / 2;
     if (isCloserToTail) {
       let count = this.length - 1;
-      let current = this.tail;
+      let current: DoublyNode<T> | null = this.tail;
       while (count !== index) {
-        current = current!.previous;
+        current = current?.previous || null;
         count--;
       }
       return current;
@@ -119,34 +124,42 @@ export class DoublyLinkedList<T extends any> {
       let current: DoublyNode<T> | null = this.head;
       let count = 0;
       while (count !== index) {
-        current = current!.next;
+        current = current?.next || null;
         count++;
       }
       return current;
     }
   }
+
+  /**
+   * Sets value at index and returns true or false if index is out of bounds.
+   * @param index index to get.
+   * @param value value to set.
+   */
   set(index: number, value: T) {
     let foundNode = this.get(index);
     if (foundNode) {
       foundNode.value = value;
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 
+  /**
+   * Inserts value at index. 
+   * if index less than 0 or greater than the length of the linked list returns false.
+   * @param index index needs to be between 0 and the total length of the LinkedList.
+   * @param value value to insert.
+   */
   insert(index: number, value: T) {
     if (index < 0 || index > this.length) return false;
-    if (index === this.length) {
-      this.push(value);
-      return true;
-    }
-    if (index === 0) this.unshift(value);
+    if (index === this.length) this.push(value);
+    else if (index === 0) this.unshift(value);
     else {
       let newNode = new DoublyNode<T>(value);
-      let prev = this.get(index - 1);
+      let prev = this.get(index - 1)!;
       let afterNode = prev?.next || null;
-      prev!.next = newNode;
+      prev.next = newNode;
       newNode.previous = prev;
       newNode.next = afterNode;
       afterNode!.previous = newNode;
@@ -160,9 +173,7 @@ export class DoublyLinkedList<T extends any> {
     if (index < 0 || index >= this.length) return null;
     if (index === 0) return this.shift();
     if (index === this.length - 1) return this.pop();
-    let removedNode = this.get(index) as DoublyNode<T>;
-    // removedNode.previous!.next = removedNode.next;
-    // removedNode.previous!.previous = removedNode.previous;
+    let removedNode = this.get(index)!;
     let prev = removedNode.previous;
     //should always be true
     if (prev) {
@@ -194,26 +205,13 @@ export class DoublyLinkedList<T extends any> {
     }
   }
 
-  //temp
-  // help to make sure the next reference is not lost
-  print() {
-    let arr = [];
+  *[Symbol.iterator]() {
     let current = this.head;
     while (current) {
-      arr.push(current.value);
+      const temp = current;
       current = current.next;
+      yield temp.value;
     }
-    console.log(arr);
-  }
-  //temp // help to make sure the prev reference is not lost
-  printReverse() {
-    let arr = [];
-    let current = this.tail;
-    while (current) {
-      arr.push(current.value);
-      current = current.previous;
-    }
-    console.log(arr);
   }
 }
 
@@ -224,6 +222,10 @@ export class DoublyLinkedList<T extends any> {
 // list.push("Austria");
 // list.push("Catalina");
 // list.push("Pablo");
+
+// for (let val of list) {
+//   console.log(val);
+// }
 
 // console.log(list.print());
 // //get

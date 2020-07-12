@@ -4,6 +4,8 @@ export interface Runner<T> {
   run: (caller: (data: T) => void) => void;
 }
 
+const INITIAL_LIMIT = 1000;
+
 /**
  * Gets a function a calls it until the limit is reached.
  * Default limit is the Number.MAX_SAFE_INTEGER;
@@ -21,7 +23,6 @@ export interface Runner<T> {
  *   stream2.stop();
  *   });
  */
-const INITIAL_LIMIT = 1000;
 export default class Stream<T extends any, A extends T> {
   /**
      * STATE

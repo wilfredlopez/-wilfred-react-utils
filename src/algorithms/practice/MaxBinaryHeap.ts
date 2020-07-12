@@ -1,3 +1,5 @@
+// In a Max Binary heap the parrent node is always larger than the children but there are no guarantees between the children.
+// each parent can have at most 2 children. (see example below)
 // The root is index 0
 // For any index on the array n...
 // The left child is stored at 2n + 1

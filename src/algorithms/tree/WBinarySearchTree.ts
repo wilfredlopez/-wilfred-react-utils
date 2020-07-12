@@ -1,7 +1,9 @@
-type BinaryTreeValue<D extends {}> = {
-  priority: number
-  data: D
-}
+import { Queue } from "../Queue";
+
+export type BinaryTreeValue<D extends {}> = {
+  priority: number;
+  data: D;
+};
 
 /**
  * Organizes the data by priority for easy access. Each priority should be unique.
@@ -9,9 +11,13 @@ type BinaryTreeValue<D extends {}> = {
  * @note It replaces the value if the priority is already taken unless you pass false as the 2nd parameter for insert.
  */
 export class BinaryTreeRoot<T extends BinaryTreeValue<any>> {
-  root: null | WBinarySearchTree<T>
-  constructor() {
-    this.root = null
+  root: null | WBinarySearchTree<T>;
+  constructor(initialValue: null | T = null) {
+    if (initialValue !== null) {
+      this.root = new WBinarySearchTree<T>(initialValue);
+    } else {
+      this.root = initialValue;
+    }
   }
   /**
    * Adds a node to the tree.
@@ -23,16 +29,16 @@ export class BinaryTreeRoot<T extends BinaryTreeValue<any>> {
    */
   insert(value: T, replace: boolean = true): boolean {
     if (!this.root) {
-      this.root = new WBinarySearchTree(value)
-      return true
+      this.root = new WBinarySearchTree(value);
+      return true;
     } else {
-      return this.root.insert(value, replace)
+      return this.root.insert(value, replace);
     }
   }
 
   contains(priority: number): boolean {
-    if (!this.root) return false
-    return this.root.contains(priority)
+    if (!this.root) return false;
+    return this.root.contains(priority);
   }
 
   /**
@@ -40,8 +46,8 @@ export class BinaryTreeRoot<T extends BinaryTreeValue<any>> {
    * @param priority priority in the tree
    */
   getValue(priority: number): T | null {
-    if (!this.root) return null
-    return this.root.getValue(priority)
+    if (!this.root) return null;
+    return this.root.getValue(priority);
   }
 
   /**
@@ -57,39 +63,8 @@ export class BinaryTreeRoot<T extends BinaryTreeValue<any>> {
     iteratorFn: (value: T) => void,
     order: "in-order" | "pre-order" | "post-order" = "in-order",
   ) {
-    if (!this.root) return
-    return this.root.depthFirstTraversal(iteratorFn, order)
-  }
-
-  //breadthFirstTraversal iterator. to use for(let t of tree){}
-  //Starting from the root and then root.left, root.right and all the next nodes in that order.
-  *[Symbol.iterator](): Generator<T> {
-    if (!this.root) return
-    const queue: WBinarySearchTree<T>[] = [this.root]
-    while (queue.length) {
-      let treeNode = queue.shift()
-      if (treeNode) {
-        yield treeNode.value
-        if (treeNode.left) queue.push(treeNode.left)
-        if (treeNode.right) queue.push(treeNode.right)
-      }
-    }
-  }
-
-  /**
-   * Gets the value with the lowest priority
-   */
-  getMinVal(): T | null {
-    if (!this.root) return null
-    return this.root.getMinVal()
-  }
-
-  /**
-   * Gets the value with the highest priority
-   */
-  getMaxVal(): T | null {
-    if (!this.root) return null
-    return this.root.getMaxVal()
+    if (!this.root) return;
+    return this.root.depthFirstTraversal(iteratorFn, order);
   }
 
   /**
@@ -97,16 +72,67 @@ export class BinaryTreeRoot<T extends BinaryTreeValue<any>> {
    * @param iteratorFn function to iterate over the values.
    */
   breadthFirstTraversal(iteratorFn: (value: T) => void) {
-    if (!this.root) return
-    const queue: WBinarySearchTree<T>[] = [this.root]
+    if (!this.root) return;
+    const queue = new Queue<WBinarySearchTree<T>>([this.root]);
     while (queue.length) {
-      let treeNode = queue.shift()
+      let treeNode = queue.dequeue();
       if (treeNode) {
-        iteratorFn(treeNode.value.data)
-        if (treeNode.left) queue.push(treeNode.left)
-        if (treeNode.right) queue.push(treeNode.right)
+        iteratorFn(treeNode.value.data);
+        if (treeNode.left) queue.enqueue(treeNode.left);
+        if (treeNode.right) queue.enqueue(treeNode.right);
       }
     }
+    // const queue: WBinarySearchTree<T>[] = [this.root];
+    // while (queue.length) {
+    //   let treeNode = queue.shift();
+    //   if (treeNode) {
+    //     iteratorFn(treeNode.value.data);
+    //     if (treeNode.left) queue.push(treeNode.left);
+    //     if (treeNode.right) queue.push(treeNode.right);
+    //   }
+    // }
+  }
+
+  //breadthFirstTraversal iterator. to use for(let t of tree){}
+  //Starting from the root and then root.left, root.right and all the next nodes in that order.
+  *[Symbol.iterator](): Generator<T> {
+    if (!this.root) return;
+    const q = new Queue<WBinarySearchTree<T>>([this.root]);
+    while (q.size) {
+      let treeNode = q.dequeue();
+      if (treeNode) {
+        yield treeNode.value;
+        if (treeNode.left) q.enqueue(treeNode.left);
+        if (treeNode.right) q.enqueue(treeNode.right);
+      }
+    }
+
+    //With array (slower)
+    // const queue: WBinarySearchTree<T>[] = [this.root];
+    // while (queue.length) {
+    //   let treeNode = queue.shift();
+    //   if (treeNode) {
+    //     yield treeNode.value;
+    //     if (treeNode.left) queue.push(treeNode.left);
+    //     if (treeNode.right) queue.push(treeNode.right);
+    //   }
+    // }
+  }
+
+  /**
+   * Gets the value with the lowest priority
+   */
+  getMinVal(): T | null {
+    if (!this.root) return null;
+    return this.root.getMinVal();
+  }
+
+  /**
+   * Gets the value with the highest priority
+   */
+  getMaxVal(): T | null {
+    if (!this.root) return null;
+    return this.root.getMaxVal();
   }
 }
 
@@ -115,12 +141,12 @@ export class BinaryTreeRoot<T extends BinaryTreeValue<any>> {
  * @note It replaces the value if the priority is already taken unless you pass false as the 2nd parameter for insert.
  */
 export class WBinarySearchTree<T extends BinaryTreeValue<any>> {
-  value: T
-  left: WBinarySearchTree<T> | null = null
-  right: WBinarySearchTree<T> | null = null
+  value: T;
+  left: WBinarySearchTree<T> | null = null;
+  right: WBinarySearchTree<T> | null = null;
 
   constructor(value: T) {
-    this.value = value
+    this.value = value;
   }
 
   /**
@@ -135,33 +161,33 @@ export class WBinarySearchTree<T extends BinaryTreeValue<any>> {
     if (value.priority === this.value.priority) {
       if (replace) {
         //replacing
-        this.value = value
-        return true
+        this.value = value;
+        return true;
       }
-      return false
+      return false;
     } else if (value.priority <= this.value.priority) {
       if (!this.left) {
-        this.left = new WBinarySearchTree(value)
-        return true
-      } else return this.left.insert(value, replace)
+        this.left = new WBinarySearchTree(value);
+        return true;
+      } else return this.left.insert(value, replace);
     } else if (value.priority > this.value.priority) {
       if (!this.right) {
-        this.right = new WBinarySearchTree(value)
-        return true
-      } else return this.right.insert(value, replace)
+        this.right = new WBinarySearchTree(value);
+        return true;
+      } else return this.right.insert(value, replace);
     }
 
-    return false
+    return false;
   }
 
   contains(priority: number): boolean {
-    if (priority === this.value.priority) return true
+    if (priority === this.value.priority) return true;
     else if (priority < this.value.priority) {
-      if (!this.left) return false
-      else return this.left.contains(priority)
+      if (!this.left) return false;
+      else return this.left.contains(priority);
     } else {
-      if (!this.right) return false
-      else return this.right.contains(priority)
+      if (!this.right) return false;
+      else return this.right.contains(priority);
     }
   }
 
@@ -171,13 +197,13 @@ export class WBinarySearchTree<T extends BinaryTreeValue<any>> {
    */
   getValue(priority: number): T | null {
     // if (!priority) return null;
-    if (priority === this.value.priority) return this.value.data
+    if (priority === this.value.priority) return this.value.data;
     else if (priority < this.value.priority) {
-      if (!this.left) return null
-      else return this.left.getValue(priority)
+      if (!this.left) return null;
+      else return this.left.getValue(priority);
     } else {
-      if (!this.right) return null
-      else return this.right.getValue(priority)
+      if (!this.right) return null;
+      else return this.right.getValue(priority);
     }
 
     // if (this.value === value) return value
@@ -198,33 +224,42 @@ export class WBinarySearchTree<T extends BinaryTreeValue<any>> {
     iteratorFn: (value: T) => void,
     order: "in-order" | "pre-order" | "post-order" = "in-order",
   ) {
-    if (order === "pre-order") iteratorFn(this.value.data)
-    if (this.left) this.left.depthFirstTraversal(iteratorFn, order)
-    if (order === "in-order") iteratorFn(this.value.data)
-    if (this.right) this.right.depthFirstTraversal(iteratorFn, order)
-    if (order === "post-order") iteratorFn(this.value.data)
+    if (order === "pre-order") iteratorFn(this.value.data);
+    if (this.left) this.left.depthFirstTraversal(iteratorFn, order);
+    if (order === "in-order") iteratorFn(this.value.data);
+    if (this.right) this.right.depthFirstTraversal(iteratorFn, order);
+    if (order === "post-order") iteratorFn(this.value.data);
   }
 
   //breadthFirstTraversal iterator. to use for(let t of tree){}
   *[Symbol.iterator](): Generator<T> {
-    const queue: WBinarySearchTree<T>[] = [this]
+    const queue = new Queue<WBinarySearchTree<T>>([this]);
     while (queue.length) {
-      let treeNode = queue.shift()
+      let treeNode = queue.dequeue();
       if (treeNode) {
-        yield treeNode.value
-        if (treeNode.left) queue.push(treeNode.left)
-        if (treeNode.right) queue.push(treeNode.right)
+        yield treeNode.value;
+        if (treeNode.left) queue.enqueue(treeNode.left);
+        if (treeNode.right) queue.enqueue(treeNode.right);
       }
     }
+    // const queue: WBinarySearchTree<T>[] = [this];
+    // while (queue.length) {
+    //   let treeNode = queue.shift();
+    //   if (treeNode) {
+    //     yield treeNode.value;
+    //     if (treeNode.left) queue.push(treeNode.left);
+    //     if (treeNode.right) queue.push(treeNode.right);
+    //   }
+    // }
   }
 
   getMinVal(): T {
-    if (this.left) return this.left.getMinVal()
-    return this.value.data
+    if (this.left) return this.left.getMinVal();
+    return this.value.data;
   }
   getMaxVal(): T {
-    if (this.right) return this.right.getMaxVal()
-    return this.value.data
+    if (this.right) return this.right.getMaxVal();
+    return this.value.data;
   }
 
   /**
@@ -232,14 +267,23 @@ export class WBinarySearchTree<T extends BinaryTreeValue<any>> {
    * @param iteratorFn function to iterate over the values.
    */
   breadthFirstTraversal(iteratorFn: (value: T) => void) {
-    const queue: WBinarySearchTree<T>[] = [this]
+    const queue = new Queue<WBinarySearchTree<T>>([this]);
     while (queue.length) {
-      let treeNode = queue.shift()
+      let treeNode = queue.dequeue();
       if (treeNode) {
-        iteratorFn(treeNode.value.data)
-        if (treeNode.left) queue.push(treeNode.left)
-        if (treeNode.right) queue.push(treeNode.right)
+        iteratorFn(treeNode.value.data);
+        if (treeNode.left) queue.enqueue(treeNode.left);
+        if (treeNode.right) queue.enqueue(treeNode.right);
       }
     }
+    // const queue: WBinarySearchTree<T>[] = [this];
+    // while (queue.length) {
+    //   let treeNode = queue.shift();
+    //   if (treeNode) {
+    //     iteratorFn(treeNode.value.data);
+    //     if (treeNode.left) queue.push(treeNode.left);
+    //     if (treeNode.right) queue.push(treeNode.right);
+    //   }
+    // }
   }
 }

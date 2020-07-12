@@ -33,6 +33,10 @@ export {
   BubleSorter,
   compose,
   pipe,
+  Comparator,
+  StopWatch,
+  Stream,
+  areThereDuplicates,
 } from "./multiuse";
 export { autoscroll } from "./scroll";
 export { PatternGenerator, StringHelper } from "./strings";

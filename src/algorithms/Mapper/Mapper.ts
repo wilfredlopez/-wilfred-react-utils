@@ -27,7 +27,6 @@
  */
 export class Mapper<V extends any, K extends string | number = string> {
   //private properties
-  //   sss: Record<K,T> = {}
   #_data: Record<K, V> = {} as Record<K, V>;
   #_size = 0;
   constructor(initialData?: Record<K, V>) {
@@ -72,10 +71,10 @@ export class Mapper<V extends any, K extends string | number = string> {
         data.push(n)
       }
    */
-  *[Symbol.iterator](): IterableIterator<V> {
+  *[Symbol.iterator]() {
     const keys = Object.keys(this.#_data) as K[];
     for (const key of keys) {
-      yield this.get(key)!;
+      yield this.get(key) as V;
     }
   }
 

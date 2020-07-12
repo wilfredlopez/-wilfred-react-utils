@@ -1,69 +1,80 @@
-import { BiNode } from "../BiNode"
+import { BiNode } from "../BiNode";
 
 /**
  * Works in a Last In First Out Aproach. (Like the js functions call stack) or browser history
- *  Keeps a Collection of data. Where the first is the last value pushed. and the last is the first value pushed.
+ *  Keeps a Collection of data. 
+ * Uses LIFO data structure (last in first out). Where the last is the first value added and the first is the last value added. 
  * Great for undo/redo functionality.
  * You can push to the begining and pop from the end.
- * @complexity O(1) very fast all constant time.
+ * @complexity 
+ * Insertion O(1) very fast all constant time.
+ * Removal O(1) very fast all constant time.
+ * Searching O(n)
+ * Access O(n)
  * @related Queues work the opposite way
  */
 export class Stack<T extends any> {
-  fist: BiNode<T> | null = null
-  last: BiNode<T> | null = null
-  size: number = 0
+  fist: BiNode<T> | null = null;
+  last: BiNode<T> | null = null;
+  private _size = 0;
 
+  get size() {
+    return this._size;
+  }
   /**
    * Adds to the begining
    * @param value value to add
+   * @complexity O(1)
    */
   push(val: T) {
-    const newHead = new BiNode<T>(val)
+    const newHead = new BiNode<T>(val);
     if (!this.fist) {
-      this.fist = newHead
-      this.last = this.fist
+      this.fist = newHead;
+      this.last = this.fist;
     } else {
-      this.fist.previous = newHead
-      newHead.next = this.fist
-      this.fist = newHead
+      this.fist.previous = newHead;
+      newHead.next = this.fist;
+      this.fist = newHead;
     }
-    this.size++
-    return this.size
+    this._size++;
+    return this._size;
   }
 
-  *[Symbol.iterator]<T>() {
-    let current = this.fist
+  *[Symbol.iterator]() {
+    let current = this.fist;
     while (current) {
-      yield current
-      current = current.next
+      yield current.value;
+      current = current.next;
     }
   }
 
   /**
    * Peeks at the next node that will go out when you call the pop method.
    * Returns null if empty.
+   * @complexity O(1)
    */
   peek(): BiNode<T> | null {
-    return this.fist ? this.fist : null
+    return this.fist ? this.fist : null;
   }
 
   /**
    * removes the first element and returns it
+   * @complexity O(1)
    */
   pop() {
-    if (!this.fist || this.size === 0) return null
-    let current = this.fist
-    this.fist = this.fist.next
+    if (!this.fist || this._size === 0) return null;
+    let current = this.fist;
+    this.fist = this.fist.next;
     if (this.fist) {
-      this.fist.previous = null
+      this.fist.previous = null;
     }
-    if (this.size === 1) {
-      this.last = null
-      this.fist = null
+    if (this._size === 1) {
+      this.last = null;
+      this.fist = null;
     }
-    this.size--
-    current.next = null
-    return current.value
+    this._size--;
+    current.next = null;
+    return current.value;
   }
 
   /**
@@ -75,30 +86,30 @@ export class Stack<T extends any> {
   get(index: number) {
     if (
       index < 0 ||
-      index >= this.size ||
+      index >= this._size ||
       this.fist === null ||
-      this.size === 0
+      this._size === 0
     ) {
-      return null
+      return null;
     }
     //Is the index closer to the tail or the head?
-    const isCloserToTail = index > this.size / 2
+    const isCloserToTail = index > this._size / 2;
     if (isCloserToTail) {
-      let count = this.size - 1
-      let current = this.last
+      let count = this._size - 1;
+      let current = this.last;
       while (count !== index) {
-        current = current!.previous
-        count--
+        current = current!.previous;
+        count--;
       }
-      return current
+      return current;
     } else {
-      let current: BiNode<T> | null = this.fist
-      let count = 0
+      let current: BiNode<T> | null = this.fist;
+      let count = 0;
       while (count !== index) {
-        current = current!.next
-        count++
+        current = current!.next;
+        count++;
       }
-      return current
+      return current;
     }
   }
 }
@@ -111,6 +122,10 @@ export class Stack<T extends any> {
 // stack.push("Pablo");
 // stack.push("Cataline");
 // stack.push("Theudy");
+
+// for (let val of stack) {
+//   console.log(val);
+// }
 // console.log(stack.fist?.value);
 // console.log(stack.get(4)?.value);
 // console.log(stack.pop());

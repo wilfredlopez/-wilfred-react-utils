@@ -1,81 +1,139 @@
-import { PriorityQueue } from "../Queue/PriorityQueue"
-interface WeightedElement {
-  vertexKey: string
-  weight: number
+import { IGraph } from ".";
+import { PriorityQueue } from "../Queue/PriorityQueue";
+
+export interface WeightedElement {
+  vertexKey: string;
+  weight: number;
 }
 
 /**
- * Implementation of Dijkstra's algorithm
+ * Implementation of Dijkstra's algorithm to find shortest path.
+ * @example
+ * const g = new WeightedGraph();
+ * g.addVertex("Dominican Republic");
+ * g.addVertex("USA");
+ * g.addVertex("Spain");
+ * g.addVertex("PR");
+ * g.addEdge("Dominican Republic", "USA", 50);
+ * g.addEdge("Dominican Republic", "PR", 30);
+ * g.addEdge("Dominican Republic", "Spain", 70);
+ * g.addEdge("USA", "Spain", 75);
+ * g.addEdge("PR", "Dominican Republic", 30);
+ * g.addEdge("PR", "USA", 14);
+ * console.log(g.shortestPath("Dominican Republic", "USA"));
+ * console.log(g.shortestPath("Dominican Republic", "Spain"));
  */
-export class WeightedGraph {
-  adjacencyList: { [key: string]: WeightedElement[] } = {}
+export class WeightedGraph implements IGraph<WeightedElement, string> {
+  private _adjacencyList: { [key: string]: WeightedElement[] } = {};
 
+  get list() {
+    return this._adjacencyList;
+  }
   //Implementation of Dijkstra's algorithm
   shortestPath(from: string, to: string) {
-    const nodes = new PriorityQueue<string>()
-    let distances: { [key: string]: number } = {}
-    let previews: { [key: string]: string | null } = {}
-    let path: string[] = [] // to return at the end
+    const nodesQueue = new PriorityQueue<string>();
+    let distances: { [key: string]: number } = {};
+    let previews: { [key: string]: string | null } = {};
+    let path: string[] = []; // to return at the end
 
     //build initial state
-    for (let vertex in this.adjacencyList) {
+    for (let vertex in this._adjacencyList) {
       if (vertex === from) {
-        distances[vertex] = 0
-        nodes.enqueue(vertex, 0)
+        distances[vertex] = 0;
+        nodesQueue.enqueue(vertex, 0);
       } else {
-        distances[vertex] = Infinity
-        nodes.enqueue(vertex, Infinity)
+        distances[vertex] = Infinity;
+        nodesQueue.enqueue(vertex, Infinity);
       }
-      previews[vertex] = null
+      previews[vertex] = null;
     }
-    let smallest: string
+    let smallest: string;
     //loop as long as there's something to visit
-    while (nodes.values.length !== 0) {
-      smallest = nodes.dequeue()
+    while (nodesQueue.length !== 0) {
+      smallest = nodesQueue.dequeue();
 
       if (smallest === to) {
         //WE ARE DONT AND NEED TO BUILD PATH
         while (previews[smallest]) {
-          path.push(smallest)
-          smallest = previews[smallest]!
+          path.push(smallest);
+          smallest = previews[smallest]!;
         }
-        break
+        break;
       }
       if (smallest || distances[smallest] !== Infinity) {
-        for (let neighbor in this.adjacencyList[smallest]) {
-          let nextNode = this.adjacencyList[smallest][neighbor]
+        for (let neighbor in this._adjacencyList[smallest]) {
+          let nextNode = this._adjacencyList[smallest][neighbor];
           //calculate new distance to neighbor in node
-          let candidate = distances[smallest] + nextNode.weight
-          let nextNeighbor = nextNode.vertexKey
+          let candidate = distances[smallest] + nextNode.weight;
+          let nextNeighbor = nextNode.vertexKey;
           if (candidate < distances[nextNeighbor]) {
             //updating new smallest distance to neighbor
-            distances[nextNeighbor] = candidate
+            distances[nextNeighbor] = candidate;
             // updating previews - how we got to neighbor
-            previews[nextNeighbor] = smallest
+            previews[nextNeighbor] = smallest;
             //enqueue in priority queue with new priotity
-            nodes.enqueue(nextNeighbor, candidate)
+            nodesQueue.enqueue(nextNeighbor, candidate);
           }
         }
       }
     } //end While Loop
-    return path.concat(smallest!).reverse()
+    return path.concat(smallest!).reverse();
   }
+
   addVertex(key: string) {
-    if (!this.adjacencyList[key]) this.adjacencyList[key] = []
+    if (!this._adjacencyList[key]) this._adjacencyList[key] = [];
+    return this;
   }
+
+  removeEdge(vertex1: string, vertex2: string) {
+    if (this.areExistinVertex(vertex1, vertex2)) {
+      this._adjacencyList[vertex1] = this._adjacencyList[vertex1].filter((v) =>
+        v.vertexKey !== vertex2
+      );
+      this._adjacencyList[vertex2] = this._adjacencyList[vertex2].filter((v) =>
+        v.vertexKey !== vertex1
+      );
+    }
+    return this;
+  }
+  removeVertex(vertex: string) {
+    if (this._adjacencyList[vertex]) {
+      for (const pairVertex of this._adjacencyList[vertex]) {
+        this.removeEdge(vertex, pairVertex.vertexKey);
+      }
+    }
+    delete this._adjacencyList[vertex];
+    return this;
+  }
+
+  /**
+   * Verifies if vertex1 and vertex2 exist.
+   * @param vertex1 
+   * @param vertex2 
+   * @returns {boolean}
+   */
+  areExistinVertex(vertex1: string, vertex2: string) {
+    if (!vertex1 || !vertex2) {
+      return false;
+    }
+    return typeof this._adjacencyList[vertex1] !== "undefined" &&
+      typeof this._adjacencyList[vertex2] !== "undefined";
+  }
+
   addEdge(vertex1Key: string, vertex2Key: string, weight: number) {
-    if (!this.adjacencyList[vertex1Key]) {
+    if (!this._adjacencyList[vertex1Key]) {
       throw new Error(
         `Please Make sure the vertex key [${vertex1Key}] is added before adding an edge`,
-      )
+      );
     }
-    if (!this.adjacencyList[vertex2Key]) {
+    if (!this._adjacencyList[vertex2Key]) {
       throw new Error(
         `Please Make sure the vertex key [${vertex2Key}] is added before adding an edge`,
-      )
+      );
     }
-    this.adjacencyList[vertex1Key].push({ vertexKey: vertex2Key, weight })
-    this.adjacencyList[vertex2Key].push({ vertexKey: vertex1Key, weight })
+    this._adjacencyList[vertex1Key].push({ vertexKey: vertex2Key, weight });
+    this._adjacencyList[vertex2Key].push({ vertexKey: vertex1Key, weight });
+    return this;
   }
 }
 
@@ -97,3 +155,20 @@ export class WeightedGraph {
 // g.addEdge("E", "F", 1);
 // // console.log(g.adjacencyList);
 // console.log(g.shortestPath("F", "C"));
+
+/**
+ * Flights example
+ */
+// const g = new WeightedGraph();
+// g.addVertex("Dominican Republic");
+// g.addVertex("USA");
+// g.addVertex("Spain");
+// g.addVertex("PR");
+// g.addEdge("Dominican Republic", "USA", 50);
+// g.addEdge("Dominican Republic", "PR", 30);
+// g.addEdge("Dominican Republic", "Spain", 70);
+// g.addEdge("USA", "Spain", 75);
+// g.addEdge("PR", "Dominican Republic", 30);
+// g.addEdge("PR", "USA", 14);
+// console.log(g.shortestPath("Dominican Republic", "USA"));
+// console.log(g.shortestPath("Dominican Republic", "Spain"));

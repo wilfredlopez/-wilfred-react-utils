@@ -4,12 +4,17 @@ export class PriorityNode<V extends any> {
 
 /**
  * Keeps track of the queue based on the priority. where -Infinity is the highest priority.
+ * Not designed for search. just add and remove one by one.
  * @complexity O(log n) fast
  */
 export class PriorityQueue<T extends any> {
-  values: PriorityNode<T>[]
+  protected _values: PriorityNode<T>[];
   constructor() {
-    this.values = []
+    this._values = [];
+  }
+
+  get length() {
+    return this._values.length;
   }
 
   /**
@@ -23,8 +28,8 @@ export class PriorityQueue<T extends any> {
       queue.enqueue("Not So Important", 45);
    */
   enqueue(value: T, priority: number) {
-    this.values.push(new PriorityNode(value, priority))
-    this.bubbleUp()
+    this._values.push(new PriorityNode(value, priority));
+    this.bubbleUp();
   }
   /**
    * Returns the value with the highest priority where the lowest number is the higher priority.
@@ -35,15 +40,15 @@ export class PriorityQueue<T extends any> {
       queue.dequeue() // Super Important
    */
   dequeue() {
-    const min = this.values[0]
-    const end = this.values.pop()
-    if (this.values.length > 0) {
+    const min = this._values[0];
+    const end = this._values.pop();
+    if (this._values.length > 0) {
       if (end) {
-        this.values[0] = end
+        this._values[0] = end;
       }
-      this.bubbleDown()
+      this.bubbleDown();
     }
-    return min.value
+    return min.value;
   }
 
   /**
@@ -51,55 +56,53 @@ export class PriorityQueue<T extends any> {
    * Basically element with the highest priority.
    */
   peek() {
-    return this.values.length > 0 ? this.values[0].value : null
+    return this._values.length > 0 ? this._values[0].value : null;
   }
   private bubbleDown() {
-    let idx = 0
-    let length = this.values.length
-    const element = this.values[0]
+    let idx = 0;
+    let length = this._values.length;
+    const element = this._values[0];
     while (true) {
-      let leftChildIdx = 2 * idx + 1
-      let rightChildIdx = 2 * idx + 2
-      let leftChild, rightChild
+      let leftChildIdx = 2 * idx + 1;
+      let rightChildIdx = 2 * idx + 2;
+      let leftChild, rightChild;
 
-      let swap = null
+      let swap = null;
       if (leftChildIdx < length) {
-        leftChild = this.values[leftChildIdx]
+        leftChild = this._values[leftChildIdx];
         if (leftChild.priority < element.priority) {
-          swap = leftChildIdx
+          swap = leftChildIdx;
         }
       }
       if (rightChildIdx < length) {
-        rightChild = this.values[rightChildIdx]
+        rightChild = this._values[rightChildIdx];
         if (
           (swap === null && rightChild.priority < element.priority) ||
           (swap !== null && ((rightChild.priority < leftChild?.priority!) as T))
         ) {
-          swap = rightChildIdx
+          swap = rightChildIdx;
         }
       }
 
       if (swap === null) {
-        break
+        break;
       }
-      this.values[idx] = this.values[swap]
-      this.values[swap] = element
-      idx = swap
-      //   break;
+      this._values[idx] = this._values[swap];
+      this._values[swap] = element;
+      idx = swap;
     }
   }
   private bubbleUp() {
-    let index = this.values.length - 1
-    const element = this.values[index]
+    let index = this._values.length - 1;
+    const element = this._values[index];
 
     while (index > 0) {
-      let parrentIdx = Math.floor((index - 1) / 2)
-      const parrent = this.values[parrentIdx]
-      if (element.priority >= parrent.priority) break
-      this.values[parrentIdx] = element
-      this.values[index] = parrent
-      index = parrentIdx
-      //   break;
+      let parrentIdx = Math.floor((index - 1) / 2);
+      const parrent = this._values[parrentIdx];
+      if (element.priority >= parrent.priority) break;
+      this._values[parrentIdx] = element;
+      this._values[index] = parrent;
+      index = parrentIdx;
     }
   }
 }

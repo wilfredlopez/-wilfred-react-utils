@@ -59,6 +59,41 @@ export default class StopWatch {
   }
 }
 
+/**-----------------------------------------------------
+ * 
+ * *********************PROBLEMS***********************
+ *
+ *------------------------------------------------------
+ */
+
+/**
+ * reverse string without using array.reverse
+ * @param {string} str 
+ * 
+ */
+function reveseString(str) {
+  //TODO
+}
+
+/**
+ * reverse number without loosing the sign.
+ * @param {number} number 
+ * 
+ */
+function reveseInt(number) {
+  //TODO
+}
+
+/**
+ * reversed form === original form?
+ * @param {string} str1 
+ * @returns {boolean}
+ * 
+ */
+function isPalindrom(str1) {
+  //TODO
+}
+
 /*************************************
  * FIZZBUZZ
  * Log to console numbers from 1 to 100. if the number is divisible by 15 log FIZZBUZZ. if divisible by 3 log FIZZ if divisible by 5 log BUZZ
@@ -93,7 +128,8 @@ export default class StopWatch {
  * console.log(characterCounter()); // {}
  * console.log(characterCounter(2000)); // {} or  { 0: 3, 2: 1 }
  * 
- ************************************/
+ ***********************************
+ */
 function characterCounter(str) {
   if (!str) return {};
   if (typeof str === "number") {
@@ -194,6 +230,11 @@ function sameFrequency(array1, array2) {
    * 
    */
 function validAnagram(string1, string2) {
+  // //other way
+  // return cleanString(string1) === cleanString(string2);
+  // function cleanString(str) {
+  //   return str.replace(/[^\w]/g, "").toLowerCase().split("").sort().join("");
+  // }
   if (string1.length !== string2.length) return false;
   string1 = string1.toLowerCase();
   string2 = string2.toLowerCase();
@@ -337,23 +378,6 @@ function maxSubArraySum(data, numberOfTimes) {
     maxSum = Math.max(maxSum, tempSum);
   }
   return maxSum;
-  //NAIVE SOLUTION (O(n2))
-  //   let max = -Infinity;
-  //   for (
-  //     let dataIndex = 0;
-  //     dataIndex < data.length - numberOfTimes + 1;
-  //     dataIndex++
-  //   ) {
-  //     let temp = 0;
-  //     for (let time = 0; time < numberOfTimes; time++) {
-  //       temp += data[dataIndex + time];
-  //     }
-  //     if (temp > max) {
-  //       max = temp;
-  //     }
-  //   }
-
-  //   return max;
 }
 
 // console.log(maxSubArraySum([1, 2, 5, 2, 8, 1, 5], 2)); //returns 10
@@ -715,28 +739,400 @@ function pivot(arr, startIndex = 0, endIndex = arr.length + 1) {
 
   return swapIndex;
 }
+
+/**
+ * Write a helper method that gets the digit located at the specified position.
+ * 0 being the most right position (for 12345 that would be 5).
+ * for example getDigitAt(12345,0) // returns 5
+ * @param {*} number 
+ * @param {*} position 
+ */
+function getDigitAt(number, position) {
+  return Math.floor(Math.abs(number) / Math.pow(10, position)) % 10;
+}
+
+/**
+ * Write a helper method digitCount that returns the count of digits in a number.
+ * 0 being the most right position (for 12345 that would be 5).
+ * for example digitCount(22) // returns 2
+ * console.log(digitCount(225)) //  3
+ * @param {*} number 
+ */
+function digitCount(number) {
+  if (number === 0) return 1;
+  return Math.floor(Math.log10(Math.abs(number))) + 1;
+}
+
+/**
+ * Write a helper method mostDigits that given an array of numbers returns the count of the largest number in the list.
+ * this uses the helper method digitCount written before. 
+ * for example digitCount(22) // returns 2
+ * console.log(digitCount(225)) //  3
+ * @param {Array<numbers>} numbers 
+ * @returns {Number} largest number of digits.
+ * @example
+ * console.log(mostDigits([1, 2, 322])); // 3
+ */
+function mostDigits(numbers) {
+  if (!numbers) return 0;
+  let maxCount = 0;
+  for (const val of numbers) {
+    const count = digitCount(val);
+    if (count > maxCount) {
+      maxCount = count;
+    }
+  }
+  return maxCount;
+}
+// console.log(mostDigits([2])); // 3
+/**
+ * RADIX SORT
+ * - figure out how many digits the largest number has.
+ * - loop from k=0 up to this largest number of digits.
+ * - for each iteration of the loop:
+ *     - create buckets of each digit (0, 9) (empty arrays)
+ *     - iterate over the nums array and get the digitAt the k position for each number.
+ *     - push each number on correcponding bucket based on its kth digit.
+ *     - Replace our exising array with values in our buckets
+ * - return list at the end.
+ * @param {Array<number>} nums
+ * @return {Array<number>} sorted array
+ * @complexity O(nk)
+ * @example
+ * console.log(radixSort([89, 200, 2, 299, 1])); //[ 1, 2, 89, 200, 299 ]
+ */
+function radixSort(nums) {
+  const maxD = mostDigits(nums);
+  for (let k = 0; k < maxD; k++) {
+    const bucket = Array.from({ length: 10 }, () => []);
+    for (let i = 0; i < nums.length; i++) {
+      const d = getDigitAt(nums[i], k);
+      bucket[d].push(nums[i]);
+    }
+    nums = [].concat(...bucket);
+  }
+  return nums;
+}
+
+/**
+ * CREATE A LINKED LIST
+ */
+class SingleNode {
+  constructor(value, next = null) {
+    this.value = value;
+    this.next = next;
+  }
+}
+
+/**
+ * List with head and tail. you can insert/push/set/unshift items. you can pop/remove/shift and you can get items or revese the order.
+ * Easy to insert (better than arrays) O(1)
+ * Not good to get items/Access like arrays or object where you can use the index. O(n)
+ * removing O(1) or O(n)
+ */
+export class SinglyLinkedList {
+  constructor() {
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
+  }
+
+  /**
+   * Insert a the end.
+   * @param val 
+   */
+  push(val) {
+    const node = new SingleNode(val);
+    if (!this.head) {
+      this.head = node;
+      this.tail = this.head;
+    } else {
+      this.tail.next = node;
+      this.tail = node;
+    }
+    this.length++;
+    return this;
+  }
+
+  /**
+   * Removes from the end.
+   */
+  pop() {
+    if (!this.head) return null;
+    let current = this.head;
+    let newTail = current;
+
+    while (current && current.next) {
+      newTail = current;
+      current = current.next;
+    }
+    this.tail = newTail;
+    if (this.tail && this.tail.next) {
+      this.tail.next = null;
+    }
+    this.length--;
+    if (this.length === 0) this.head = null;
+    return current;
+  }
+
+  /**
+   * Remove from the begining (the head)
+   */
+  shift() {
+    if (!this.head) return null;
+    let current = this.head;
+    this.head = this.head.next;
+    this.length--;
+    if (this.length === 0) {
+      this.tail = null;
+    }
+    return current;
+  }
+
+  /**
+   * Insert at the begining
+   * @param val 
+   */
+  unshift(val) {
+    const newHead = new SingleNode(val);
+    if (!this.head) {
+      this.head = newHead;
+      this.tail = this.head;
+    } else {
+      newHead.next = this.head;
+      this.head = newHead;
+    }
+    this.length++;
+    return this;
+  }
+
+  get(index) {
+    if (
+      index < 0 || index >= this.length || this.head === null ||
+      this.length === 0
+    ) {
+      return null;
+    }
+    let current = this.head;
+    let count = 0;
+    while (count !== index) {
+      current = current.next;
+      count++;
+    }
+    return current;
+  }
+
+  set(index, value) {
+    let foundNode = this.get(index);
+    if (foundNode) {
+      foundNode.value = value;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /**
+   * Inserts value at index. 
+   * if index less than 0 or greater than the length of the linked list returns false.
+   * @param index index needs to be between 0 and the total length of the LinkedList.
+   * @param value value to insert.
+   */
+  insert(index, value) {
+    if (index < 0 || index > this.length) return false;
+    if (index === this.length) {
+      this.push(value);
+      return true;
+    }
+    if (index === 0) this.unshift(value);
+    else {
+      let newNode = new SingleNode(value);
+      let prev = this.get(index - 1);
+      let temp = prev.next || null;
+      prev.next = newNode;
+      newNode.next = temp;
+      this.length++;
+    }
+
+    return true;
+  }
+
+  remove(index) {
+    if (index < 0 || index >= this.length) return null;
+    if (index === 0) return this.shift();
+    if (index === this.length - 1) return this.pop();
+    let previewsNode = this.get(index - 1);
+    let removed = previewsNode.next || null;
+    previewsNode.next = removed.next;
+    this.length--;
+
+    return removed;
+  }
+
+  revese() {
+    let node = this.head;
+    this.head = this.tail;
+    this.tail = node;
+    let next = null;
+    let prev = null;
+    for (let i = 0; i < this.length; i++) {
+      next = node.next || null;
+      node.next = prev;
+      prev = node;
+      node = next;
+    }
+    return this;
+  }
+
+  // *[Symbol.iterator]() {
+  //   let current = this.head;
+  //   while (current) {
+  //     let temp = current;
+  //     current = current.next;
+  //     yield temp.value;
+  //   }
+  // }
+}
+// const list = new SinglyLinkedList();
+// // adding
+// list.push("Wilfred");
+// list.push("yanna");
+// list.push("Austria");
+// list.push("Catalina");
+// list.push("Pablo");
+// // console.log(list.unshift("Mom"));
+// list.set(0, "mami");
+// list.insert(0, "NEW");
+// list.unshift("2");
+
+// for (let val of list) {
+//   console.log(val);
+// }
+
+/**
+ * Given an array an chunk size,
+ * divide the array into many subarrays where each subarray is of the length size.
+ * --examples
+ * chunk([1,2,3,4], 2) --> [[1,2], [3,4]]
+ * chunk([1,2,3,4,5], 2) --> [[1,2], [3,4], [5]]
+ * @param {Array<number>} array
+ * @param {number} size
+ * @returns {Array<Array<number>>} array of array of numbers
+ * @example
+ * console.log(chunk([1, 2, 3, 4], 2)); // [[1,2], [3,4]]
+ * console.log(chunk([1, 2, 3, 4, 5], 2)); // [[1,2], [3,4], [5]]
+ * console.log(chunk([1, 2, 3, 4, 5, 6, 7, 8], 3)); // [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8 ] ]
+ */
+function chunk(array, size) {
+  const chunked = [];
+  let index = 0;
+
+  while (index < array.length) {
+    const elemet = array.slice(index, index + size);
+    chunked.push(elemet);
+    index = index + size;
+  }
+  return chunked;
+}
+// console.log(chunk([1, 2, 3, 4], 2)); // [[1,2], [3,4]]
+// console.log(chunk([1, 2, 3, 4, 5], 2)); // [[1,2], [3,4], [5]]
+// console.log(chunk([1, 2, 3, 4, 5, 6, 7, 8], 3)); // [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8 ] ]
+// console.log(
+//   chunk([1, 2, 3, 4, 5, 6, 7, 8], 1),
+// );
+
+/**
+ * Console logs a level shape with a # and spaces acording to the number of times..
+ * @param num number of times.
+ * @example
+ * levels(2)
+ * #
+ * ##
+ * ###
+ * ####
+ */
+
+function levels(num) {
+  let output = [];
+  for (let i = 1; i <= num; i++) {
+    //repeat method!!!!
+    output.push("#".repeat(i) + " ".repeat(num - i));
+    console.log(genHash(i) + getSpace(num - i));
+  }
+  return output;
+}
+
+/**
+ * Generates a # string x number of times.
+ * @param times
+ */
+function genHash(times) {
+  return Array.from({ length: times }, () => "#").join("");
+}
+
+/**
+ * Generates an empty space x number of times.
+ * @param times
+ */
+function getSpace(times) {
+  return Array.from({ length: times }, () => " ").join("");
+}
+
+/**
+ * Console logs a piramid shape with a # in the center and spaces on the sides.
+ * @param num number of times.
+ */
+//eslint-disable-next-line
+function piramid(num) {
+  let output = [];
+  for (let i = 1; i <= num; i++) {
+    output.push(getSpace(num - i) + genHash(i) + getSpace(num - i));
+    console.log(getSpace(num - i) + genHash(i) + getSpace(num - i) + "\r");
+  }
+  return output.join().replace(/,/g, "\n");
+}
+
+// console.log(piramid(5))
+
+/**
+ * Returns an object with the key of the max char and the value is the number of times repeated.
+ * If none are repeated it will return an empty object {}.
+ * @param text string to get the max char from.
+ * @param findFirst If several characters repeat the same amount of times. it will return the last one by default. To override this please pass true.
+ */
+//eslint-disable-next-line
+function maxChar(text, findFirst = false) {
+  let chars = {};
+  for (const s of text) {
+    if (chars[s] !== undefined) {
+      chars[s]++;
+    } else {
+      chars[s] = 1;
+    }
+  }
+  let max = 1;
+  let char = "";
+  for (const key in chars) {
+    if (!findFirst && chars[key] >= max) {
+      max = chars[key];
+      char = key;
+    }
+    if (findFirst && chars[key] > max) {
+      max = chars[key];
+      char = key;
+    }
+  }
+  return { [char]: max };
+}
+
+// console.log(maxChar("aaaabbccdddDDDD", false))
+
+// console.log(isPalindrome("RaceCar")) //true
+
+// console.log(reverseWords("Coding , Javascript")) //gnidoC tpircsavaJ
+
 /**
  * -----------------------------------------
  * ***************TESTING*******************
  * -----------------------------------------
  */
-
-function genArray(length = 200, random = 1000) {
-  return Array.from(
-    { length: length },
-    () => Math.floor(Math.random() * random),
-  );
-}
-const stopWatch = new StopWatch();
-const toSortArr = genArray(5);
-// const toSortArr = [{ name: "A" }, { name: "C" }, { name: "B" }, { name: "Z" }];
-
-// stopWatch.start();
-// console.log(selectionSort(toSortArr));
-// console.log(stopWatch.stop().printElapsed("QuickSort"));
-
-stopWatch.start();
-console.log(
-  quickSort([99, 100, 200, 50, 30, 1000, 0, 20]),
-);
-console.log(stopWatch.stop().printElapsed("QuickSort"));

@@ -116,24 +116,24 @@ export class NumberHelper {
   }
 
   /**
-   * Returns the digit in number at the given place value.
+   * Returns the digit in number at the given position.
    * Always returns a positive number and returns 0 if the place doesnt exist.
    * @param number the number to get the digit from.
-   * @param place the place in the number where 0 is the last number. to get the last number(5) in 12345 the place would be 0.
+   * @param position the position or place in the number where 0 is the last number. to get the last number (5) in 12345 the position would be 0.
    *
    * Example:
    * For 1835 to get the 5 you can pass the 0 place.
    * @example
-   * getDigit(1835, 0) // 5
-   * getDigit(12345, 0) // 5
-   * getDigit(12345, 1) // 4
-   * getDigit(12345, 2) // 3
-   * getDigit(12345, 3) // 2
-   * getDigit(12345, 4) // 1
-   * getDigit(1, 4) // 0 (there's no fourth place in this case returns 0)
+   * getDigitAt(1835, 0) // 5
+   * getDigitAt(12345, 0) // 5
+   * getDigitAt(12345, 1) // 4
+   * getDigitAt(12345, 2) // 3
+   * getDigitAt(12345, 3) // 2
+   * getDigitAt(12345, 4) // 1
+   * getDigitAt(1, 4) // 0 (there's no fourth place in this case returns 0)
    */
-  static getDigit(number: number, place: number): number {
-    return Math.floor(Math.abs(number) / Math.pow(10, place)) % 10;
+  static getDigitAt(number: number, position: number): number {
+    return Math.floor(Math.abs(number) / Math.pow(10, position)) % 10;
   }
 
   /**
@@ -199,7 +199,7 @@ export class NumberHelper {
    */
   static fibRecursive(
     n: number,
-    memo: { [key: string]: number } = { "0": 1, "1": 1, "2": 1 },
+    memo: { [key: string]: number } = { "0": 0, "1": 1, "2": 1 },
   ): number {
     if (memo[n] !== undefined) return memo[n];
     //base case. alredy included in memo but leaving here anyways

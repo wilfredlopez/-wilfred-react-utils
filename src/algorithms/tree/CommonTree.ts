@@ -1,45 +1,45 @@
-export class CNode<T extends any> {
-  data: T
-  children: CNode<T>[]
+export class NodeWithChildren<T extends any> {
+  data: T;
+  children: NodeWithChildren<T>[];
 
   get totalChildrens() {
-    return this.children.length
+    return this.children.length;
   }
 
-  constructor(data: T, children: CNode<T>[] = []) {
-    this.data = data
-    this.children = children
+  constructor(data: T, children: NodeWithChildren<T>[] = []) {
+    this.data = data;
+    this.children = children;
   }
 
-  add(value: T, children: CNode<T>[] = []) {
-    this.children.push(new CNode(value, children))
+  add(value: T, children: NodeWithChildren<T>[] = []) {
+    this.children.push(new NodeWithChildren(value, children));
   }
 
   contains(value: T): boolean {
-    if (!this.data === value) return true
-    let current = [...this.children]
+    if (!this.data === value) return true;
+    let current = [...this.children];
 
     while (current.length) {
-      const node = current.shift()
+      const node = current.shift();
       if (node) {
-        if (node.data === value) return true
-        current.push(...node.children)
+        if (node.data === value) return true;
+        current.push(...node.children);
       } else {
         //should never be the case.
-        return false
+        return false;
       }
     }
-    return false
+    return false;
   }
 
   remove(content: T) {
-    this.children = this.children.filter((n) => n.data !== content)
+    this.children = this.children.filter((n) => n.data !== content);
   }
 
   *[Symbol.iterator](): Generator<T> {
-    yield this.data
+    yield this.data;
     for (const child of this.children) {
-      yield* child
+      yield* child;
     }
   }
 }
@@ -65,17 +65,17 @@ console.log(elements)
  * 
  */
 export class CommonTree<T> {
-  public root: CNode<T>
-  constructor(root: T, children: CNode<T>[] = []) {
-    this.root = new CNode(root, children)
+  public root: NodeWithChildren<T>;
+  constructor(initialData: T, children: NodeWithChildren<T>[] = []) {
+    this.root = new NodeWithChildren(initialData, children);
   }
 
   contains(data: T) {
-    return this.root.contains(data)
+    return this.root.contains(data);
   }
 
-  addToRoot(value: T, children: CNode<T>[] = []) {
-    this.root.add(value, children)
+  addToRoot(value: T, children: NodeWithChildren<T>[] = []) {
+    this.root.add(value, children);
   }
 
   /**
@@ -83,12 +83,12 @@ export class CommonTree<T> {
    * @param fn
    */
   breadthFirstTraverse(fn: (data: T) => void) {
-    const arr = [this.root]
+    const arr = [this.root];
     while (arr.length) {
-      const node = arr.pop()
+      const node = arr.pop();
       if (node) {
-        arr.push(...node.children)
-        fn(node.data)
+        arr.push(...node.children);
+        fn(node.data);
       }
     }
   }
@@ -107,13 +107,13 @@ export class CommonTree<T> {
     //   }
     // }
     for (const node of this.root) {
-      fn(node)
+      fn(node);
     }
   }
 
   *[Symbol.iterator](): Generator<T> {
-    if (!this.root) return
-    yield* this.root
+    if (!this.root) return;
+    yield* this.root;
   }
 }
 
