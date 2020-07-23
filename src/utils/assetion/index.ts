@@ -97,8 +97,25 @@ export function isObject(arg: any): arg is object {
     }
  */
 export function assertIsString(val: any): asserts val is string {
-  if (typeof val !== "string") {
-    throw new AssertionError("Not a string!");
+  const isString = (typeof val === "string" || val instanceof String);
+
+  if (!isString) {
+    let invalidType;
+    if (val === null) {
+      invalidType = "null";
+    } else {
+      invalidType = typeof val;
+      if (
+        invalidType === "object" && val.constructor &&
+        val.constructor.hasOwnProperty("name")
+      ) {
+        invalidType = val.constructor.name;
+      } else {
+        invalidType = `a ${invalidType}`;
+      }
+    }
+    // throw new TypeError(`Expected string but received ${invalidType}.`);
+    throw new AssertionError(`Expected string but received ${invalidType}.`);
   }
 }
 
