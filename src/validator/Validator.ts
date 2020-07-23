@@ -1,5 +1,6 @@
 import isUrl from "./isUrl";
 import isIP from "./isIP";
+import isPostalCode from "./isPostalCode";
 export function merge<T extends {}>(obj: Partial<T> = {}, defaults: T): T {
   for (const key in defaults) {
     if (typeof obj[key] === "undefined") {
@@ -127,6 +128,8 @@ export class Validator {
     }
     return false;
   }
+
+  static isPostalCode = isPostalCode;
 
   static isString(val: any): val is string {
     return (typeof val === "string" || val instanceof String);
