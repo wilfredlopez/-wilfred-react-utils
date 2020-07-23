@@ -200,9 +200,9 @@ describe.skip("Validator", () => {
       expect(Validator.isURL("https://wilfredlopez.net")).toBe(true);
       expect(Validator.isURL("https://www.wilfredlopez.net")).toBe(true);
       expect(Validator.isURL("www.test.com")).toBe(true);
+      expect(Validator.isURL("www.test.")).toBe(false);
 
       expect(Validator.isURL("http:www.test.com")).toBe(false);
-      expect(Validator.isURL("www.test.")).toBe(false);
       expect(Validator.isURL("mr")).toBe(false);
       expect(Validator.isURL("http")).toBe(false);
     });

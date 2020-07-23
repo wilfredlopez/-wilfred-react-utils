@@ -30,6 +30,10 @@ export class Mapper<V extends any, K extends string | number = string> {
   #_data: Record<K, V> = {} as Record<K, V>;
   #_size = 0;
   constructor(initialData?: Record<K, V>) {
+    if (initialData) {
+      const keys = Object.keys(initialData);
+      this.#_size = keys.length;
+    }
     this.#_data = initialData || {} as Record<K, V>;
   }
 
@@ -269,3 +273,17 @@ export class Mapper<V extends any, K extends string | number = string> {
     return this;
   }
 }
+
+// const initialData = {
+//   "test1": 1,
+//   "test2": 2,
+// };
+// const dataMap = new Mapper<number, string>(initialData);
+// console.log(dataMap.length); //2
+// console.log(dataMap.set("test3", 3).delete("test1")); //1
+// console.log(dataMap.has("test1")); //false
+// console.log(dataMap.get("test2")); //2
+// console.log(dataMap.isEmpty()); //false
+// dataMap.map((val) => {
+//   console.log(val); // 2, 3
+// });

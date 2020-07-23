@@ -423,12 +423,15 @@ export class PatternGenerator {
 // console.log(StringHelper.isAnagram("Hi There", "ni There")) // false
 // console.log(StringHelper.isAnagram("Wilfred &*(*)_()", "wcxckj 82fs d")) // false
 
-// const pg = new PatternGenerator("'WL'-XXXXX")
+const pg = new PatternGenerator("'WL'-XXXXX");
 
-// const codes = []
-// while (codes.length < 50) {
-//   codes.push(pg.next)
-// }
-// console.log(codes) // UAD-28986 (something with this pattern but not exactly)
-// console.log(pg.next) //FQH-78470 (something with this pattern but not exactly)
-// console.log(pg.next) // LWR-88988 (something with this pattern but not exactly)
+const codes = [];
+console.log(pg.next); //WL-H2QDD
+while (codes.length < 50) {
+  codes.push(pg.next);
+}
+console.log(codes); //[ 'WL-H2QDD', 'WL-LHCO7', 'WL-0EFK6', 'WL-SQU7W',...,'WL-9NYHX' ]  // UAD-28986 (something with this pattern but not exactly)
+console.log(pg.next); //FQH-78470 (something with this pattern but not exactly)
+console.log(pg.next); // LWR-88988 (something with this pattern but not exactly)
+
+StringHelper.patternGenerator;

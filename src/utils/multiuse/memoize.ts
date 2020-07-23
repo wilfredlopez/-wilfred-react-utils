@@ -140,9 +140,9 @@ memoize.Cache = Map;
 
 // const fib = memoize(slowfib);
 
-// console.log(fib(20)); //6765;
 // console.log(fib(20)); //6765
 // console.log(fib(30)); //832040
+// console.log(fib(20)); //6765;
 // console.log(fib(100)); //354224848179262000000
 // console.log(
 //   fib.cache,
