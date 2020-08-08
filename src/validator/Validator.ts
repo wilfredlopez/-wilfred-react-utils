@@ -1,6 +1,41 @@
 import isUrl from "./isUrl";
 import isIP from "./isIP";
 import isPostalCode from "./isPostalCode";
+
+declare const $NestedValue: unique symbol;
+
+export type IsFlatObject<T extends object> = Extract<
+  Exclude<T[keyof T], NestedValue | Date | FileList>,
+  any[] | object
+> extends never ? true
+  : false;
+export type NestedValue<TValue extends any[] | object = any[] | object> = {
+  [$NestedValue]: never;
+} & TValue;
+
+export type EmptyObject = { [K in string | number]: never };
+export type Primitive = string | boolean | number | symbol | null | undefined;
+export type FieldElement<TFieldValues extends FieldValues = FieldValues> =
+  | HTMLInputElement
+  | HTMLSelectElement
+  | HTMLTextAreaElement
+  | CustomElement<TFieldValues>;
+export type FieldValues = Record<string, any>;
+export type FieldName<TFieldValues extends FieldValues> = IsFlatObject<
+  TFieldValues
+> extends true ? Extract<keyof TFieldValues, string>
+  : string;
+
+export type CustomElement<TFieldValues extends FieldValues> = {
+  name: FieldName<TFieldValues>;
+  type?: string;
+  value?: any;
+  checked?: boolean;
+  options?: HTMLOptionsCollection;
+  files?: FileList | null;
+  focus?: VoidFunction;
+};
+
 export function merge<T extends {}>(obj: Partial<T> = {}, defaults: T): T {
   for (const key in defaults) {
     if (typeof obj[key] === "undefined") {
@@ -129,8 +164,14 @@ export class Validator {
     return false;
   }
 
+  static isHTMLElement = (value: any): value is HTMLElement =>
+    value instanceof HTMLElement;
+
   static isPostalCode = isPostalCode;
 
+  static isPrimitive(value: unknown): value is Primitive {
+    return Validator.isNullOrUndefined(value) || !(typeof value === "object");
+  }
   static isString(val: any): val is string {
     return (typeof val === "string" || val instanceof String);
   }
@@ -176,6 +217,8 @@ export class Validator {
       typeof arg === "number") &&
       String(arg).length >= options.min && String(arg).length <= options.max;
   }
+
+  static isRegex = (value: unknown): value is RegExp => value instanceof RegExp;
 
   static isArray<T extends any>(arg: any): arg is Array<T> {
     return arg instanceof Array;
@@ -479,6 +522,12 @@ export class Validator {
     return typeof arg === "number";
   }
 
+  static isKey(value: [] | string) {
+    return !Validator.isArray(value) &&
+      (/^\w*$/.test(value) ||
+        !/\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/.test(value));
+  }
+
   static isFunction<T extends Function>(arg: any): arg is T {
     return typeof arg === "function";
   }
@@ -491,7 +540,12 @@ export class Validator {
     return typeof arg === "undefined" || arg === null;
   }
   static isObject(arg: any): arg is object {
-    return typeof arg === "object";
+    return !Validator.isNullOrUndefined(arg) && !Validator.isArray(arg) &&
+      typeof arg === "object";
+  }
+
+  static isEmptyObject(value: unknown): value is EmptyObject {
+    return Validator.isObject(value) && !Object.keys(value).length;
   }
 
   /**
@@ -506,6 +560,9 @@ export class Validator {
     return string === string.toUpperCase();
   }
 
+  static isFileInput = (
+    element: FieldElement,
+  ): element is HTMLInputElement => element.type === "file";
   /**
    * Check if string or number is integer
    * @param str 

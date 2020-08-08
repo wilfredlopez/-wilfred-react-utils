@@ -51,42 +51,52 @@ export function memoizeSimple<
  * provided to the memoized function is used as the map cache key. The `func`
  * is invoked with the `this` binding of the memoized function.
  *
- * @category Function
  * @param {Function} func The function to have its output memoized.
- * @param {Function} [resolver] The function to resolve the cache key.
+ * @param {{resolver?: Function, maxCacheSize?:number}} options optional object that takes: 
+ * [resolver] The function to resolve the cache key and 
+ * [maxCacheSize] cap for the size of the cache. 
+ * cache will be cleared by half when max size is reached.
+ * @default options {resolver:undefined, maxCacheSize:255}
  * @returns {Function} Returns the new memoized function.
  * @example
- *let fib = (n: number): number => {
- *if (n <= 2) return 1;
- *  return fib(n - 1) + fib(n - 2);
- * };
- *
- * fib = memoize(fib);
- *
- * console.log(fib(20)); //6765
- * console.log(fib(30)); //832040
- * console.log(fib.cache); // Map { 2 => 1, 1 => 1, ...}
- *
- * @example
- * function add(a: number, b: number) {
- *   return a + b;
- * }
+ * 
  * const adder = memoize(
- *   add,
- *   (...args: number[]) => args.map((arg) => arg + "_").join(),
+ *   function add(a: number, b: number) {
+ *     return a + b;
+ *   },
+ *   {
+ *     resolver: (...args: number[]) => args.map((arg) => arg + "_").join(),
+ *     maxCacheSize: 255,
+ *   },
  * );
  * console.log(adder(12, 13)); //25
  * console.log(adder(12, 12)); // 24
  * console.log(adder(12, 12)); // 24
  * console.log(adder(1, 2)); // 3
  * console.log(adder.cache); //Map { '12_,13_' => 25, '12_,12_' => 24, '1_,2_' => 3 }
+ * 
+ * const fibMemo = memoize(function (n: number): number {
+ *   if (n <= 2) return 1;
+ *   return fibMemo(n - 1) + fibMemo(n - 2);
+ * });
+ * 
+ * console.log(fibMemo(20)); //6765
+ * console.log(fibMemo(30)); //832040
+ * console.log(fibMemo(20)); //6765;
+ * console.log(fibMemo(100)); //354224848179262000000
+ * console.log(
+ *   fibMemo.cache.size, //100
+ * );
  */
 export function memoize<
   T extends (...args: any[]) => ReturnType<T>,
   A extends ParametersOf<T>,
 >(
   func: T,
-  resolver?: (...args: A) => any,
+  { resolver, maxCacheSize = 255 }: {
+    resolver?: (...args: A) => any;
+    maxCacheSize?: number;
+  } = {},
 ): { (...args: A): ReturnType<T>; cache: Map<A, ReturnType<T>> } {
   if (
     typeof func !== "function"
@@ -110,6 +120,13 @@ export function memoize<
     if (cache.has(key)) {
       return cache.get(key) as ReturnType<T>;
     }
+    if (cache.size > maxCacheSize) {
+      //delete half cached when reached maxCacheSize.
+      const half = Math.floor(cache.size / 2);
+      for (let i = 0; i < half; i++) {
+        cache.delete(cache.keys().next().value);
+      }
+    }
     const result = func.apply(memoize, args);
     memoized.cache = cache.set(key, result) || cache;
     return result;
@@ -120,12 +137,14 @@ export function memoize<
 
 memoize.Cache = Map;
 
-// function add(a: number, b: number) {
-//   return a + b;
-// }
 // const adder = memoize(
-//   add,
-//   // (...args: number[]) => args.map((arg) => arg + "_").join(),
+//   function add(a: number, b: number) {
+//     return a + b;
+//   },
+//   {
+//     resolver: (...args: number[]) => args.map((arg) => arg + "_").join(),
+//     maxCacheSize: 255,
+//   },
 // );
 // console.log(adder(12, 13)); //25
 // console.log(adder(12, 12)); // 24
@@ -133,17 +152,15 @@ memoize.Cache = Map;
 // console.log(adder(1, 2)); // 3
 // console.log(adder.cache); //Map { '12_,13_' => 25, '12_,12_' => 24, '1_,2_' => 3 }
 
-// let slowfib = (n: number): number => {
+// const fibMemo = memoize(function (n: number): number {
 //   if (n <= 2) return 1;
-//   return fib(n - 1) + fib(n - 2);
-// };
+//   return fibMemo(n - 1) + fibMemo(n - 2);
+// });
 
-// const fib = memoize(slowfib);
-
-// console.log(fib(20)); //6765
-// console.log(fib(30)); //832040
-// console.log(fib(20)); //6765;
-// console.log(fib(100)); //354224848179262000000
+// console.log(fibMemo(20)); //6765
+// console.log(fibMemo(30)); //832040
+// console.log(fibMemo(20)); //6765;
+// console.log(fibMemo(100)); //354224848179262000000
 // console.log(
-//   fib.cache,
+//   fibMemo.cache.size, //100
 // );

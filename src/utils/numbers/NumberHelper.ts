@@ -148,6 +148,13 @@ export class NumberHelper {
       fivNums[i] = fivNums[i - 1] + fivNums[i - 2];
     }
     return fivNums[n];
+    /* Alternative Way. might be better but need to measure
+if (n <= 2) return 1;
+  return Array(n).fill([1, 0]).reduce(
+    (prev, _acc) => [prev[0] + prev[1], prev[0]],
+  )[0];
+
+    */
   }
 
   /**

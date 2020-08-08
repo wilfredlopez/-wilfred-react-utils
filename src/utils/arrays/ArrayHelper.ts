@@ -1,7 +1,9 @@
 import { dropRightWhile } from "../../lodash/dropRightWhile";
 import { map } from "../../lodash/map";
 import last from "../../lodash/last";
-import { NumberHelper } from "../numbers";
+// import { NumberHelper } from "../numbers";
+import { Validator } from "../../validator";
+const { isArray, isUndefined } = Validator;
 
 export class ArrayHelper {
   /**
@@ -172,6 +174,27 @@ export class ArrayHelper {
     return chunked;
   }
 
+  static fillEmptyArray = <T>(value: T | T[]): undefined[] | undefined =>
+    isArray(value) ? Array(value.length).fill(undefined) : undefined;
+
+  static insert<T>(data: T[], index: number): (T | undefined)[];
+  static insert<T>(
+    data: T[],
+    index: number,
+    value: T | T[],
+  ): T[];
+  static insert<T>(
+    data: T[],
+    index: number,
+    value?: T | T[],
+  ): (T | undefined)[] {
+    return [
+      ...data.slice(0, index),
+      ...(isArray(value) ? value : [value || undefined]),
+      ...data.slice(index),
+    ];
+  }
+
   /**
    * Sorts an array using insertion Sort. Only recommended for nearly sorted data.
    * use quickSort if the array is not randomly sorted.
@@ -193,9 +216,73 @@ export class ArrayHelper {
     return arr;
   }
 
+  static prepend<T>(data: T[]): (T | undefined)[];
+  static prepend<T>(data: T[], value: T | T[]): T[];
+  static prepend<T>(
+    data: T[],
+    value?: T | T[],
+  ): (T | undefined)[] {
+    return [
+      ...(Validator.isArray(value) ? value : [value || undefined]),
+      ...data,
+    ];
+  }
+
+  static unique = <T extends any>(value: T[]) => value.filter(Boolean);
+  static removeAtIndexes<T>(data: T[], index: number[]): T[] {
+    let k = -1;
+
+    while (++k < data.length) {
+      if (index.indexOf(k) >= 0) {
+        delete data[k];
+      }
+    }
+
+    return ArrayHelper.unique(data);
+  }
+
+  static moveArrayAt = <T>(
+    data: T[],
+    from: number,
+    to: number,
+  ): (T | undefined)[] => {
+    if (isArray(data)) {
+      if (isUndefined(data[to])) {
+        data[to] = undefined as any;
+      }
+      data.splice(to, 0, data.splice(from, 1)[0]);
+      return data;
+    }
+
+    return [];
+  };
+
+  static removeArrayAt = <T>(data: T[], index?: number | number[]): T[] =>
+    isUndefined(index)
+      ? []
+      : isArray(index)
+      ? ArrayHelper.removeAtIndexes(data, index)
+      : ArrayHelper.removeAt(data, index);
+
+  static removeAt<T>(data: T[], index: number): T[] {
+    return [
+      ...data.slice(0, index),
+      ...data.slice(index + 1),
+    ];
+  }
+  static swapArrayAt = <T>(
+    data: T[],
+    indexA: number,
+    indexB: number,
+  ): void => {
+    const temp = [data[indexB], data[indexA]];
+    data[indexA] = temp[0];
+    data[indexB] = temp[1];
+  };
   /**
    * Swaps values in the array determined by the indexes passed to the function.
    * doesnt return a new array. just makes changes to the array that was passed.
+   * if you want a new array to be returned please use ArrayHelper.move
    * @param arr array be be swapped.
    * @param idx1 target index
    * @param idx2 index to be swapped with target index
@@ -206,6 +293,27 @@ export class ArrayHelper {
     //   let temp = arr[idx1];
     //   arr[idx1] = arr[idx2];
     //   arr[idx2] = temp;
+  }
+  static arrayMoveMutate(array: any[], from: number, to: number) {
+    const startIndex = to < 0 ? array.length + to : to;
+
+    if (startIndex >= 0 && startIndex < array.length) {
+      const item = array.splice(from, 1)[0];
+      array.splice(startIndex, 0, item);
+    }
+  }
+
+  /**
+   * Swaps values in the array determined by the indexes passed to the function.
+   * returns a new array with the values swapped.
+   * @param array array to move
+   * @param from index from
+   * @param to index to
+   */
+  static move<T>(array: T[], from: number, to: number) {
+    array = [...array];
+    ArrayHelper.arrayMoveMutate(array, from, to);
+    return array;
   }
   static isArray<T extends any>(arg: any): arg is Array<T> {
     return arg instanceof Array;
