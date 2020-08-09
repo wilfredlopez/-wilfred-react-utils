@@ -27,7 +27,7 @@ export {
 } from "./numbers";
 export { downloadToFile } from "./downloadToFile";
 export { createResource, wrapPromise } from "./createResource";
-export { DateFormatter, getMonthFromInt } from "./dates";
+export { DateFormatter, getMonthFromInt, PrecisionTime } from "./dates";
 export * from "./multiuse";
 export { autoscroll } from "./scroll";
 export { PatternGenerator, StringHelper } from "./strings";

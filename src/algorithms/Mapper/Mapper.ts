@@ -1,3 +1,8 @@
+
+class Keyable extends Object{
+  [key: string]: any
+ }
+
 /**
  * Alternative to an array a Map, Object or a Set. with extra functionality and easy access.
  * @strengths
@@ -24,17 +29,78 @@
     for (const ln of lastnames) {
         data.push(ln)
     }
+    //You can use Braket notation to access
+    const map = new Mapper<any,any>()
+    map.set(2222, [20,20,20])
+    console.log(map[2222]) //[20,20,20]
  */
-export class Mapper<V extends any, K extends string | number = string> {
+export class Mapper<V extends any, K extends string | number = string> extends Keyable{
   //private properties
   #_data: Record<K, V> = {} as Record<K, V>;
   #_size = 0;
+
+  public static getSetters(): string[] {
+    return Reflect.ownKeys(this.prototype).filter(name => {
+      const prop = Reflect.getOwnPropertyDescriptor(this.prototype, name)
+       if(prop){
+         return typeof prop["set"] !== 'undefined';
+       }
+    }) as string[];
+}
+public static getGetters(): string[] {
+  return Reflect.ownKeys(this.prototype).filter(name => {
+    const prop = Reflect.getOwnPropertyDescriptor(this.prototype, name)
+    if(prop){
+      return typeof prop['get'] === "function";
+    }
+    return false
+  }) as string[];
+}
+public static getPropertyKeys(): string[] {
+  return Reflect.ownKeys(this.prototype) as string[]
+}
+
+public isSaveKey(key:K){
+  return !Mapper.getPropertyKeys().includes(String(key))
+}
   constructor(initialData?: Record<K, V>) {
+    super()
     if (initialData) {
       const keys = Object.keys(initialData);
       this.#_size = keys.length;
     }
     this.#_data = initialData || {} as Record<K, V>;
+    const target:any = this
+   
+    //THIS PROXY ALLOWS USERS TO ACCESS MapperObject[key typeof K] witch is equivalent to say MapperObject.data[key]
+		const proxy = new Proxy<this>(
+      target, // This value is irrelevant, it just has to be valid.
+			{
+				get: function( _, property:any, receiver ){
+          if(property === 'length'){
+            return target.length
+          }
+          if(typeof target[property] === 'function'){
+            return target[property].bind(target)
+          }
+          if(typeof target[property] !== 'undefined'){
+            return target[property]
+          }
+          if(typeof target['data'][property]){
+              return target['data'][property]
+          }
+					return  undefined
+
+        },
+        set: function( _, property:any, receiver){
+          //set is disallowed.
+          throw new Error(`Setting propery ${property} is not allowed. Use the set method instead`)
+          // return false
+        }
+			}
+		);
+		return( proxy );
+ 
   }
 
   /**
@@ -51,18 +117,23 @@ export class Mapper<V extends any, K extends string | number = string> {
   get size() {
     return this.#_size;
   }
-
+ 
   isEmpty() {
     return this.#_size === 0;
   }
 
-  toString() {
+  // toString() {
+  //   if (this.isEmpty()) {
+  //     return "{}";
+  //   }
+  //   return JSON.stringify(this.data);
+  // }
+  [Symbol.toStringTag](){
     if (this.isEmpty()) {
       return "{}";
     }
     return JSON.stringify(this.data);
   }
-
   /**
    * Iterator function. allows you to use for(const element of mapper){}
    * @example
@@ -81,6 +152,8 @@ export class Mapper<V extends any, K extends string | number = string> {
       yield this.get(key) as V;
     }
   }
+
+
 
   /**
    * @returns { IterableIterator<V> } Array of the values. V[ ]
@@ -128,7 +201,11 @@ export class Mapper<V extends any, K extends string | number = string> {
    * this cannot be set from the outside
    */
   get data() {
-    return this.#_data;
+    return Object.assign({}, this.#_data);
+  }
+
+  set data(data){
+    return 
   }
 
   /**
@@ -177,6 +254,9 @@ export class Mapper<V extends any, K extends string | number = string> {
    * @param value value to save
    */
   set(key: K, value: V) {
+    if(!this.isSaveKey(key)){
+      console.warn(`['${key}'] as a key in mapper might not be save to you use. it will not be available if you use bracket notation to access. to verify you can use the isSaveKey method.`)
+    }
     this.#_data[key] = value;
     this.#_size++;
     return this;
@@ -191,9 +271,8 @@ export class Mapper<V extends any, K extends string | number = string> {
     if (this.has(key)) {
       return this;
     }
-    this.#_data[key] = value;
-    this.#_size++;
-    return this;
+    
+    return this.set(key, value);
   }
 
   /**
@@ -203,8 +282,11 @@ export class Mapper<V extends any, K extends string | number = string> {
   get(key: K, fallback: V): V;
   get(key: K): V | null;
   get(key: K, fallback?: V): V | null {
+
     return this.has(key) ? this.#_data[key] : fallback ? fallback : null;
   }
+  
+
 
   /**
    * Returns the value or the fallback if the value doenst exist.
@@ -274,16 +356,26 @@ export class Mapper<V extends any, K extends string | number = string> {
   }
 }
 
+
+
+
 // const initialData = {
 //   "test1": 1,
 //   "test2": 2,
 // };
+
+
 // const dataMap = new Mapper<number, string>(initialData);
 // console.log(dataMap.length); //2
 // console.log(dataMap.set("test3", 3).delete("test1")); //1
 // console.log(dataMap.has("test1")); //false
 // console.log(dataMap.get("test2")); //2
 // console.log(dataMap.isEmpty()); //false
-// dataMap.map((val) => {
+// console.log(dataMap['test3'])
+// console.log(dataMap.data)
+// dataMap.set('get', 222)
+// console.log(dataMap.get('get'))
+// console.log(dataMap.length); //2
+// // dataMap.map((val) => {
 //   console.log(val); // 2, 3
 // });

@@ -2,12 +2,23 @@ import { Mapper } from "./Mapper";
 
 const numbers = new Mapper<number>();
 
-describe.skip("Mapper", () => {
+describe("Mapper", () => {
   afterEach(() => {
     numbers.reset();
   });
 
-  describe.skip("Iterator function", () => {
+
+  describe('Braket Notation Getters', () => {
+    const map = new Mapper<any,any>()
+    map.set("25", "25")
+    map.set(2222, [20,20,20])
+    expect(map['25']).toBe("25")
+    expect(map[2222]).toEqual([20,20,20])
+    expect(map['something']).toBeUndefined()
+  })
+
+
+  describe("Iterator function", () => {
     it("Returns an iterator that allows to do a for of loop", () => {
       numbers.set("first", 111);
       numbers.set("second", 222);
