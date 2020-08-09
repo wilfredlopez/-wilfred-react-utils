@@ -6,7 +6,101 @@ export type ResultOf<T> = {
   error: string;
 };
 
-export class NumberHelper {
+
+
+export class NumberHelper implements Math {
+  [Symbol.toStringTag] = NumberHelper.name
+
+  static toString(){
+    return `[object ${this.name}]`
+  }
+   E = Math.E
+   SQRT2 = Math.SQRT1_2
+   asinh = Math.asinh
+   LN10 = Math.LN10
+   LN2 =  Math.LN2
+   LOG10E = Math.LOG10E
+   LOG2E = Math.LOG2E
+   PI = Math.PI
+   SQRT1_2 = Math.SQRT1_2
+   abs = Math.abs
+   acos = Math.acos
+   acosh = Math.acosh
+   asin = Math.asin
+   atan = Math.atan
+   atan2 = Math.atan2
+   atanh = Math.atanh
+   cbrt = Math.cbrt
+   ceil = Math.ceil
+   clz32 = Math.clz32
+   cos = Math.cos
+   cosh = Math.cosh
+   exp = Math.exp
+   expm1 = Math.expm1
+   floor = Math.floor
+   fround = Math.fround
+   hypot = Math.hypot
+   imul = Math.imul
+   log = Math.log
+   log10 = Math.log10
+   log1p = Math.log1p
+   log2 = Math.log2
+   max = Math.max
+   min = Math.min
+   pow = Math.pow
+   random = Math.random
+   round = Math.round
+   sign = Math.sign
+   sin = Math.sin
+   sinh = Math.sinh
+   sqrt = Math.sqrt
+   tan = Math.tan
+   tanh = Math.tanh
+   trunc = Math.trunc
+  static E = Math.E
+  static SQRT2 = Math.SQRT1_2
+  static asinh = Math.asinh
+  static LN10 = Math.LN10
+  static LN2 =  Math.LN2
+  static LOG10E = Math.LOG10E
+  static LOG2E = Math.LOG2E
+  static PI = Math.PI
+  static SQRT1_2 = Math.SQRT1_2
+  static abs = Math.abs
+  static acos = Math.acos
+  static acosh = Math.acosh
+  static asin = Math.asin
+  static atan = Math.atan
+  static atan2 = Math.atan2
+  static atanh = Math.atanh
+  static cbrt = Math.cbrt
+  static ceil = Math.ceil
+  static clz32 = Math.clz32
+  static cos = Math.cos
+  static cosh = Math.cosh
+  static exp = Math.exp
+  static expm1 = Math.expm1
+  static floor = Math.floor
+  static fround = Math.fround
+  static hypot = Math.hypot
+  static imul = Math.imul
+  static log = Math.log
+  static log10 = Math.log10
+  static log1p = Math.log1p
+  static log2 = Math.log2
+  static max = Math.max
+  static min = Math.min
+  static pow = Math.pow
+  static random = Math.random
+  static round = Math.round
+  static sign = Math.sign
+  static sin = Math.sin
+  static sinh = Math.sinh
+  static sqrt = Math.sqrt
+  static tan = Math.tan
+  static tanh = Math.tanh
+  static trunc = Math.trunc
+
   /**
    * Returns true or false if the number is prime or not.
    * @param n number to verify
@@ -280,9 +374,19 @@ if (n <= 2) return 1;
   }
 }
 
+
+//Asign all properties of Math to NumberHelper
+// for(let o of Reflect.ownKeys(Math)){
+//   //@ts-ignore
+//   NumberHelper[o] = Math[o  as keyof Math]
+    
+// }
+
+
 // for (let n of NumberHelper.range()) {
 //   console.log(n); // 0,2, 4, 5, 8, 10, 12, 14, 16, 18, 20
 // }
 
 // const arr = [...NumberHelper.range({ start: 0, end: 10 })];
 // console.log(arr); // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+
