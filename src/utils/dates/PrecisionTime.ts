@@ -384,7 +384,15 @@ export class PrecisionTime {
       return this.toString().replace(/0{1,6}Z$/, "Z");
     }
 
-
+    timeDistance(start:Date){
+      let distance = Math.abs(new Date().getTime() - start.getTime())
+      const hours = Math.floor(distance / 3600000);
+      distance -= hours * 3600000;
+      const minutes = Math.floor(distance / 60000);
+      distance -= minutes * 60000;
+      const seconds = Math.floor(distance / 1000);
+      return `${hours}:${('0' + minutes).slice(-2)}:${('0' + seconds).slice(-2)} and ${distance}ms`;
+    };
     /**
      * Gets difference between 2 times. only goes till days of difference. Does not account for years.
      * @param end PrecisionTime object

@@ -1,12 +1,42 @@
-export function Emoji() {
-  return function <T extends Object>(target: T, key: keyof T) {
-    let val = target[key];
+
+ function appendEmoji(emoji:string, next:string){
+  return `${emoji} ${next} ${emoji}`
+ }
+ /**
+  * Adds emoji to start and end of the string. if set on an array. it will added to every string on the top level of the array. ['here', {other: 'not here'}]
+  * @param emoji '🍦' to decorate string.
+  * @example
+  * class IceScream {
+  *  @Emoji('🍦')
+  * ```ts
+  *  flavor = "vanilla"; // output will be: 🍦 vanilla 🍦
+  * ```
+  *  @Emoji('🎪')
+  * ```ts
+  *  toppings: string[] = [];
+  *  addTopping(topping = "sprinkles") {
+                this.toppings.push(topping);
+  *         }
+  * }
+  ```
+  */
+export function Emoji(emoji = '🍦'):PropertyDecorator {
+  return function <T extends Object>(target: T, key: string | symbol) {
+    let val = target[key as keyof T];
     const getter = () => {
-      return val;
+      if(Array.isArray(val) && val.length >  0){
+        val  = val.map(v => {
+          return typeof v === 'string' && !v.includes(emoji) ? appendEmoji(emoji, v) : v
+        }) as any
+      }
+     return  val
     };
     const setter = (next: T[keyof T]) => {
-      console.log("updating flavor");
-      val = `🍭 ${next} 🍭` as any;
+      if(typeof next === 'string'){
+        val = appendEmoji(emoji, next)  as any;
+      }else{
+        val = next
+      }
     };
     Object.defineProperty(target, key, {
       get: getter,
@@ -17,47 +47,21 @@ export function Emoji() {
   };
 }
 
-function Rejectable(
-  allow: (...args: any[]) => boolean,
-  message = "This is not allowed",
-) {
-  return function (
-    target: Object,
-    key: string | symbol,
-    descriptor: PropertyDescriptor,
-  ) {
-    const original = descriptor.value;
-    descriptor.value = function (...args: any[]) {
-      if (allow(...args)) {
-        console.log("its allowed");
-        const result = original.apply(this, args);
-        return result;
-      } else {
-        throw new Error(message);
-        // return null;
-      }
-    };
-    return descriptor;
-  };
-}
 
-class IceScream {
-  @Emoji()
-  flavor = "vanilla";
-  toppings: string[] = [];
+// class IceScream {
+//   @Emoji('🍍')
+//   flavor = "vanilla";
+//   @Emoji('🎪')
+//   toppings: string[] = [];
+//   addTopping(topping = "sprinkles") {
+//     this.toppings.push(topping);
+//   }
+// }
 
-  @Rejectable((top: string) => {
-    if (typeof top !== "string") return false;
-    return top.length > 6;
-  }, "Toppings should have a length greater than 6")
-  addTopping(topping = "sprinkles") {
-    this.toppings.push(topping);
-  }
-}
+// const ice = new IceScream();
 
-const ice = new IceScream();
-
-console.log(ice.flavor); //🍭 vanilla 🍭
-// ice.addTopping("short"); //Error: Toppings should have a length greater than 6
-ice.addTopping("wilfred");
-console.log(ice.toppings);
+// console.log(ice.flavor); //🍦 vanilla 🍦
+// ice.addTopping("wilfred");
+// ice.flavor = "Pineapple"
+// console.log(ice.flavor); //🍦 Pineapple 🍦
+// console.log(ice.toppings) // [ '🎪 wilfred 🎪' ]

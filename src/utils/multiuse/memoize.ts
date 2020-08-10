@@ -115,7 +115,7 @@ export function memoize<
   const memoized = function (...args: A) {
     // const key: A = resolver ? resolver.apply(memoize, args) : args[0]; //args 0? or args?
     let key: any = resolver ? resolver.apply(memoize, args) : args;
-    key = key.toString() as A;
+    // key = key.toString() as A;
     const cache = memoized.cache;
     if (cache.has(key)) {
       return cache.get(key) as ReturnType<T>;
