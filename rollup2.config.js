@@ -36,6 +36,7 @@ export default {
       file: pkg.main,
       format: "umd",
       sourcemap: true,
+      
       name,
 
       // https://rollupjs.org/guide/en#output-globals-g-globals
