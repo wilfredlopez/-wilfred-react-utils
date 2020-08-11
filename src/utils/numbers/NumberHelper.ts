@@ -298,16 +298,16 @@ if (n <= 2) return 1;
 
 let NumberHelperWithMath= NumberHelperBase as Math & typeof NumberHelperBase 
 for(let key of Reflect.ownKeys(Math)){
-    const fn = Math[key as keyof Math]
+    const fnOrProp = Math[key as keyof Math]
     
-    if(typeof fn === 'function'){
-        //@ts-ignore
-        NumberHelperWithMath = appendMethod(NumberHelperBase, fn, String(key))
+    if(typeof fnOrProp === 'function'){ 
+        NumberHelperWithMath = appendMethod(NumberHelperWithMath, fnOrProp, String(key))
     }else{
         //@ts-ignore
-        NumberHelperWithMath[key] = fn
+        NumberHelperWithMath[key] = fnOrProp
     }
 }
+
 
 
 

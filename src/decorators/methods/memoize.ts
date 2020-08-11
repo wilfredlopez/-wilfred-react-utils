@@ -55,6 +55,7 @@ export function Memoize(config: MemoizeConfig = {}) {
 		propertyDescriptor: PropertyDescriptor
 	): PropertyDescriptor {
 		let timeout = Infinity;
+		
 		const prop = propertyDescriptor.value ? "value" : "get";
 
 		const originalFunction = propertyDescriptor[prop];

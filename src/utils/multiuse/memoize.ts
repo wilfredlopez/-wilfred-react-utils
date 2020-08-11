@@ -34,6 +34,12 @@ export function memoizeSimple<
   };
 }
 
+export interface MemoizeOptions<A extends any[]> {
+  ttl?: number;
+  resolver?: (...args: A) => any;
+  maxCacheSize?: number;
+}
+
 // let fib = (n: number): number => {
 //   if (n <= 2) return 1;
 //   return fib(n - 1) + fib(n - 2);
@@ -52,11 +58,10 @@ export function memoizeSimple<
  * is invoked with the `this` binding of the memoized function.
  *
  * @param {Function} func The function to have its output memoized.
- * @param {{resolver?: Function, maxCacheSize?:number}} options optional object that takes: 
- * [resolver] The function to resolve the cache key and 
- * [maxCacheSize] cap for the size of the cache. 
- * cache will be cleared by half when max size is reached.
- * @default options {resolver:undefined, maxCacheSize:255}
+ * @param {{resolver?: Function, maxCacheSize?:number, ttl?:number}} options [optional]: 
+ * @param options.resolver The function to resolve the cache key. 
+ * @param options.maxCacheSize cap for the size of the cache. cache will be cleared by half when max size is reached. 
+ * @param options.ttl number in milliseconds for total live of the cache. example: { ttl: 10 * 60 * 1000 } cached for at most 10 minutes
  * @returns {Function} Returns the new memoized function.
  * @example
  * 
@@ -85,7 +90,7 @@ export function memoizeSimple<
  * console.log(fibMemo(20)); //6765;
  * console.log(fibMemo(100)); //354224848179262000000
  * console.log(
- *   fibMemo.cache.size, //100
+ *   fibMemo.cache.size, //1  00
  * );
  */
 export function memoize<
@@ -93,11 +98,8 @@ export function memoize<
   A extends ParametersOf<T>,
 >(
   func: T,
-  { resolver, maxCacheSize = 255 }: {
-    resolver?: (...args: A) => any;
-    maxCacheSize?: number;
-  } = {},
-): { (...args: A): ReturnType<T>; cache: Map<A, ReturnType<T>> } {
+  { resolver, maxCacheSize = 255, ttl }:MemoizeOptions<A> = {},
+): { (...args: A): ReturnType<T>; cache: Map<any, ReturnType<T>> } {
   if (
     typeof func !== "function"
   ) {
@@ -112,15 +114,17 @@ export function memoize<
       `Expected a function as resolver but received ${typeof resolver}`,
     );
   }
+  let timeout = Infinity;
   const memoized = function (...args: A) {
     // const key: A = resolver ? resolver.apply(memoize, args) : args[0]; //args 0? or args?
-    let key: any = resolver ? resolver.apply(memoize, args) : args;
+    let key: any = resolver ? resolver.apply(memoize, args) : JSON.stringify(args);
     // key = key.toString() as A;
     const cache = memoized.cache;
-    if (cache.has(key)) {
+   
+    if ( (cache.has(key) && (!ttl || timeout > Date.now())) ) {
       return cache.get(key) as ReturnType<T>;
     }
-    if (cache.size > maxCacheSize) {
+    if (cache.size >= maxCacheSize) {
       //delete half cached when reached maxCacheSize.
       const half = Math.floor(cache.size / 2);
       for (let i = 0; i < half; i++) {
@@ -129,6 +133,9 @@ export function memoize<
     }
     const result = func.apply(memoize, args);
     memoized.cache = cache.set(key, result) || cache;
+    if (ttl) {
+      timeout = Date.now() + ttl;
+    }
     return result;
   };
   memoized.cache = new (memoize.Cache || Map)() as Map<A, ReturnType<T>>;
