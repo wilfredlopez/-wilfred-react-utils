@@ -1,4 +1,5 @@
-
+import { maxBy } from 'lodash'
+import {deepCopy} from '../utils/multiuse'
 function getKeyValuePair(data: Record<any, any>){
     let record:Record<any,any> = {}
     //loop back each if is array.
@@ -19,10 +20,41 @@ function getKeyValuePair(data: Record<any, any>){
     return record
 }
 
+
+/**
+ * Creates a javascript object with extra functionality. you can still do the same operations as using the {} notation.
+ * It provides utility functions like copy, map, keys, forEach, has, isEmpty, toPromise, toArray, etc.
+ * It has a getter for the length. and you can use it in (for of) loops.
+ * To access you can use bracket notation or getValue function. 
+ * @example
+ * 
+ * interface User{
+ *     id:number
+ *     name:string
+ *     age:number
+ * }
+ * const obj = new EnhancedObject<number, User>({1:{age:30,id: 1,name:'Wilfred'}})
+ * 
+ * obj.isEmpty() //false
+ * obj.setValue(2, {age: 20, id: 2, name: "Theudy"})
+ * obj.has(2) //true
+ * console.log(obj[2]) // { age: 20, id: 2, name: 'Theudy' }
+ * obj.length // 2
+ * obj.getValue(1000, 'value doesnt exist')// returns 'value doesnt exist'
+ * 
+ * for(let [id, user] of obj.entries()){
+ *     console.log(id) // returns the current user id
+ *     console.log(user) // returns the user object.
+ * }
+ * 
+ * for(let user of obj){
+ *     console.log(user) // returns the user object on by one.
+ * }
+ */
 export class EnhancedObject<K extends string|number,V extends {}>{
     [K:string]:V | Function | number
 
-    constructor(initialValues?: Record<K,V>){
+    constructor(initialValues?: Record<K,V> |  Record<K,V>[] | EnhancedObject<K, V>){
         if(typeof initialValues !== 'undefined'){
             const vals = getKeyValuePair(initialValues)
             for(let k of Object.keys(vals)){
@@ -47,12 +79,35 @@ export class EnhancedObject<K extends string|number,V extends {}>{
        return this.toString()
       }
 
-    toArray(): V[] {
+    toObjectArray(){
+        const arr: Record<K,V>[] = [];
+        const keys = Object.keys(this) as K[];
+        for (const key of keys) {
+            //@ts-ignore
+            arr.push({[key as K]: this.getValue(key as any)!});
+        }
+        return deepCopy(arr)
+    }
+
+    copy():  Record<K,V>{
+        const arr: Record<K,V>[] = [];
+        const keys = Object.keys(this) as K[];
+        for (const key of keys) {
+            //@ts-ignore
+            arr.push({[key as K]: this.getValue(key as any)!});
+        }
+    
+        return deepCopy(this) as Record<K,V>;
+    }
+
+    toArray():  V[] {
     const arr: V[] = [];
     const keys = Object.keys(this) as K[];
     for (const key of keys) {
+        //@ts-ignore
         arr.push(this.getValue(key as any)!);
     }
+
     return arr;
     }
 
@@ -68,7 +123,7 @@ export class EnhancedObject<K extends string|number,V extends {}>{
       }
 
     toPromise() {
-        return new Promise<V[]>((res, rej) => {
+        return new Promise<Array<V>>((res, rej) => {
           res(this.toArray());
         });
     }
@@ -106,7 +161,7 @@ export class EnhancedObject<K extends string|number,V extends {}>{
 
     map<R extends any>(callback: (value: V, key: K, index: number) => R) {
         return Object.keys(this).map<R>((key, index) => {
-          return callback(this.getValue(key as any) as V, key as K, index);
+          return callback(deepCopy(this.getValue(key as any)) as V, key as K, index);
         });
     }
 
@@ -124,6 +179,12 @@ export class EnhancedObject<K extends string|number,V extends {}>{
         })
         return this
     }
+
+    *entries(): IterableIterator<[K, V]> {
+        for (const key of this.keys()) {
+          yield [key as K, this.getValue(key as any)!];
+        }
+      }
 }
 
 // interface User{
@@ -131,9 +192,24 @@ export class EnhancedObject<K extends string|number,V extends {}>{
 //     name:string
 //     age:number
 // }
-// const en = new EnhancedObject<number, User>({1: {age: 1, id: 1, name: 'Wilfred'}})
-// // const en = new EnhancedObject([1,2,4, 'pineaple', {name:'w'}, {'data': [{'name': 2}]}])
-// console.log(en.isEmpty())
+// const obj = new EnhancedObject<number, User>({1: {age: 30, id: 1, name: 'Wilfred'}})
+
+// obj.isEmpty() //false
+// obj.setValue(2, {age: 20, id: 2, name: "Theudy"})
+// obj.has(2) //true
+// console.log(obj[2]) // { age: 20, id: 2, name: 'Theudy' }
+// obj.length // 2
+// obj.getValue(1000, 'value doesnt exist')// returns 'value doesnt exist'
+// for(let [id, user] of obj.entries()){
+//     console.log(id) // returns the current user id
+//     console.log(user) // returns the user object.
+// }
+// for(let user of obj){
+//     console.log(user) // returns the user object.
+// }
+
+
+// const en = new EnhancedObject([1,2,4, 'pineaple', {name:'w'}, {'data': [{'name': 2}]}])
 
 // for(let val of en){
 //     console.log(val)
