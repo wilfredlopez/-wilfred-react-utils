@@ -1,5 +1,5 @@
-import { maxBy } from 'lodash'
 import {deepCopy} from '../utils/multiuse'
+
 function getKeyValuePair(data: Record<any, any>){
     let record:Record<any,any> = {}
     //loop back each if is array.
