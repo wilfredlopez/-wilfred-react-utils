@@ -139,7 +139,7 @@ export class EnhancedObject<K extends string|number,V extends {}>{
               yield that._getValue(key as any) as V;
             }
           }
-    return iter
+        return iter
     } 
 
     @Decorators.ReadOnly()
