@@ -5,7 +5,7 @@ const PASSWORD = "MyPassword"
 const decoder = Cipher.GenerateDecoder(PASSWORD)
 const encoder = Cipher.GenerateEncoder(PASSWORD)
 
-describe.skip("Cipher", () => {
+describe("Cipher", () => {
   describe("Cipher.Encoder", () => {
     it("encodes and returns de decoded string", () => {
       const secret = encoder("Wilfred")

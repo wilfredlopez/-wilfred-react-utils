@@ -1,7 +1,7 @@
 import { Stack } from "./Stack";
 
 let stack = new Stack<string>();
-describe.skip("Stack", () => {
+describe("Stack", () => {
   beforeEach(() => {
     stack = new Stack<string>();
   });

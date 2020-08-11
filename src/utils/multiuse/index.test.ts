@@ -1,7 +1,7 @@
 import { throttle } from "./index"
 import { wait } from "@testing-library/react"
 
-describe.skip("Throttle", () => {
+describe("Throttle", () => {
   it("creates delay", async () => {
     let i = 0
     function getInt() {

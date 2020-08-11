@@ -7,7 +7,7 @@ interface TestOb {
   data: number;
 }
 
-describe.skip("PriorityQueue", () => {
+describe("PriorityQueue", () => {
   beforeAll(() => {
     queue = new PriorityQueue<TestOb>();
   });

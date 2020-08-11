@@ -4,7 +4,7 @@ import { wait } from "@testing-library/react";
 const counterFunction = (n: number) => n + 1;
 const nGenerator = () => Math.round(Math.random() * 20);
 
-describe.skip("Stream", () => {
+describe("Stream", () => {
   describe("Static Methods", () => {
     it("Generates a stream with Stream.Generate", () => {
       const CounterStream = Stream.Generate(counterFunction);

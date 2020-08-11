@@ -29,7 +29,7 @@ const validEmails = [
   "jhon@example.online",
 ];
 
-describe.skip("Validator", () => {
+describe("Validator", () => {
   describe("isEmail", () => {
     it("Returns false when email is not valid", () => {
       for (let email of invalidEmails) {

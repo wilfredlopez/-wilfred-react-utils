@@ -1,7 +1,7 @@
 import { StringHelper } from "./index";
 const { reduceLongString, toProperCase, slogify, camelCase, objectFromCSS } =
   StringHelper;
-describe.skip("String Methods", () => {
+describe("String Methods", () => {
   describe("objectFromCSS", () => {
     it("it turns regular css in to object", () => {
       const clasOb = objectFromCSS`

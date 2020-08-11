@@ -5,7 +5,7 @@ import {
   mergeArr,
 } from "./basic";
 
-describe.skip("Array Utils", () => {
+describe("Array Utils", () => {
   describe("bubleSort", () => {
     it("Sorts Ascending by default", () => {
       const set = [100, 50, 200, 20, 40, 30];

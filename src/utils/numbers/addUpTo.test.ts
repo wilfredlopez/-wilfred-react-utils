@@ -1,6 +1,6 @@
 import { addUpTo } from "./index"
 
-describe.skip("addUpTo", () => {
+describe("addUpTo", () => {
   it("Add the right value in timely matter", () => {
     const to20 = addUpTo(20)
     const to100 = addUpTo(100)

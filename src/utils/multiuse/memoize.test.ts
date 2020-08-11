@@ -1,7 +1,7 @@
 import {memoize} from './memoize'
 import { wait} from "@testing-library/react"
 
-describe.skip('memoize', () => {
+describe('memoize', () => {
     it("has the expected cache size", () => {
         const fib = memoize(function(n:number){
                 if(n < 3) return 1

@@ -9,7 +9,7 @@ const {
   quickSort,
 } = ArrayHelper;
 
-describe.skip("Get Digit and arraysEqual", () => {
+describe("Get Digit and arraysEqual", () => {
   describe("quickSort", () => {
     it("can sort numbers from greatest to least by default.", () => {
       const result = quickSort(

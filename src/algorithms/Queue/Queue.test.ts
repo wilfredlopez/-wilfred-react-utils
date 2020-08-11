@@ -1,7 +1,7 @@
 import { Queue } from "./Queue";
 
 let queue = new Queue<string>();
-describe.skip("Queue", () => {
+describe("Queue", () => {
   beforeEach(() => {
     queue = new Queue<string>();
   });

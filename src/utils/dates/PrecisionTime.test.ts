@@ -1,7 +1,7 @@
 
 
 import {PrecisionTime} from './PrecisionTime'
-describe.skip('PrecisionTime', function() {
+describe('PrecisionTime', function() {
 
   describe("Auto TESTS", function() {
     // YYYY (eg 1997)

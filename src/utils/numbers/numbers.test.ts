@@ -4,7 +4,7 @@ import {
   formatCentsToDollars,
 } from "./index";
 
-describe.skip("Numbers Module", () => {
+describe("Numbers Module", () => {
   describe("turnSecondsToFormatedMinutes", () => {
     it("return the formated value in hours and minutes when a value doenst exceed to hours", () => {
       const value = turnSecondsToFormatedMinutes(1000);

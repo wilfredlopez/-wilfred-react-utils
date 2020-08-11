@@ -1,6 +1,6 @@
 import { fib } from "./index";
 
-describe.skip("fib", () => {
+describe("fib", () => {
   it("Gets the right value in timely matter", () => {
     const fivOf20 = fib(20);
     const fivOf100 = fib(100);

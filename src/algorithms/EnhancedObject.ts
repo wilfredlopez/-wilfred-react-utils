@@ -169,7 +169,9 @@ export class EnhancedObject<K extends string|number,V extends {}>{
 
             this[key as any] = value
         }else{
-            console.warn(`The key '${key}' is not asignable to ${EnhancedObject.name}`)
+            if(process.env.NODE_ENV !== 'test'){
+                console.warn(`The key '${key}' is not asignable to ${EnhancedObject.name}`)
+            }
             // throw new Error(`The key '${key}' is not asignable to ${EnhancedObject.name}`)
         }
         return this

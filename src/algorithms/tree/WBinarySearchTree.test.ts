@@ -7,7 +7,7 @@ interface DataType {
 
 let bst: WBinarySearchTree<DataType> | null = null;
 
-describe.skip("BinarySearchTree", () => {
+describe("BinarySearchTree", () => {
   beforeEach(() => {
     //head 20
     bst = new WBinarySearchTree<DataType>({

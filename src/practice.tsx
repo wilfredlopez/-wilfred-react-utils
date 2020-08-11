@@ -107,3 +107,4 @@ function timeIt(func: Function, { label = "Execution time", log = true } = {}) {
   return { text, time: end - start };
 }
 
+// console.log('%c ALL CONSOLE LOGS SHOULD BE %c TRUE',"background:black ; color: white", "color: green; font-size:15px")

@@ -56,5 +56,17 @@ export default {
       format: "es",
       sourcemap: true,
     },
+    {
+      file: pkg.browser,
+      format: "iife",
+      sourcemap: true,
+      
+      name,
+      // globals: {
+      //   fs: "require('fs')",
+      //   regeneratorRuntime: "require('regenerator-runtime')",
+      //   "@babel/runtime/regenerator": "regeneratorRuntime",
+      // },
+    }
   ],
 }

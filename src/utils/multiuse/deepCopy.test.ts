@@ -1,6 +1,6 @@
 import deepCopy from './deepCopy'
 
-describe.skip('deepCopy', () => {
+describe('deepCopy', () => {
     it('makes a deepCopy of array', () => {
         const a1 = [1]
         const a2 = [2]

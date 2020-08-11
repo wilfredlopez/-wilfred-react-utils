@@ -6,7 +6,7 @@ class Logger {
   }
 }
 
-describe.skip("combineClasses", () => {
+describe("combineClasses", () => {
   it("combines two classes", () => {
     const CombinedArray = combineClasses<string[], Logger>(Array, Logger)
     const arrayAndLogger = CombinedArray()

@@ -1,6 +1,6 @@
 import { DateFormatter, getMonthFromInt } from "./index"
 
-describe.skip("DateFormatter", () => {
+describe("DateFormatter", () => {
   it("returns the correct date", () => {
     const date = new DateFormatter("August 19, 1975 23:15:30")
 
@@ -22,7 +22,7 @@ describe.skip("DateFormatter", () => {
   })
 })
 
-describe.skip("getMonthFromInt", () => {
+describe("getMonthFromInt", () => {
   it("gets the correct month when the value is valid", () => {
     const jan = getMonthFromInt(0)
     expect(jan).toEqual("January")

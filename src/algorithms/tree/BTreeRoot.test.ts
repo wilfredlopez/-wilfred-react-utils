@@ -7,7 +7,7 @@ interface DataType {
 
 let bst: BinaryTreeRoot<DataType> | null = null;
 
-describe.skip("BTreeRoot", () => {
+describe("BTreeRoot", () => {
   beforeEach(() => {
     //head 20
     bst = new BinaryTreeRoot<DataType>();

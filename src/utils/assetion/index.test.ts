@@ -5,7 +5,7 @@ import {
   assertNever,
   forceString,
 } from "./index"
-describe.skip("AssertionError", () => {
+describe("AssertionError", () => {
   it("Returns an error with the message", () => {
     const error = new AssertionError("message")
     expect(error.message).toBe("message")
@@ -13,7 +13,7 @@ describe.skip("AssertionError", () => {
   })
 })
 
-describe.skip("assert", () => {
+describe("assert", () => {
   it("Asserts the condition or throws error", () => {
     const n = 1
     function assertGood() {
@@ -30,7 +30,7 @@ describe.skip("assert", () => {
   })
 })
 
-describe.skip("assertIsString", () => {
+describe("assertIsString", () => {
   it("Asserts that is typeof string or throws error", () => {
     const message = ""
     function assertGood() {
@@ -47,7 +47,7 @@ describe.skip("assertIsString", () => {
   })
 })
 
-describe.skip("assertNever", () => {
+describe("assertNever", () => {
   it("Doesnt throw error when type will be never", () => {
     function assertGood() {
       const message = 1
@@ -69,7 +69,7 @@ describe.skip("assertNever", () => {
   })
 })
 
-describe.skip("forceString", () => {
+describe("forceString", () => {
   it("Doesnt throw error when type is string", () => {
     function assertGood() {
       const s = "string"

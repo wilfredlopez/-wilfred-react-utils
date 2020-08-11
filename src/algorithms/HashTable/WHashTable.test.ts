@@ -1,6 +1,6 @@
 import { WHasTable, HashNode } from "./WHashTable";
 
-describe.skip("WHasTable", () => {
+describe("WHasTable", () => {
   describe("constructor", () => {
     it("creates an empty hash table", () => {
       const table = new WHasTable(53);

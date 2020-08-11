@@ -2,7 +2,7 @@
   import { NumberHelper } from "./NumberHelper";
   const { getDigitAt, isPositive, switchSign, tryParseInt } = NumberHelper;
 
-  describe.skip("NumbersHelper", () => {
+  describe("NumbersHelper", () => {
     describe("Math object functions", () => {
         expect(NumberHelper.round(20.6)).toBe(21)
         expect(NumberHelper.ceil(-20.6)).toBe(-20)

@@ -21,7 +21,7 @@ describe("EnhancedObject", () => {
         myObj[Symbol.iterator] = null
         expect(() => {
             for(let o of myObj){
-                console.log(o, 'works')
+                // console.log(o, 'works')
             }
         }).not.toThrow()
         
