@@ -13,4 +13,5 @@ export { Queue, PriorityNode, PriorityQueue } from "./Queue";
 export { Stack } from "./Stack/Stack";
 export { WBinarySearchTree, BinaryTreeRoot, CNode, CommonTree } from "./tree";
 export { Graph, WeightedGraph } from "./Graph";
-export {EnhancedObject} from './EnhancedObject'
+export { EnhancedObject } from "./EnhancedObject";
+export { Dictionary } from "./Dictionary";

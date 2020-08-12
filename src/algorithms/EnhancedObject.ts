@@ -1,26 +1,24 @@
-import {deepCopy} from '../utils/multiuse'
-import {Decorators} from '../decorators'
+import { deepCopy } from "../utils/multiuse";
+import { Decorators } from "../decorators";
 
-function getKeyValuePair(data: Record<any, any>){
-    let record:Record<any,any> = {}
-    //loop back each if is array.
-    if(Array.isArray(data)){
-        for(let val of data){
-            record = Object.assign(record, getKeyValuePair(val)) 
-        }
-    }//proceed if is object
-    else if(typeof data === 'object'){
-        for(let k of Object.keys(data)){
-            record[k] = data[k]
-        }
+function getKeyValuePair(data: Record<any, any>) {
+  let record: Record<any, any> = {};
+  //loop back each if is array.
+  if (Array.isArray(data)) {
+    for (let val of data) {
+      record = Object.assign(record, getKeyValuePair(val));
     }
-    else{
-        //if is of type string|number|boolean asign same value as key.
-        record[data] = data      
+  } //proceed if is object
+  else if (typeof data === "object") {
+    for (let k of Object.keys(data)) {
+      record[k] = data[k];
     }
-    return record
+  } else {
+    //if is of type string|number|boolean asign same value as key.
+    record[data] = data;
+  }
+  return record;
 }
-
 
 /**
  * Creates a javascript object with extra functionality. you can still do the same operations as using the {} notation.
@@ -53,187 +51,194 @@ function getKeyValuePair(data: Record<any, any>){
  *     console.log(user) // returns the user object on by one.
  * }
  */
-export class EnhancedObject<K extends string|number,V extends {}>{
-    [K:string]:V | Function | number
+export class EnhancedObject<K extends string | number, V extends {}> {
+  [K: string]: V | Function | number
 
-    constructor(initialValues?: Record<K,V> |  Record<K,V>[] | EnhancedObject<K, V>){
-        if(typeof initialValues !== 'undefined'){
-            const vals = getKeyValuePair(initialValues)
-            for(let k of Object.keys(vals)){
-                this[k] = vals[k as K]
-            }           
-        }
-    }
-
-    get _length(){
-        return this._keys().length
-    }
-
-    @Decorators.ReadOnly()
-    _toString(){
-        if (this._isEmpty()) {
-            return "{}";
-          }
-          
-          return JSON.stringify(this, null, 4);
-    }
-
-    @Decorators.ReadOnly()
-    toString(){
-       return this._toString()
-    }
-
-    [Symbol.toStringTag](){
-       return this.toString()
+  constructor(
+    initialValues?: Record<K, V> | Record<K, V>[] | EnhancedObject<K, V>,
+  ) {
+    if (typeof initialValues !== "undefined") {
+      const vals = getKeyValuePair(initialValues);
+      for (let k of Object.keys(vals)) {
+        this[k] = vals[k as K];
       }
+    }
+  }
 
-    @Decorators.ReadOnly()
-    _toObjectArray(){
-        const arr: Record<K,V>[] = [];
-        const keys = Object.keys(this) as K[];
-        for (const key of keys) {
-            //@ts-ignore
-            arr.push({[key as K]: this._getValue(key as any)!});
-        }
-        return deepCopy(arr)
+  get _length() {
+    return this._keys().length;
+  }
+
+  @Decorators.ReadOnly()
+  _toString() {
+    if (this._isEmpty()) {
+      return "{}";
     }
 
-    @Decorators.ReadOnly()
-    _copy():  Record<K,V>{
-        const arr: Record<K,V>[] = [];
-        const keys = Object.keys(this) as K[];
-        for (const key of keys) {
-            //@ts-ignore
-            arr.push({[key as K]: this._getValue(key as any)!});
-        }
-    
-        return deepCopy(this) as Record<K,V>;
+    return JSON.stringify(this, null, 4);
+  }
+
+  @Decorators.ReadOnly()
+  toString() {
+    return this._toString();
+  }
+
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
+
+  @Decorators.ReadOnly()
+  _toObjectArray() {
+    const arr: Record<K, V>[] = [];
+    const keys = Object.keys(this) as K[];
+    for (const key of keys) {
+      //@ts-ignore
+      arr.push({ [key as K]: this._getValue(key as any)! });
+    }
+    return deepCopy(arr);
+  }
+
+  @Decorators.ReadOnly()
+  _copy(): Record<K, V> {
+    const arr: Record<K, V>[] = [];
+    const keys = Object.keys(this) as K[];
+    for (const key of keys) {
+      //@ts-ignore
+      arr.push({ [key as K]: this._getValue(key as any)! });
     }
 
-    @Decorators.ReadOnly()
-    _toArray():  V[] {
+    return deepCopy(this) as Record<K, V>;
+  }
+
+  @Decorators.ReadOnly()
+  _toArray(): V[] {
     const arr: V[] = [];
     const keys = Object.keys(this) as K[];
     for (const key of keys) {
-        //@ts-ignore
-        arr.push(this._getValue(key as any)!);
+      //@ts-ignore
+      arr.push(this._getValue(key as any)!);
     }
 
     return arr;
-    }
+  }
 
-    @Decorators.ReadOnly()
-    _isEmpty() {
-        return this._keys().length === 0;
+  @Decorators.ReadOnly()
+  _isEmpty() {
+    return this._keys().length === 0;
+  }
+
+  set [Symbol.iterator](data: any) {
+    return;
+  }
+
+  get [Symbol.iterator]() {
+    const that = this;
+    function* iter() {
+      const keys = Object.keys(that) as K[];
+      for (const key of keys) {
+        yield that._getValue(key as any) as V;
       }
-
-    set [Symbol.iterator](data:any){
-        return
     }
+    return iter;
+  }
 
-    get [Symbol.iterator](){
-        const that = this
-        function *iter() {
-            const keys = Object.keys(that) as K[];
-            for (const key of keys) {
-              yield that._getValue(key as any) as V;
-            }
-          }
-        return iter
-    } 
+  @Decorators.ReadOnly()
+  _toPromise() {
+    return new Promise<Array<V>>((res, rej) => {
+      res(this._toArray());
+    });
+  }
 
-    @Decorators.ReadOnly()
-    _toPromise() {
-        return new Promise<Array<V>>((res, rej) => {
-          res(this._toArray());
-        });
+  _getValue<D>(key: K, defaultVal: D): V | D;
+  _getValue<D>(key: K): V | null;
+
+  @Decorators.ReadOnly()
+  _getValue<D = null>(key: K, defaultVal = null): V | D | null {
+    if (this._has(key)) {
+      return this[key] as V;
     }
+    return defaultVal;
+  }
 
-
-    _getValue<D>(key:K, defaultVal:D):V | D
-    _getValue<D>(key:K):V|null
-    @Decorators.ReadOnly()
-    _getValue<D = null>(key:K, defaultVal = null):V | D | null{
-        if(typeof this[key] !== 'undefined'){
-            return this[key] as V
-        }
-        return defaultVal
-    }
-
-    @Decorators.ReadOnly()
-    /**
+  @Decorators.ReadOnly()
+  /**
      * sets the value if is a save key to set. invalid keys would be existing function on the object.
      */
-    _setValue(key:K, value:V){
-        if(this._isSaveKey(key)){
-
-            this[key as any] = value
-        }else{
-            if(process.env.NODE_ENV !== 'test'){
-                console.warn(`The key '${key}' is not asignable to ${EnhancedObject.name}`)
-            }
-            // throw new Error(`The key '${key}' is not asignable to ${EnhancedObject.name}`)
-        }
-        return this
-    }
-
-    @Decorators.ReadOnly()
-    _has(key: K) {
-        return this[key] !== undefined;
-    }
-
-    @Decorators.ReadOnly()
-    _deleteValue(key: K) {
-        if (this._has(key)) {
-          const temp = this[key];
-          delete this[key];
-          return temp;
-        }
-        return null;
-    }
-
-    @Decorators.ReadOnly()
-    _keys(){
-        return Object.keys(this)
-    }
-
-    @Decorators.ReadOnly()
-    _map<R extends any>(callback: (value: V, key: K, index: number) => R) {
-        return Object.keys(this).map<R>((key, index) => {
-          return callback(deepCopy(this._getValue(key as any)) as V, key as K, index);
-        });
-    }
-
-    @Decorators.ReadOnly()
-    _forEach(callback: (value: V, key: K, index: number) => void) {
-        return Object.keys(this).forEach((key, index) => {
-          return callback(this._getValue(key as any) as V, key as K, index);
-        });
-    }
-
-    @Decorators.ReadOnly()
-    _values(){
-        return Object.values(this)
-    }
-    @Decorators.ReadOnly()
-    _reset(){
-        this._keys().forEach((k) => {
-            this._deleteValue(k as K)
-        })
-        return this
-    }
-
-    @Decorators.ReadOnly()
-    public _isSaveKey(key:K){
-        return !Reflect.ownKeys(EnhancedObject.prototype).includes(String(key))
+  _setValue(key: K, value: V) {
+    if (this._isSaveKey(key)) {
+      this[key as any] = value;
+    } else {
+      if (process.env.NODE_ENV !== "test") {
+        console.warn(
+          `The key '${key}' is not asignable to ${EnhancedObject.name}`,
+        );
       }
+      // throw new Error(`The key '${key}' is not asignable to ${EnhancedObject.name}`)
+    }
+    return this;
+  }
 
-    @Decorators.ReadOnly()
-    *_entries(): IterableIterator<[K, V]> {
-        for (const key of this._keys()) {
-          yield [key as K, this._getValue(key as any)!];
-        }
-      }
+  @Decorators.ReadOnly()
+  _has(key: K) {
+    return typeof this[key] !== "undefined";
+  }
+
+  @Decorators.ReadOnly()
+  _deleteValue(key: K) {
+    if (this._has(key)) {
+      const temp = this[key];
+      delete this[key];
+      return temp;
+    }
+    return null;
+  }
+
+  @Decorators.ReadOnly()
+  _keys() {
+    return Object.keys(this);
+  }
+
+  @Decorators.ReadOnly()
+  _map<R extends any>(callback: (value: V, key: K, index: number) => R) {
+    return Object.keys(this).map<R>((key, index) => {
+      return callback(
+        deepCopy(this._getValue(key as any)) as V,
+        key as K,
+        index,
+      );
+    });
+  }
+
+  @Decorators.ReadOnly()
+  _forEach(callback: (value: V, key: K, index: number) => void) {
+    return Object.keys(this).forEach((key, index) => {
+      return callback(this._getValue(key as any) as V, key as K, index);
+    });
+  }
+
+  @Decorators.ReadOnly()
+  _values() {
+    return Object.values(this);
+  }
+  @Decorators.ReadOnly()
+  _reset() {
+    this._keys().forEach((k) => {
+      this._deleteValue(k as K);
+    });
+    return this;
+  }
+
+  @Decorators.ReadOnly()
+  public _isSaveKey(key: K) {
+    return !Reflect.ownKeys(EnhancedObject.prototype).includes(String(key));
+  }
+
+  @Decorators.ReadOnly()
+  *_entries(): IterableIterator<[K, V]> {
+    for (const key of this._keys()) {
+      yield [key as K, this._getValue(key as any)!];
+    }
+  }
 }
 
 // interface User{
@@ -256,7 +261,6 @@ export class EnhancedObject<K extends string|number,V extends {}>{
 // for(let user of obj){
 //     console.log(user) // returns the user object.
 // }
-
 
 // const en = new EnhancedObject([1,2,4, 'pineaple', {name:'w'}, {'data': [{'name': 2}]}])
 
