@@ -15,3 +15,5 @@ test.js
 testdata.csv
 tsbuild
 test.html
+testhtml.js
+DEPLOY_GUIDE.md
