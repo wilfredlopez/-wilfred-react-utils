@@ -7,9 +7,76 @@ const {
   mostDigits,
   mergeSort,
   quickSort,
+  deepCopy,
+  concat,
+  isArray,
+  arrayMoveMutate,
+  move,
+  createMap
 } = ArrayHelper;
 
-describe("Get Digit and arraysEqual", () => {
+describe("ArrayHelper", () => {
+
+  describe('createMap', () => {
+    interface Data {
+      name: string,
+      count: number
+    }
+    const FAKE_DATA: Data[] = [{ count: 19, name: "BEST ONE" }, { count: 2, name: "SHORT ONE" }]
+    const mapToLowerCase = createMap(
+      (data: Data) => ({ ...data, name: data.name.toLocaleLowerCase() })
+    )
+
+    const data = mapToLowerCase(FAKE_DATA)
+    expect(data[0].name).toBe(FAKE_DATA[0].name.toLowerCase())
+    expect(data[0].name).not.toBe(FAKE_DATA[0].name)
+    expect(data[1].name).toBe(FAKE_DATA[1].name.toLowerCase())
+    expect(data[1].name).not.toBe(FAKE_DATA[1].name)
+  })
+  describe("arrayMoveMutate vs move", () => {
+    const data = { name: 'some' }
+    const myArray = [{ data: data }, 22, 44,]
+
+    arrayMoveMutate(myArray, 0, 2)//move position 0(data) to position 2
+    data.name = 'OTHER_NAME'
+    //@ts-expect-error
+    expect(myArray[2].data.name).toBe('OTHER_NAME')
+
+    const myArray2 = [{ data: data }, 22, 44,]
+    const moved = move(myArray2, 0, 2) //returns new array and myArray2 position doesnt change.
+    data.name = 'CHANGED' //this should not affect the moved array since returns a new array.
+    expect(myArray2[2]).toBe(44)
+    //@ts-expect-error
+    expect(moved[2].data.name).toBe('OTHER_NAME')
+  })
+  describe('concat', () => {
+    const data = [1, 3, 4] as const
+    const other = ['hi', 'hello']
+
+    //type [1, 3, 4, ...string[]]
+    const merge = concat(data, other)
+    expect(merge).toEqual([1, 3, 4, "hi", 'hello'])
+
+
+  })
+  describe('is array', () => {
+    expect(isArray([])).toBe(true)
+    expect(isArray('')).toBe(false)
+    expect(isArray(1)).toBe(false)
+    expect(isArray(true)).toBe(false)
+    expect(isArray(new Map())).toBe(false)
+    expect(isArray(new Date())).toBe(false)
+  })
+  describe('deepCopy', () => {
+    const data = { name: 'some' }
+    const myArray = [22, 44, { data: data }] as const
+
+    const copy = deepCopy(myArray)
+    const notCopy = [...myArray] as const
+    data.name = 'OTHER_NAME'
+    expect(copy[2].data.name).toBe('some')
+    expect(notCopy[2].data.name).toBe('OTHER_NAME')
+  })
   describe("quickSort", () => {
     it("can sort numbers from greatest to least by default.", () => {
       const result = quickSort(
@@ -88,6 +155,8 @@ describe("Get Digit and arraysEqual", () => {
       [testDataBig, testDataBig],
     );
     expect(shouldTrue).toBeTruthy();
+    const notEqual = arraysEqual([1, 2], [2, 4])
+    expect(notEqual).toBeFalsy()
   });
   describe("splitArray", () => {
     it("Splits the array", () => {

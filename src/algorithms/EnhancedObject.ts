@@ -87,6 +87,9 @@ export class EnhancedObject<K extends string | number, V extends {}> {
     return this.toString();
   }
 
+  /**
+   * Returns a new array with each key value pair.
+   */
   @Decorators.ReadOnly()
   _toObjectArray() {
     const arr: Record<K, V>[] = [];

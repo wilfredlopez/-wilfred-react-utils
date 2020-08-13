@@ -108,3 +108,75 @@ function timeIt(func: Function, { label = "Execution time", log = true } = {}) {
 }
 
 // console.log('%c ALL CONSOLE LOGS SHOULD BE %c TRUE',"background:black ; color: white", "color: green; font-size:15px")
+
+function findPermutations(
+  string: string,
+  cache: { [key: string]: string[] } = {},
+): Array<string> {
+  if (!string || typeof string !== "string") {
+    throw new Error("Only Acepting Srings");
+  } else if (string.length < 2) {
+    return [string];
+  }
+  if (cache[string]) {
+    return cache[string];
+  }
+  let permutationsArray = [];
+
+  for (let i = 0; i < string.length; i++) {
+    let char = string[i];
+
+    if (string.indexOf(char) !== i) {
+      continue;
+    }
+
+    let remainingChars = string.slice(0, i) +
+      string.slice(i + 1, string.length);
+
+    for (let permutation of findPermutations(remainingChars, cache)) {
+      permutationsArray.push(char + permutation);
+    }
+  }
+  cache[string] = permutationsArray;
+  return permutationsArray;
+}
+function findPermutationsNoCache(
+  string: string,
+): Array<string> {
+  if (!string || typeof string !== "string") {
+    throw new Error("Only Acepting Srings");
+  } else if (string.length < 2) {
+    return [string];
+  }
+
+  let permutationsArray = [];
+
+  for (let i = 0; i < string.length; i++) {
+    let char = string[i];
+
+    if (string.indexOf(char) !== i) {
+      continue;
+    }
+
+    let remainingChars = string.slice(0, i) +
+      string.slice(i + 1, string.length);
+
+    for (let permutation of findPermutationsNoCache(remainingChars)) {
+      permutationsArray.push(char + permutation);
+    }
+  }
+  return permutationsArray;
+}
+
+// const lookup = "aaabbbccc";
+// console.time("findPermutations");
+// const result1 = findPermutations(lookup);
+// console.log(result1.length);
+// console.timeEnd("findPermutations");
+// console.time("findPermutationsNoCache");
+// const result2 = findPermutationsNoCache(lookup);
+// console.log(result2.length);
+// console.timeEnd("findPermutationsNoCache");
+
+// console.log(result1.length === result2.length);
+// console.log(JSON.stringify(result1) === JSON.stringify(result2));

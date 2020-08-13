@@ -1,9 +1,12 @@
 import { dropRightWhile } from "../../lodash/dropRightWhile";
 import { map } from "../../lodash/map";
 import last from "../../lodash/last";
+import { deepCopy } from '../multiuse'
 // import { NumberHelper } from "../numbers";
 import { Validator } from "../../validator";
 const { isArray, isUndefined } = Validator;
+export type ReadOnlyArray = readonly any[];
+
 
 export class ArrayHelper {
   /**
@@ -17,23 +20,48 @@ export class ArrayHelper {
     function getRandomInt(from = 0, upTo = 100): number {
       return from + Math.floor(Math.random() * (upTo - from));
     }
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < array.length; i++)
+    {
       const randomIndex = getRandomInt(i, array.length) as number;
       [array[i], array[randomIndex]] = [array[randomIndex], array[i]];
     }
 
     return array;
   }
+
+  /**
+   * Returns a new array with all data in reverse. [1,2] => [2,1]
+   * @param arr array to reverse
+   */
   static reverseArray<T extends any>(arr: T[]) {
-    const unmutated = [...arr];
+    const unmutated = ArrayHelper.deepCopy(arr);
     const output = [];
-    while (unmutated.length) {
+    while (unmutated.length)
+    {
       output.push(unmutated.pop());
     }
 
     return output;
   }
 
+  //return type [...T, ...U] only supported in TS v.4.0.0 BETA. need to add once stable version is out.
+  // static concat<T extends ReadOnlyArray, U extends ReadOnlyArray>(arr1: T, arr2: U): [...T, ...U] {
+  static concat<T extends ReadOnlyArray, U extends ReadOnlyArray>(arr1: T, arr2: U) {
+    return [...arr1, ...arr2];
+  }
+
+  /**
+   * Returns a new array without mutating the original
+   * @param arr array to copy
+   */
+  static deepCopy<T extends ReadOnlyArray>(arr: T): T {
+    return deepCopy(arr)
+  }
+
+  /**
+   * Gets the last element of array.
+   * @param array 
+   */
   static last<T extends any>(array: T[]) {
     return last(array);
   }
@@ -75,8 +103,9 @@ export class ArrayHelper {
   ) {
     return dropRightWhile(array, predicate);
   }
+
   static splitArray<T extends any>(array: Array<T>): [T[], T[]] {
-    const unmutated = [...array];
+    const unmutated = ArrayHelper.deepCopy(array);
     return [
       unmutated.splice(0, unmutated.length / 2),
       unmutated.splice(unmutated.length / 2 - 1),
@@ -101,12 +130,13 @@ export class ArrayHelper {
       right = inputArr.length - 1,
       compare = (v1: T, v2: T) => v1 < v2,
     } = {
-      left: 0,
-      right: inputArr.length - 1,
-      compare: (v1: T, v2: T) => v1 < v2,
-    },
+        left: 0,
+        right: inputArr.length - 1,
+        compare: (v1: T, v2: T) => v1 < v2,
+      },
   ): T[] {
-    if (left < right) {
+    if (left < right)
+    {
       let pivotIndex = ArrayHelper._pivot(inputArr, left, compare);
       ArrayHelper.quickSort(inputArr, { left, right: pivotIndex - 1, compare });
       ArrayHelper.quickSort(inputArr, { left: pivotIndex + 1, right, compare });
@@ -144,8 +174,10 @@ export class ArrayHelper {
     let pivot = arr[startI];
     let swapIdx = startI;
     //   for (let i = startI + 1; i < endI +1; i++) {
-    for (let i = startI + 1; i < arr.length; i++) {
-      if (compare(pivot, arr[i])) {
+    for (let i = startI + 1; i < arr.length; i++)
+    {
+      if (compare(pivot, arr[i]))
+      {
         swapIdx++;
         ArrayHelper.swap(arr, swapIdx, i);
       }
@@ -162,11 +194,13 @@ export class ArrayHelper {
    * console.log(chunkArr([1, 2, 3, 4, 5], 2)) //[ [ 1, 2 ], [ 3, 4 ], [ 5 ] ]
    */
   static chunkArr(arr: any[], size: number) {
-    const unmutated = [...arr];
+    const unmutated = ArrayHelper.deepCopy(arr)
+
     const chunked: any[][] = [];
     let index = 0;
 
-    while (index < unmutated.length) {
+    while (index < unmutated.length)
+    {
       chunked.push(unmutated.slice(index, index + size));
       index += size;
     }
@@ -206,9 +240,11 @@ export class ArrayHelper {
     arr: T[],
     compare = (n1: T, n2: T) => n1 > n2,
   ) {
-    for (let i = 1; i < arr.length; i++) {
+    for (let i = 1; i < arr.length; i++)
+    {
       const current = arr[i];
-      for (let j = i - 1; j >= 0 && compare(arr[j], current); j--) {
+      for (let j = i - 1; j >= 0 && compare(arr[j], current); j--)
+      {
         ArrayHelper.swap(arr, j + 1, j);
       }
     }
@@ -232,8 +268,10 @@ export class ArrayHelper {
   static removeAtIndexes<T>(data: T[], index: number[]): T[] {
     let k = -1;
 
-    while (++k < data.length) {
-      if (index.indexOf(k) >= 0) {
+    while (++k < data.length)
+    {
+      if (index.indexOf(k) >= 0)
+      {
         delete data[k];
       }
     }
@@ -246,8 +284,10 @@ export class ArrayHelper {
     from: number,
     to: number,
   ): (T | undefined)[] => {
-    if (isArray(data)) {
-      if (isUndefined(data[to])) {
+    if (isArray(data))
+    {
+      if (isUndefined(data[to]))
+      {
         data[to] = undefined as any;
       }
       data.splice(to, 0, data.splice(from, 1)[0]);
@@ -261,8 +301,8 @@ export class ArrayHelper {
     isUndefined(index)
       ? []
       : isArray(index)
-      ? ArrayHelper.removeAtIndexes(data, index)
-      : ArrayHelper.removeAt(data, index);
+        ? ArrayHelper.removeAtIndexes(data, index)
+        : ArrayHelper.removeAt(data, index);
 
   static removeAt<T>(data: T[], index: number): T[] {
     return [
@@ -270,6 +310,7 @@ export class ArrayHelper {
       ...data.slice(index + 1),
     ];
   }
+
   static swapArrayAt = <T>(
     data: T[],
     indexA: number,
@@ -287,17 +328,26 @@ export class ArrayHelper {
    * @param idx1 target index
    * @param idx2 index to be swapped with target index
    */
-  static swap(arr: Array<any>, idx1: number, idx2: number): void {
+  static swap<T>(arr: Array<T>, idx1: number, idx2: number): void {
     [arr[idx1], arr[idx2]] = [arr[idx2], arr[idx1]];
     //ES5
     //   let temp = arr[idx1];
     //   arr[idx1] = arr[idx2];
     //   arr[idx2] = temp;
   }
-  static arrayMoveMutate(array: any[], from: number, to: number) {
+
+  /**
+   * Moves the item in the array from position 'from' to position 'to'.
+   * @returns void and mutates the array in place.
+   * @param array array to mutate
+   * @param from index from 
+   * @param to index to
+   */
+  static arrayMoveMutate<T extends Array<any>>(array: T, from: number, to: number) {
     const startIndex = to < 0 ? array.length + to : to;
 
-    if (startIndex >= 0 && startIndex < array.length) {
+    if (startIndex >= 0 && startIndex < array.length)
+    {
       const item = array.splice(from, 1)[0];
       array.splice(startIndex, 0, item);
     }
@@ -305,19 +355,21 @@ export class ArrayHelper {
 
   /**
    * Swaps values in the array determined by the indexes passed to the function.
-   * returns a new array with the values swapped.
+   * returns a new array with the values swapped and doesnt mutate the original array.
    * @param array array to move
    * @param from index from
    * @param to index to
    */
   static move<T>(array: T[], from: number, to: number) {
-    array = [...array];
+    array = ArrayHelper.deepCopy(array)
     ArrayHelper.arrayMoveMutate(array, from, to);
     return array;
   }
+
   static isArray<T extends any>(arg: any): arg is Array<T> {
-    return arg instanceof Array;
+    return Validator.isArray(arg)
   }
+
   static arraysEqual(a: any[], b: any[]): boolean {
     /******This would do it too*******/
     //   if (!Array.isArray(a) || !Array.isArray(b)) return false;
@@ -332,19 +384,24 @@ export class ArrayHelper {
             elements are pairwise == to each other recursively under this
             definition.
         */
-    if (a instanceof Array && b instanceof Array) {
-      if (a.length !== b.length) {
+    if (a instanceof Array && b instanceof Array)
+    {
+      if (a.length !== b.length)
+      {
         // assert same length
         return false;
       }
-      for (var i = 0; i < a.length; i++) {
+      for (var i = 0; i < a.length; i++)
+      {
         // assert each element equal
-        if (!ArrayHelper.arraysEqual(a[i], b[i])) {
+        if (!ArrayHelper.arraysEqual(a[i], b[i]))
+        {
           return false;
         }
       }
       return true;
-    } else {
+    } else
+    {
       return a === b; // if not both arrays, should be the same
     }
   }
@@ -370,7 +427,8 @@ export class ArrayHelper {
   static mostDigits(arr: number[]) {
     let maxDigits = 0;
 
-    for (const n of arr) {
+    for (const n of arr)
+    {
       maxDigits = Math.max(ArrayHelper.digitCount(n), maxDigits);
     }
     return maxDigits;
@@ -387,22 +445,27 @@ export class ArrayHelper {
     let leftI = 0;
     let rightI = 0;
     let result = [];
-    while (leftI < leftArr.length && rightI < rightArr.length) {
+    while (leftI < leftArr.length && rightI < rightArr.length)
+    {
       if (
         compare(leftArr[leftI], rightArr[rightI])
-      ) {
+      )
+      {
         result.push(rightArr[rightI]);
         rightI++;
-      } else {
+      } else
+      {
         result.push(leftArr[leftI]);
         leftI++;
       }
     }
-    while (leftI < leftArr.length) {
+    while (leftI < leftArr.length)
+    {
       result.push(leftArr[leftI]);
       leftI++;
     }
-    while (rightI < rightArr.length) {
+    while (rightI < rightArr.length)
+    {
       result.push(rightArr[rightI]);
       rightI++;
     }
@@ -433,7 +496,8 @@ export class ArrayHelper {
     compare = (value1: T, value2: T) => value1 > value2,
   ): T[] {
     // base case
-    if (array.length <= 1) {
+    if (array.length <= 1)
+    {
       return array;
     }
     // slit and merge
@@ -455,7 +519,8 @@ export class ArrayHelper {
   static *getBackAndForthIterator<T>(array: T[]): Generator<[T, T]> {
     let i = array.length;
     let start = 0;
-    while (i > 0) {
+    while (i > 0)
+    {
       yield [array[start++], array[--i]];
     }
   }
@@ -471,7 +536,8 @@ export class ArrayHelper {
    */
   static *createReverseArrayIterator<T>(array: T[]) {
     let i = array.length;
-    while (i > 0) {
+    while (i > 0)
+    {
       yield array[--i];
     }
   }
