@@ -1,4 +1,4 @@
-export function getKeyValuePair(data: Record<any, any> | Array<Record<any, any>>) {
+export function getKeyValuePair<T extends {}>(data: Array<Record<keyof T, T>> | Record<any, any>) {
     let record: Record<any, any> = {};
     if (Array.isArray(data))
     {
