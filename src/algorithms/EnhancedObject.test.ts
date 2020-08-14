@@ -2,6 +2,17 @@ import { EnhancedObject } from './EnhancedObject'
 
 
 describe("EnhancedObject", () => {
+    it('Updates the values passing another object', () => {
+        const some = new EnhancedObject<number, { name: string, price: number }>({ 222: { name: "Pants", price: 200 }, 333: { name: "Shirt", price: 20.99 } })
+        const beforeUpdateSome = new EnhancedObject<number, { name: string, price: number }>(some.$copy())
+        const product222 = { 222: { name: "Pants New", price: 200 } }
+        some.$update(product222)
+        expect(some.$get(222).name).toBe("Pants New")
+        some.$update(beforeUpdateSome)
+        expect(some.$get(222).name).toBe("Pants")
+        some.$update({ 333: { name: "Cookies", price: 20.99 } })
+        expect(some.$get(333).name).toBe("Cookies")
+    })
     it('maps the keys', () => {
         interface User {
             id: number
@@ -123,7 +134,7 @@ describe("EnhancedObject", () => {
     it('resets and maps object', () => {
         const myObj = new EnhancedObject<number, string>()
         myObj.$set(30, 'september')
-        myObj.$reset()
+        myObj.$clear()
         expect(myObj.$get(30)).toBe(null)
         myObj.$set(29, 'Lucky Number')
         myObj.$set(22, 'Try it')

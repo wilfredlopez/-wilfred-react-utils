@@ -122,7 +122,8 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     return this.$keys().length === 0;
   }
 
-  set [Symbol.iterator](data: any) {
+  set [Symbol.iterator](_data: any) {
+    //making sure users cant override this function setting this[Symbol.iterator] = null
     return;
   }
 
@@ -163,11 +164,24 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     return defaultVal;
   }
 
-
-  @Decorators.ReadOnly()
   /**
-     * sets the value if is a save key to set. invalid keys would be existing function on the object.
-     */
+   * Sets the value if key doesnt exits
+   * @param key 
+   * @param value 
+   */
+  @Decorators.ReadOnly()
+  $setIfNotExists(key: K, value: V) {
+    if (typeof this[key] === 'undefined')
+    {
+      return this.$set(key, value)
+    }
+    return this
+  }
+  /**
+   * sets the value and overrides if key was already in use.
+   * if it's a not a save key it will console log a warning. invalid keys would be existing function on the class that cant be modified.
+   */
+  @Decorators.ReadOnly()
   $set(key: K, value: V) {
     if (this.$isSaveKey(key))
     {
@@ -185,20 +199,37 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     return this;
   }
 
+  /**
+   * Update values from a different object.
+   * @param data a key value pair object or another EnchancedObject instance. example: {222: {price: 299, description:'desc..'}}
+   * @param shouldAddIfNotExists [Optional] Defaults to false. if you want to add all other values in the data pass true.
+   */
+  @Decorators.ReadOnly()
+  $update(data: Record<K, V> | EnhancedObject<K, V>, shouldAddIfNotExists = false) {
+    for (let key in data)
+    {
+      if (this.$has(key as K) || shouldAddIfNotExists)
+        this.$set(key as K, data[key as K] as V)
+    }
+    return this
+  }
+
   @Decorators.ReadOnly()
   $has(key: K) {
     return typeof this[key] !== "undefined";
   }
 
+  $delete<F extends any>(key: K, defaultVal: F): (V | F);
+  $delete<F extends any>(key: K): V | null;
   @Decorators.ReadOnly()
-  $delete(key: K) {
-    if (this.$has(key))
+  $delete<F extends any>(key: K, fallback: F | null = null): V | F | null {
+    if (this.$has(key) && this.$isSaveKey(key))
     {
-      const temp = this[key];
+      const temp = this[key]!;
       delete this[key];
-      return temp;
+      return temp as V;
     }
-    return null;
+    return fallback;
   }
 
   @Decorators.ReadOnly()
@@ -229,7 +260,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     return Object.values(this) as V[];
   }
   @Decorators.ReadOnly()
-  $reset() {
+  $clear() {
     this.$keys().forEach((k) => {
       this.$delete(k as K);
     });
@@ -250,16 +281,16 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   }
 }
 
-interface User {
-  id: number
-  name: string
-  age: number
-}
+// interface User {
+//   id: number
+//   name: string
+//   age: number
+// }
 
-const users: User[] = [{ age: 30, id: 100, name: 'Wilfred' }, { age: 27, id: 325, name: 'Theudy' }]
-const mapUserToRecord = (data: User[]) => data
-  .reduce((prev: Record<number, User>, curr) => Object
-    .assign(prev, ({ [curr.id]: curr })), {})
+// const users: User[] = [{ age: 30, id: 100, name: 'Wilfred' }, { age: 27, id: 325, name: 'Theudy' }]
+// const mapUserToRecord = (data: User[]) => data
+//   .reduce((prev: Record<number, User>, curr) => Object
+//     .assign(prev, ({ [curr.id]: curr })), {})
 
 // const obj = new EnhancedObject<number, User>(users, (data) => mapUserToRecord(data))
 

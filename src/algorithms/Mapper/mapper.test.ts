@@ -7,13 +7,21 @@ describe("Mapper", () => {
     numbers.reset();
   });
 
+  describe('from another mapper', () => {
+    const map = new Mapper<number[]>({ "1": [20, 20, 20] })
+    expect(map.get("1")).toEqual([20, 20, 20])
+    const map2 = new Mapper(map)
+    expect(map2.get("1")).toEqual([20, 20, 20])
+    const mapFrom = Mapper.from(map)
+    expect(mapFrom.get("1")).toEqual([20, 20, 20])
+  })
 
   describe('Braket Notation Getters', () => {
-    const map = new Mapper<any,any>()
+    const map = new Mapper<any, any>()
     map.set("25", "25")
-    map.set(2222, [20,20,20])
+    map.set(2222, [20, 20, 20])
     expect(map['25']).toBe("25")
-    expect(map[2222]).toEqual([20,20,20])
+    expect(map[2222]).toEqual([20, 20, 20])
     expect(map['something']).toBeUndefined()
   })
 
@@ -24,7 +32,8 @@ describe("Mapper", () => {
       numbers.set("second", 222);
       numbers.set("last", 0);
       let data = [];
-      for (const n of numbers) {
+      for (const n of numbers)
+      {
         data.push(n);
       }
       expect(data).toStrictEqual([111, 222, 0]);

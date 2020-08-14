@@ -1,7 +1,8 @@
+import { deepCopy } from '../../utils/multiuse'
 
-class Keyable extends Object{
+class Keyable extends Object {
   [key: string]: any
- }
+}
 
 /**
  * Alternative to an array a Map, Object or a Set. with extra functionality and easy access.
@@ -34,75 +35,97 @@ class Keyable extends Object{
     map.set(2222, [20,20,20])
     console.log(map[2222]) //[20,20,20]
  */
-export class Mapper<V extends any, K extends string | number = string> extends Keyable{
+export class Mapper<V extends any, K extends string | number = string> extends Keyable {
   //private properties
   #_data: Record<K, V> = {} as Record<K, V>;
   #_size = 0;
 
-  public static getSetters(): string[] {
-    return Reflect.ownKeys(this.prototype).filter(name => {
-      const prop = Reflect.getOwnPropertyDescriptor(this.prototype, name)
-       if(prop){
-         return typeof prop["set"] !== 'undefined';
-       }
-    }) as string[];
-}
-public static getGetters(): string[] {
-  return Reflect.ownKeys(this.prototype).filter(name => {
-    const prop = Reflect.getOwnPropertyDescriptor(this.prototype, name)
-    if(prop){
-      return typeof prop['get'] === "function";
-    }
-    return false
-  }) as string[];
-}
-public static getPropertyKeys(): string[] {
-  return Reflect.ownKeys(this.prototype) as string[]
-}
 
-public isSaveKey(key:K){
-  return !Mapper.getPropertyKeys().includes(String(key))
-}
-  constructor(initialData?: Record<K, V>) {
+  constructor(initialData?: Record<K, V> | Mapper<V, K>) {
     super()
-    if (initialData) {
+    if (initialData && initialData instanceof (Mapper))
+    {
+      this.#_data = initialData.#_data
+      this.#_size = initialData.#_size
+    } else if (initialData)
+    {
       const keys = Object.keys(initialData);
       this.#_size = keys.length;
+      this.#_data = initialData;
+    } else
+    {
+      this.#_size = 0
+      this.#_data = {} as Record<K, V>;
+
     }
-    this.#_data = initialData || {} as Record<K, V>;
-    const target:any = this
-   
+
+    const target: any = this
+
     //THIS PROXY ALLOWS USERS TO ACCESS MapperObject[key typeof K] witch is equivalent to say MapperObject.data[key]
-		const proxy = new Proxy<this>(
+    const proxy = new Proxy<this>(
       target, // This value is irrelevant, it just has to be valid.
-			{
-				get: function( _, property:any, receiver ){
-          if(property === 'length'){
+      {
+        get: function (_, property: any, receiver) {
+          if (property === 'length')
+          {
             return target.length
           }
-          if(typeof target[property] === 'function'){
+          if (typeof target[property] === 'function')
+          {
             return target[property].bind(target)
           }
-          if(typeof target[property] !== 'undefined'){
+          if (typeof target[property] !== 'undefined')
+          {
             return target[property]
           }
-          if(typeof target['data'][property]){
-              return target['data'][property]
+          if (typeof target['data'][property])
+          {
+            return target['data'][property]
           }
-					return  undefined
+          return undefined
 
         },
-        set: function( _, property:any, receiver){
+        set: function (_, property: any, receiver) {
           //set is disallowed.
           throw new Error(`Setting propery ${property} is not allowed. Use the set method instead`)
           // return false
         }
-			}
-		);
-		return( proxy );
- 
+      }
+    );
+    return (proxy);
+
   }
 
+  public static from<D, KE extends number | string = string>(mapper: Mapper<D, KE> | Record<KE, D>) {
+    return new Mapper(mapper)
+  }
+
+  public static getSetters(): string[] {
+    return Reflect.ownKeys(this.prototype).filter(name => {
+      const prop = Reflect.getOwnPropertyDescriptor(this.prototype, name)
+      if (prop)
+      {
+        return typeof prop["set"] !== 'undefined';
+      }
+    }) as string[];
+  }
+  public static getGetters(): string[] {
+    return Reflect.ownKeys(this.prototype).filter(name => {
+      const prop = Reflect.getOwnPropertyDescriptor(this.prototype, name)
+      if (prop)
+      {
+        return typeof prop['get'] === "function";
+      }
+      return false
+    }) as string[];
+  }
+  public static getPropertyKeys(): string[] {
+    return Reflect.ownKeys(this.prototype) as string[]
+  }
+
+  public isSaveKey(key: K) {
+    return !Mapper.getPropertyKeys().includes(String(key))
+  }
   /**
    * Length of the keys stored.
    * cannot be set from outside.
@@ -117,19 +140,22 @@ public isSaveKey(key:K){
   get size() {
     return this.#_size;
   }
- 
+
   isEmpty() {
     return this.#_size === 0;
   }
 
-  // toString() {
-  //   if (this.isEmpty()) {
-  //     return "{}";
-  //   }
-  //   return JSON.stringify(this.data);
-  // }
-  [Symbol.toStringTag](){
-    if (this.isEmpty()) {
+  toString() {
+    if (this.isEmpty())
+    {
+      return "{}";
+    }
+    return JSON.stringify(this.data);
+  }
+
+  [Symbol.toStringTag]() {
+    if (this.isEmpty())
+    {
       return "{}";
     }
     return JSON.stringify(this.data);
@@ -148,7 +174,8 @@ public isSaveKey(key:K){
    */
   *[Symbol.iterator]() {
     const keys = Object.keys(this.#_data) as K[];
-    for (const key of keys) {
+    for (const key of keys)
+    {
       yield this.get(key) as V;
     }
   }
@@ -161,7 +188,8 @@ public isSaveKey(key:K){
    */
   *values(): IterableIterator<V> {
     // return this.toArray;
-    for (const key of this.keys()) {
+    for (const key of this.keys())
+    {
       yield this.get(key)!;
     }
   }
@@ -178,7 +206,8 @@ public isSaveKey(key:K){
    * const data = [...map.entries()]; //  [[1,'one'], [2, 'two']]
    */
   *entries(): IterableIterator<[K, V]> {
-    for (const key of this.keys()) {
+    for (const key of this.keys())
+    {
       yield [key, this.get(key)!];
     }
   }
@@ -190,10 +219,15 @@ public isSaveKey(key:K){
   toArray(): V[] {
     const arr: V[] = [];
     const keys = Object.keys(this.#_data) as K[];
-    for (const key of keys) {
+    for (const key of keys)
+    {
       arr.push(this.get(key)!);
     }
     return arr;
+  }
+
+  deepCopy(): Record<K, V> {
+    return deepCopy(this.#_data)
   }
 
   /**
@@ -204,8 +238,8 @@ public isSaveKey(key:K){
     return Object.assign({}, this.#_data);
   }
 
-  set data(data){
-    return 
+  set data(data) {
+    return
   }
 
   /**
@@ -254,7 +288,8 @@ public isSaveKey(key:K){
    * @param value value to save
    */
   set(key: K, value: V) {
-    if(!this.isSaveKey(key)){
+    if (!this.isSaveKey(key))
+    {
       console.warn(`['${key}'] as a key in mapper might not be save to you use. it will not be available if you use bracket notation to access. to verify you can use the isSaveKey method.`)
     }
     this.#_data[key] = value;
@@ -268,10 +303,11 @@ public isSaveKey(key:K){
    * @param value value to save if key doesnt exist.
    */
   setIfUndefined(key: K, value: V) {
-    if (this.has(key)) {
+    if (this.has(key))
+    {
       return this;
     }
-    
+
     return this.set(key, value);
   }
 
@@ -285,7 +321,7 @@ public isSaveKey(key:K){
 
     return this.has(key) ? this.#_data[key] : fallback ? fallback : null;
   }
-  
+
 
 
   /**
@@ -310,7 +346,8 @@ public isSaveKey(key:K){
    * @param key key of the value
    */
   delete(key: K) {
-    if (this.has(key)) {
+    if (this.has(key))
+    {
       const temp = this.#_data[key];
       delete this.#_data[key];
       this.#_size--;
@@ -354,6 +391,25 @@ public isSaveKey(key:K){
     this.#_size = 0;
     return this;
   }
+
+  update(data: Record<K, V> | Mapper<V, K>, shouldAddIfNotExists = false) {
+    if (data instanceof (Mapper))
+    {
+      for (let [k, v] of data.entries())
+      {
+        this.set(k, v)
+      }
+      return this
+    }
+
+    for (let key in data)
+    {
+      if (this.has(key as K) || shouldAddIfNotExists)
+        this.set(key as K, data[key as K] as V)
+    }
+    return this
+  }
+
 }
 
 
