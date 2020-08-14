@@ -7,7 +7,7 @@ import { getKeyValuePair } from './getKeyValuePair'
  * Built-In Functions are prexfixed with $ to avoid collitions with keys you might want to use.
  * It provides utility functions like $copy, $map, $keys, $forEach, $has, $isEmpty, $toPromise, $toArray, etc.
  * It has a getter for the length ($length). and you can use it in (for of) loops.
- * To access you can use bracket notation or $getValue function. 
+ * To access you can use bracket notation or $get function. 
  * @param initialValues [Optional] an object with key value pairs. or an array. If is array the array index is used as the key unless you pass 2nd parameter to map the keys.
  * @param mapToKey [Optional] Map the keys passing a function that receives the initialValues and should return a key value pair. (initialValues:any) => Record<K, V>
  * @example
@@ -19,11 +19,11 @@ import { getKeyValuePair } from './getKeyValuePair'
  * const obj = new EnhancedObject<number, User>({1:{age:30,id: 1,name:'Wilfred'}})
  * 
  * obj.$isEmpty() //false
- * obj.$setValue(2, {age: 20, id: 2, name: "Theudy"})
+ * obj.$set(2, {age: 20, id: 2, name: "Theudy"})
  * obj.$has(2) //true
  * console.log(obj[2]) // { age: 20, id: 2, name: 'Theudy' }
  * obj.$length // 2
- * obj.$getValue(1000, 'value doesnt exist')// returns 'value doesnt exist'
+ * obj.$get(1000, 'value doesnt exist')// returns 'value doesnt exist'
  * 
  * for(let [id, user] of obj.$entries()){
  *     console.log(id) // returns the current user id
@@ -56,7 +56,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
       const vals = mapToKey(initialValues);
       for (let k of Object.keys(vals))
       {
-        this.$setValue(k as K, vals[k as K])
+        this.$set(k as K, vals[k as K])
       }
     }
   }
@@ -94,7 +94,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     for (const key of keys)
     {
       //@ts-ignore
-      arr.push({ [key as K]: this.$getValue(key as any)! });
+      arr.push({ [key as K]: this.$get(key as any)! });
     }
     return deepCopy(arr);
   }
@@ -111,7 +111,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     for (const key of keys)
     {
       //@ts-ignore
-      arr.push(this.$getValue(key as any)!);
+      arr.push(this.$get(key as any)!);
     }
 
     return arr;
@@ -132,7 +132,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
       const keys = Object.keys(that) as K[];
       for (const key of keys)
       {
-        yield that.$getValue(key as any) as V;
+        yield that.$get(key as any) as V;
       }
     }
     return iter;
@@ -151,11 +151,11 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     });
   }
 
-  $getValue<D extends any>(key: K, defaultVal: D): (V | D);
-  $getValue<D extends any>(key: K): V | null;
+  $get<D extends any>(key: K, defaultVal: D): (V | D);
+  $get<D extends any>(key: K): V | null;
 
   @Decorators.ReadOnly()
-  $getValue<D extends any = null>(key: K, defaultVal = null): V | D | null {
+  $get<D extends any = null>(key: K, defaultVal = null): V | D | null {
     if (this.$has(key))
     {
       return this[key] as V;
@@ -168,7 +168,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   /**
      * sets the value if is a save key to set. invalid keys would be existing function on the object.
      */
-  $setValue(key: K, value: V) {
+  $set(key: K, value: V) {
     if (this.$isSaveKey(key))
     {
       this[key as any] = value;
@@ -191,7 +191,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   }
 
   @Decorators.ReadOnly()
-  $deleteValue(key: K) {
+  $delete(key: K) {
     if (this.$has(key))
     {
       const temp = this[key];
@@ -210,7 +210,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   $map<R extends any>(callback: (value: V, key: K, index: number) => R) {
     return Object.keys(this).map<R>((key, index) => {
       return callback(
-        deepCopy(this.$getValue(key as any)) as V,
+        deepCopy(this.$get(key as any)) as V,
         key as K,
         index,
       );
@@ -220,7 +220,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   @Decorators.ReadOnly()
   $forEach(callback: (value: V, key: K, index: number) => void) {
     return Object.keys(this).forEach((key, index) => {
-      return callback(this.$getValue(key as any) as V, key as K, index);
+      return callback(this.$get(key as any) as V, key as K, index);
     });
   }
 
@@ -231,7 +231,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   @Decorators.ReadOnly()
   $reset() {
     this.$keys().forEach((k) => {
-      this.$deleteValue(k as K);
+      this.$delete(k as K);
     });
     return this;
   }
@@ -245,42 +245,42 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   *$entries(): IterableIterator<[K, V]> {
     for (const key of this.$keys())
     {
-      yield [key as K, this.$getValue(key as any)!];
+      yield [key as K, this.$get(key as any)!];
     }
   }
 }
 
-// interface User {
-//   id: number
-//   name: string
-//   age: number
-// }
+interface User {
+  id: number
+  name: string
+  age: number
+}
 
-// const users: User[] = [{ age: 30, id: 100, name: 'Wilfred' }, { age: 27, id: 325, name: 'Theudy' }]
-// const mapUserToRecord = (data: User[]) => data
-//   .reduce((prev: Record<number, User>, curr) => Object
-//     .assign(prev, ({ [curr.id]: curr })), {})
+const users: User[] = [{ age: 30, id: 100, name: 'Wilfred' }, { age: 27, id: 325, name: 'Theudy' }]
+const mapUserToRecord = (data: User[]) => data
+  .reduce((prev: Record<number, User>, curr) => Object
+    .assign(prev, ({ [curr.id]: curr })), {})
 
 // const obj = new EnhancedObject<number, User>(users, (data) => mapUserToRecord(data))
 
-  // console.log(obj.toString())
+// console.log(obj.toString())
 
-  // const obj = new EnhancedObject<number, User>({ 1: { age: 30, id: 1, name: 'Wilfred' } })
+// const obj = new EnhancedObject<number, User>({ 1: { age: 30, id: 1, name: 'Wilfred' } })
 
 // console.log(obj.$isEmpty())//false
-// obj._setValue(2, { age: 20, id: 2, name: "Theudy" })
-// console.log(obj._has(2)) //true
+// obj.$set(2, { age: 20, id: 2, name: "Theudy" })
+// console.log(obj.$has(2)) //true
 // console.log(obj[2]) // { age: 20, id: 2, name: 'Theudy' }
 // console.log(obj._length) // 2
-// obj._getValue(1000, 'value doesnt exist')// returns 'value doesnt exist'
+// obj.$get(1000, 'value doesnt exist')// returns 'value doesnt exist'
 
-// for (let [id, user] of obj._entries())
+// for (let [id, user] of obj.$entries())
 // {
 //   console.log(id) // returns the current user id
 //   console.log(user) // returns the user object.
 // }
 
-// for (let user of obj._values())
+// for (let user of obj.$values())
 // {
 //   console.log(user) // returns the user object on by one.
 // }

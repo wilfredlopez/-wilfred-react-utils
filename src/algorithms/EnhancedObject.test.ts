@@ -17,13 +17,13 @@ describe("EnhancedObject", () => {
         const obj = new EnhancedObject<number, User>(users,
             (data: User[]) => mapUserToRecord(data)
         )
-        expect(obj.$getValue(100).id).toBe(100)
-        expect(obj.$getValue(325).name).toBe('Theudy')
+        expect(obj.$get(100).id).toBe(100)
+        expect(obj.$get(325).name).toBe('Theudy')
         const obj2 = new EnhancedObject<number, User>({ 100: { age: 30, id: 100, name: 'Wilfred' }, 325: { age: 27, id: 325, name: 'Theudy' } }, (values: Record<number, User>) => {
             return values
         })
-        expect(obj2.$getValue(100).id).toBe(100)
-        expect(obj2.$getValue(325).name).toBe('Theudy')
+        expect(obj2.$get(100).id).toBe(100)
+        expect(obj2.$get(325).name).toBe('Theudy')
     })
     it("Returns default value if asked for", () => {
         function characterCounter(str: string, dict: EnhancedObject<string, number>) {
@@ -37,7 +37,7 @@ describe("EnhancedObject", () => {
                     continue;
                 }
                 //if result[char] is undefined it will return 0 using ++ wont cause a NAN.
-                result[char] = result.$getValue(char, 0) + 1
+                result[char] = result.$get(char, 0) + 1
             }
             return result;
         }
@@ -47,8 +47,8 @@ describe("EnhancedObject", () => {
     });
     it('cannot modify built-in functions', () => {
         const myObj = new EnhancedObject<string, { name: string, year: number }>()
-        expect(myObj.$isSaveKey('$setValue')).toBe(false)
-        expect(() => myObj['$setValue'] = null).toThrow()
+        expect(myObj.$isSaveKey('$set')).toBe(false)
+        expect(() => myObj['$set'] = null).toThrow()
         //@ts-ignore
         expect(() => myObj.$length = 2000).toThrow()
 
@@ -56,9 +56,9 @@ describe("EnhancedObject", () => {
         //@ts-ignore
         expect(() => myObj['$entries'] = 2000).toThrow()
         expect(myObj.$entries).toBeInstanceOf(Function)
-        myObj.$setValue('$setValue', {} as any)
-        myObj.$setValue('1', { 'name': 'car 1', year: 1977 })
-        expect(myObj.$getValue('1').year).toBe(1977)
+        myObj.$set('$set', {} as any)
+        myObj.$set('1', { 'name': 'car 1', year: 1977 })
+        expect(myObj.$get('1').year).toBe(1977)
 
         myObj[Symbol.iterator] = null
         expect(() => {
@@ -72,41 +72,41 @@ describe("EnhancedObject", () => {
     })
     it('sets and gets value', () => {
         const myObj = new EnhancedObject<string, { name: string, year: number }>()
-        myObj.$setValue('1', { 'name': 'car 1', year: 1977 })
-        myObj.$setValue('2', { 'name': 'car 2', year: 2019 })
-        expect(myObj.$getValue('1').year).toBe(1977)
-        expect(myObj.$getValue('2').year).toBe(2019)
+        myObj.$set('1', { 'name': 'car 1', year: 1977 })
+        myObj.$set('2', { 'name': 'car 2', year: 2019 })
+        expect(myObj.$get('1').year).toBe(1977)
+        expect(myObj.$get('2').year).toBe(2019)
     })
     it('creates from initial values from array', () => {
         const myObj = new EnhancedObject<string, { name: string, year: number }>([{ name: 'car 1', year: 1977 }, { name: 'car 2', year: 2019 }])
-        expect(myObj.$getValue('0').year).toBe(1977)
-        expect(myObj.$getValue('1').year).toBe(2019)
+        expect(myObj.$get('0').year).toBe(1977)
+        expect(myObj.$get('1').year).toBe(2019)
     })
     it('creates from initial values from object', () => {
         const myObjInitial = new EnhancedObject<string, { name: string, year: number }>({ '1': { name: 'car 1', year: 1977 }, '2': { name: 'car 2', year: 2019 } })
         const myObj = new EnhancedObject<string, { name: string, year: number }>(myObjInitial)
-        expect(myObj.$getValue('1').year).toBe(1977)
-        expect(myObj.$getValue('2').year).toBe(2019)
+        expect(myObj.$get('1').year).toBe(1977)
+        expect(myObj.$get('2').year).toBe(2019)
     })
     it('deletes values', () => {
         const myObj = new EnhancedObject<number, string>()
-        myObj.$setValue(29, 'Lucky Number')
-        myObj.$setValue(22, 'Try it')
-        myObj.$setValue(3, 'Dont even try')
-        myObj.$setValue(13, 'Bad Luck')
-        expect(myObj.$getValue(29)).toBe('Lucky Number')
-        expect(myObj.$deleteValue(29)).toBe('Lucky Number')
-        expect(myObj.$getValue(29, 'sorry')).toBe('sorry')
-        myObj.$deleteValue(3)
-        expect(myObj.$getValue(3)).toBe(null)
+        myObj.$set(29, 'Lucky Number')
+        myObj.$set(22, 'Try it')
+        myObj.$set(3, 'Dont even try')
+        myObj.$set(13, 'Bad Luck')
+        expect(myObj.$get(29)).toBe('Lucky Number')
+        expect(myObj.$delete(29)).toBe('Lucky Number')
+        expect(myObj.$get(29, 'sorry')).toBe('sorry')
+        myObj.$delete(3)
+        expect(myObj.$get(3)).toBe(null)
     })
     it('has utility functions', () => {
         const myObj = new EnhancedObject<number, string>()
         expect(myObj.$isEmpty()).toBe(true)
-        myObj.$setValue(29, 'Lucky Number')
-        myObj.$setValue(22, 'Try it')
-        myObj.$setValue(3, 'Dont even try')
-        myObj.$setValue(13, 'Bad Luck')
+        myObj.$set(29, 'Lucky Number')
+        myObj.$set(22, 'Try it')
+        myObj.$set(3, 'Dont even try')
+        myObj.$set(13, 'Bad Luck')
         expect(myObj.$has(29)).toBe(true)
         expect(myObj.$has(100)).toBe(false)
         const result = []
@@ -122,13 +122,13 @@ describe("EnhancedObject", () => {
     })
     it('resets and maps object', () => {
         const myObj = new EnhancedObject<number, string>()
-        myObj.$setValue(30, 'september')
+        myObj.$set(30, 'september')
         myObj.$reset()
-        expect(myObj.$getValue(30)).toBe(null)
-        myObj.$setValue(29, 'Lucky Number')
-        myObj.$setValue(22, 'Try it')
-        myObj.$setValue(3, 'Dont even try')
-        myObj.$setValue(13, 'Bad Luck')
+        expect(myObj.$get(30)).toBe(null)
+        myObj.$set(29, 'Lucky Number')
+        myObj.$set(22, 'Try it')
+        myObj.$set(3, 'Dont even try')
+        myObj.$set(13, 'Bad Luck')
         const result = myObj.$map((value) => {
             return value.toLowerCase()
         })
