@@ -17,6 +17,7 @@
     "start": "node scripts/start.js",
     "build:react": "node scripts/build.js",
     "test": "node scripts/test.js",
+    "setup": "npm install",
     "build:wp": "rimraf dist && webpack",
     "build:babel": "npm run build:types && npm run build:js",
     "build:types": "tsc --emitDeclarationOnly",
