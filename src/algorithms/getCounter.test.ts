@@ -11,5 +11,10 @@ describe("getCounter", () => {
     expect(count).toEqual({ wilfred: 2, lopez: 2 });
     count = getCounter("@wilfreddonaldlo");
     expect(Object.values(count).reduce((pre, cu) => Math.max(pre, cu))).toBe(3);
+    count = getCounter(
+      [{ name: "wilfred" }, { "name": "wilfred" }],
+      (value) => value.name,
+    );
+    expect(count).toEqual({ wilfred: 2 });
   });
 });
