@@ -22,5 +22,10 @@ import { Decorators } from "../decorators";
  */
 @Decorators.ReplaceUndefined(0)
 export class Dictionary<T extends any> {
+
+  static toString() {
+    return `[object Dictionary]`
+  }
   [key: string]: T
+
 }

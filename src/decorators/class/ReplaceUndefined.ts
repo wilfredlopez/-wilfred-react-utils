@@ -27,26 +27,39 @@ ReplaceUndefined(0)
 ```
  */
 export function ReplaceUndefined(withValue: any = 0) {
-  return function Dictionary<T extends { new (...args: any[]): {} }>(
+  return function Dictionary<T extends { new(...args: any[]): {} }>(
     constructor: T,
   ) {
+    const originalName = constructor.name
     return class extends constructor {
       constructor(...args: any[]) {
         super(...args);
+        //Override the anomimous class name with the originalname
+        const desc = Reflect.getOwnPropertyDescriptor(this.constructor, 'name',)
+        if (desc)
+        {
+          desc.value = originalName
+          Reflect.defineProperty(this.constructor, 'name', desc)
+        }
+
         const proxy = new Proxy<this>(this, {
           get(target, name, receiver) {
             const realValue = Reflect.get(target, name, receiver);
             if (
               (typeof realValue !== "undefined") || (realValue === null) ||
               (realValue === 0)
-            ) {
+            )
+            {
               return realValue;
-            } else {
+            } else
+            {
               return withValue;
             }
           },
         });
+
         return proxy;
+
       }
     };
   };
