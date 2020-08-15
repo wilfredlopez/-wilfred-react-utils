@@ -130,6 +130,10 @@ export class StringHelper {
     return (s: string[]) => s.join(letter);
   }
 
+  static split(regexOrString: string | RegExp, str: string) {
+    return str.split(regexOrString);
+  }
+
   static splitWith(withString: string | RegExp) {
     return (s: string) => s.split(withString);
   }
