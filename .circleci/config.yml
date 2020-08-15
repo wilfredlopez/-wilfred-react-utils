@@ -23,7 +23,7 @@ workflows:
   node-tests:
     jobs:
       - node/test
-  build-and-test:
+  test-build:
     jobs:
-      - build
+      - test-build
 
