@@ -48,7 +48,7 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
   [K: string]: V | Function | number
 
   constructor(
-    initialValues?: any,
+    initialValues?: any[] | (Record<K, V> | EnhancedObject<K, V>),
     mapToKey: (values: any) => Record<K, V> = getKeyValuePair
   ) {
     if (typeof initialValues !== "undefined")
@@ -164,25 +164,31 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
     return defaultVal;
   }
 
-  /**
-   * Sets the value if key doesnt exits
-   * @param key 
-   * @param value 
-   */
-  @Decorators.ReadOnly()
-  $setIfNotExists(key: K, value: V) {
-    if (typeof this[key] === 'undefined')
-    {
-      return this.$set(key, value)
-    }
-    return this
-  }
+
   /**
    * sets the value and overrides if key was already in use.
    * if it's a not a save key it will console log a warning. invalid keys would be existing function on the class that cant be modified.
+   * @param key
+   * @param value
+   * @param replace [Optional] Defaults to true. if you dont want to replace value if already defined you can pass false.
    */
   @Decorators.ReadOnly()
-  $set(key: K, value: V) {
+  $set(key: K, value: V, replace = true) {
+    return this.$setIfNotExists(key, value, replace) //passing true for replacing the value
+  }
+
+  /**
+ * Sets the value if key doesnt exits
+ * @param key 
+ * @param value 
+ * @param replace [Optional] defaults to false.
+ */
+  @Decorators.ReadOnly()
+  $setIfNotExists(key: K, value: V, replace = false) {
+    if (this.$has(key) && !replace)
+    {
+      return this
+    }
     if (this.$isSaveKey(key))
     {
       this[key as any] = value;
@@ -292,11 +298,11 @@ export class EnhancedObject<K extends string | number, V extends {}>  {
 //   .reduce((prev: Record<number, User>, curr) => Object
 //     .assign(prev, ({ [curr.id]: curr })), {})
 
-// const obj = new EnhancedObject<number, User>(users, (data) => mapUserToRecord(data))
+// const obj = new EnhancedObject(users, (data) => mapUserToRecord(data))
 
 // console.log(obj.toString())
-
-// const obj = new EnhancedObject<number, User>({ 1: { age: 30, id: 1, name: 'Wilfred' } })
+// const userRecord = { 1: { age: 30, id: 1, name: 'Wilfred' } }
+// const obj = new EnhancedObject(userRecord)
 
 // console.log(obj.$isEmpty())//false
 // obj.$set(2, { age: 20, id: 2, name: "Theudy" })

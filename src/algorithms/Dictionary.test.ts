@@ -5,9 +5,11 @@ describe("Dictionary", () => {
     function characterCounter(str: string, dict: object | Dictionary<number>) {
       if (!str) return {};
       const result = dict;
-      for (let char of str) {
+      for (let char of str)
+      {
         char = char.toLowerCase();
-        if (!(/[a-zA-Z0-9]/.test(char))) {
+        if (!(/[a-zA-Z0-9]/.test(char)))
+        {
           continue;
         }
         //if result[char] is undefined it will return 0 using ++ wont cause a NAN.
@@ -15,6 +17,7 @@ describe("Dictionary", () => {
       }
       return result;
     }
+
     expect(characterCounter("abcabc", new Dictionary<number>())).toEqual(
       { a: 2, b: 2, c: 2 },
     );

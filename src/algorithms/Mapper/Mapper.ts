@@ -56,7 +56,6 @@ export class Mapper<V extends any, K extends string | number = string> extends K
     {
       this.#_size = 0
       this.#_data = {} as Record<K, V>;
-
     }
 
     const target: any = this
@@ -286,8 +285,24 @@ export class Mapper<V extends any, K extends string | number = string> extends K
    * Sets the key value pair.
    * @param key key to use for the value
    * @param value value to save
+   * @param replace [Optional] defaults to true. replaces the value if already exist. if false it will only set the value if undefined.
    */
-  set(key: K, value: V) {
+  set(key: K, value: V, replace = true) {
+    //passing 3rd argument to replace the value or not.
+    return this.setIfUndefined(key, value, replace)
+  }
+
+  /**
+   * Sets the key value pair only if the key doesnt exist already.
+   * @param key key of the value
+   * @param value value to save if key doesnt exist.
+   * @param replace [Optional] defaults to false. if passed as true it will work as the set method.
+   */
+  setIfUndefined(key: K, value: V, replace = false) {
+    if (this.has(key) && !replace)
+    {
+      return this;
+    }
     if (!this.isSaveKey(key))
     {
       console.warn(`['${key}'] as a key in mapper might not be save to you use. it will not be available if you use bracket notation to access. to verify you can use the isSaveKey method.`)
@@ -295,20 +310,6 @@ export class Mapper<V extends any, K extends string | number = string> extends K
     this.#_data[key] = value;
     this.#_size++;
     return this;
-  }
-
-  /**
-   * Sets the key value pair only if the key doesnt exist already.
-   * @param key key of the value
-   * @param value value to save if key doesnt exist.
-   */
-  setIfUndefined(key: K, value: V) {
-    if (this.has(key))
-    {
-      return this;
-    }
-
-    return this.set(key, value);
   }
 
   /**

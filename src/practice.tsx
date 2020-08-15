@@ -180,3 +180,7 @@ function findPermutationsNoCache(
 
 // console.log(result1.length === result2.length);
 // console.log(JSON.stringify(result1) === JSON.stringify(result2));
+
+function isSameRegex(reg1: RegExp, reg2: RegExp) {
+  return reg1.source === reg2.source && reg1.flags === reg2.flags;
+}

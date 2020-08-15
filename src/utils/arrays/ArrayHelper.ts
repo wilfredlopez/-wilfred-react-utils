@@ -1,10 +1,27 @@
-import { dropRightWhile } from "../../lodash/dropRightWhile";
-import { map } from "../../lodash/map";
-import last from "../../lodash/last";
+import { dropRightWhile } from "./dropRightWhile";
 import { deepCopy } from '../multiuse'
 // import { NumberHelper } from "../numbers";
-import { Validator } from "../../validator";
-const { isArray, isUndefined } = Validator;
+import { Validator } from "../../";
+
+export function map<T extends any>(
+  array: T[],
+  iteratee: (value: T, index: number, array: T[]) => void,
+) {
+  let index = -1;
+  const length = array == null ? 0 : array.length;
+  const result: any[] = new Array<T>(length);
+
+  while (++index < length)
+  {
+    result[index] = iteratee(array[index], index, array);
+  }
+  return result as T[];
+}
+
+function last<T extends any>(array: T[]) {
+  const length = array == null ? 0 : array.length;
+  return length ? array[length - 1] : undefined;
+}
 export type ReadOnlyArray = readonly any[];
 
 
@@ -209,7 +226,7 @@ export class ArrayHelper {
   }
 
   static fillEmptyArray = <T>(value: T | T[]): undefined[] | undefined =>
-    isArray(value) ? Array(value.length).fill(undefined) : undefined;
+    Validator.isArray(value) ? Array(value.length).fill(undefined) : undefined;
 
   static insert<T>(data: T[], index: number): (T | undefined)[];
   static insert<T>(
@@ -224,7 +241,7 @@ export class ArrayHelper {
   ): (T | undefined)[] {
     return [
       ...data.slice(0, index),
-      ...(isArray(value) ? value : [value || undefined]),
+      ...(Validator.isArray(value) ? value : [value || undefined]),
       ...data.slice(index),
     ];
   }
@@ -284,9 +301,9 @@ export class ArrayHelper {
     from: number,
     to: number,
   ): (T | undefined)[] => {
-    if (isArray(data))
+    if (Validator.isArray(data))
     {
-      if (isUndefined(data[to]))
+      if (Validator.isUndefined(data[to]))
       {
         data[to] = undefined as any;
       }
@@ -298,9 +315,9 @@ export class ArrayHelper {
   };
 
   static removeArrayAt = <T>(data: T[], index?: number | number[]): T[] =>
-    isUndefined(index)
+    Validator.isUndefined(index)
       ? []
-      : isArray(index)
+      : Validator.isArray(index)
         ? ArrayHelper.removeAtIndexes(data, index)
         : ArrayHelper.removeAt(data, index);
 
@@ -402,7 +419,7 @@ export class ArrayHelper {
       return true;
     } else
     {
-      return a === b; // if not both arrays, should be the same
+      return JSON.stringify(a) === JSON.stringify(b); // if not both arrays, should be the same
     }
   }
 

@@ -30,9 +30,104 @@ const validEmails = [
 ];
 
 describe("Validator", () => {
+  describe('isDeepEqual', () => {
+    it("verifies deep equality", () => {
+      const isEqEmptyObj = Validator.isDeepEqual({}, {})
+      expect(isEqEmptyObj).toBe(true)
+      const isEqObj = Validator.isDeepEqual({ name: "wilfred" }, { name: "wilfred" })
+      expect(isEqObj).toBe(true)
+      const isEqObjWithArr = Validator.isDeepEqual({ name: "wilfred", 'data': [1] }, { name: "wilfred", 'data': [1] })
+      const deep = {
+        "data1": {
+          names: ['a', 'b', 'c'],
+          deeps: {
+            "1": "1",
+            "2": [1, 2]
+          }
+        }, "data2": {
+          otherNames: ["d", 'e', 'f']
+        }
+      }
+      expect(isEqObjWithArr).toBe(true)
+      const isEqObjDeppArr = Validator.isDeepEqual(deep, {
+        "data1": {
+          names: ['a', 'b', 'c'],
+          deeps: {
+            "1": "1",
+            "2": [1, 2]
+          }
+        }, "data2": {
+          otherNames: ["d", 'e', 'f']
+        }
+      })
+      expect(isEqObjDeppArr).toBe(true)
+      const invalid = Validator.isDeepEqual(deep, {
+        "data1": {
+          names: ['a', 'b'],
+          deeps: {
+            "1": "1",
+            "2": [1, 2]
+          }
+        }, "data2": {
+          otherNames: ["d", 'e', 'f']
+        }
+      })
+      expect(invalid).toBe(false)
+    })
+
+    it('can compare all types', () => {
+      //numbers
+      const ints = { '1': 1 }
+      expect(Validator.isDeepEqual(ints, { '1': 1 })).toBe(true)
+      expect(Validator.isDeepEqual(ints, { '1': 0 })).toBe(false)
+      expect(Validator.isDeepEqual(1, 1)).toBe(true)
+      expect(Validator.isDeepEqual(1, 200)).toBe(false)
+      //regex
+      expect(Validator.isDeepEqual(new RegExp('jpg'), new RegExp('jpg'))).toBe(true)
+      expect(Validator.isDeepEqual({ "a": new RegExp('jpg') }, { "a": new RegExp('jpg') })).toBe(true)
+      expect(Validator.isDeepEqual(new RegExp('jpg'), new RegExp('png'))).toBe(false)
+      expect(Validator.isDeepEqual({ "a": new RegExp('jpg') }, { "a": new RegExp('png') })).toBe(false)
+      //array
+      expect(Validator.isDeepEqual([], [])).toBe(true)
+      expect(Validator.isDeepEqual([1], [1])).toBe(true)
+      expect(Validator.isDeepEqual([1], [1, 2])).toBe(false)
+      //string
+      expect(Validator.isDeepEqual("", "")).toBe(true)
+      expect(Validator.isDeepEqual('one', 'one')).toBe(true)
+      expect(Validator.isDeepEqual('one', 'two')).toBe(false)
+      //boolean
+      const bool = { 'b': false }
+      expect(Validator.isDeepEqual(bool, { 'b': false })).toBe(true)
+      expect(Validator.isDeepEqual(ints, { 'b': true })).toBe(false)
+      expect(Validator.isDeepEqual(true, true)).toBe(true)
+      //Nested values
+      const arr = { "a": [100, 200] }
+      expect(Validator.isDeepEqual(arr, { "a": [100, 200] })).toBe(true)
+      expect(Validator.isDeepEqual(arr, { 'a': true })).toBe(false)
+      const nestedObj = { 'n': { 'd': { 'z': "YEAH" } } }
+      expect(Validator.isDeepEqual(nestedObj, { 'n': { 'd': { 'z': "YEAH" } } })).toBe(true)
+      expect(Validator.isDeepEqual(nestedObj, { 'n': { 'd': { 'z': null } } })).toBe(false)
+      //null
+      expect(Validator.isDeepEqual([{ "1": null }], [{ "1": null }])).toBe(true)
+      expect(Validator.isDeepEqual([{ "1": null }], [{ "1": 0 }])).toBe(false)
+      expect(Validator.isDeepEqual(null, null)).toBe(true)
+      expect(Validator.isDeepEqual(null, 0)).toBe(false)
+      //function
+      function go() {
+
+      }
+
+      expect(Validator.isDeepEqual(go, go)).toBe(true)
+      expect(Validator.isDeepEqual(go, function go2() {
+        return ''
+      })).toBe(false)
+
+    })
+  })
   describe("isEmail", () => {
     it("Returns false when email is not valid", () => {
-      for (let email of invalidEmails) {
+      for (let email of invalidEmails)
+      {
         let isValid = Validator.isEmail(email);
         expect(isValid).toBe(false);
       }
@@ -46,7 +141,8 @@ describe("Validator", () => {
       expect(Validator.isEmail(Symbol("data"))).toBe(false);
     });
     it("Returns true when email is valid", () => {
-      for (let email of validEmails) {
+      for (let email of validEmails)
+      {
         let isValid = Validator.isEmail(email);
         expect(isValid).toBe(true);
       }
@@ -229,7 +325,8 @@ describe("Validator", () => {
         "0:0:0:0:0:ffff:127.0.0.1",
       ];
 
-      for (let ip of valid) {
+      for (let ip of valid)
+      {
         expect(Validator.isIP(ip)).toBe(true);
       }
     });
@@ -258,7 +355,8 @@ describe("Validator", () => {
         "0:0:0:0:ffff:127.0.0.1",
       ];
 
-      for (let ip of invalid) {
+      for (let ip of invalid)
+      {
         expect(Validator.isIP(ip)).toBe(false);
       }
     });

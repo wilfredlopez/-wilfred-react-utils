@@ -1,5 +1,5 @@
 import fs from "fs"
-import { dropRightWhile } from "../lodash/dropRightWhile"
+import { dropRightWhile } from "../_lodash/dropRightWhile"
 import { organizeData } from "./orginizeData"
 // import { map } from "../lodash/map"
 // import { pullAt } from "../lodash/pullAt"
@@ -27,10 +27,10 @@ export function loadCsv(
   {
     converters,
   }: // labelColums, dataColums
-  Options = {
-    // dataColums: [],
-    // labelColums: [],
-  },
+    Options = {
+      // dataColums: [],
+      // labelColums: [],
+    },
 ) {
   const data = fs.readFileSync(filename, { encoding: "utf-8" })
 
@@ -42,18 +42,22 @@ export function loadCsv(
   const headers = [...rows[0]]
 
   let parsedRows = rows.map((row, index) => {
-    if (index === 0) {
+    if (index === 0)
+    {
       return row
     }
     return row.map((element, index) => {
-      if (converters && converters[headers[index]]) {
+      if (converters && converters[headers[index]])
+      {
         const converted = converters[headers[index]](element)
         return Number.isNaN(converted) ? element : converted
       }
       const num = parseFloat(element)
-      if (Number.isNaN(num)) {
+      if (Number.isNaN(num))
+      {
         return element
-      } else {
+      } else
+      {
         return num
       }
     })

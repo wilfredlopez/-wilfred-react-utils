@@ -15,3 +15,4 @@ export { WBinarySearchTree, BinaryTreeRoot, CNode, CommonTree } from "./tree";
 export { Graph, WeightedGraph } from "./Graph";
 export { EnhancedObject } from "./EnhancedObject";
 export { Dictionary } from "./Dictionary";
+export { default as getCounter } from './getCounter'
