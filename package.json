@@ -30,6 +30,7 @@
     "@babel/plugin-external-helpers": "^7.8.3",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
     "@babel/plugin-transform-runtime": "^7.9.6",
+    "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-typescript": "^7.9.0",
     "@babel/runtime": "^7.9.6",
@@ -47,11 +48,11 @@
     "@types/react": "^16.9.0",
     "@typescript-eslint/eslint-plugin": "^2.10.0",
     "@typescript-eslint/parser": "^2.10.0",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "10.1.0",
-    "babel-jest": "^24.9.0",
+    "babel-jest": "^23.4.2",
     "babel-loader": "8.1.0",
     "babel-plugin-named-asset-import": "^0.3.6",
-    "babel-polyfill": "^6.26.0",
     "babel-preset-react-app": "^9.1.2",
     "camelcase": "^5.3.1",
     "case-sensitive-paths-webpack-plugin": "2.3.0",
@@ -91,6 +92,7 @@
     "webpack-dev-server": "3.10.3"
   },
   "dependencies": {
+    "@babel/core": "^7.0.0",
     "@babel/plugin-proposal-decorators": "^7.10.5"
   },
   "eslintConfig": {

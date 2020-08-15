@@ -17,6 +17,5 @@
         "loose": true
       }
     ]
-    // "@babel/plugin-external-helpers"
   ]
 }
