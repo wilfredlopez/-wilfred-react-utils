@@ -1,3 +1,21 @@
+jobs:
+  test-only:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          override-ci-command: npm install
+      - run: npm run test
+  test-build:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages:
+          cache-path: ~/project/node_modules
+          override-ci-command: npm install
+      - run: npm run build
+      
 version: 2.1
 orbs:
   node: circleci/node@4.0.0
@@ -7,17 +25,5 @@ workflows:
       - node/test
   build-and-test:
     jobs:
-      - build-and-test
-
-jobs:
-  build-and-test:
-    executor:
-      name: node/default
-    steps:
-      - checkout
-      - node/with-cache:
-          steps:
-            - run: npm install
-            - run: npm test
-            - run: npm run build
+      - build
 
