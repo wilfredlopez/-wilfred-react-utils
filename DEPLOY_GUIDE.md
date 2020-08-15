@@ -14,3 +14,8 @@ npm run test  -t 'NameOfTheTestHere or Regex'
 3. `npm version patch -m "Upgrade reasons"`
 4. `npm publish --access public`
 
+
+#### UPGRADE BABEL DEPENDENCIES
+```
+npx babel-upgrade --write --install
+```
