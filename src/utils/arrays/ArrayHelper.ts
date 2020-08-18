@@ -282,6 +282,28 @@ export class ArrayHelper {
     ];
   }
 
+  /**
+   * 
+   * @param array 
+   * @param where Function that should return true to skip the current value. receives every value and the current value to compare with.
+   * @example
+   * //this removes songs that have the same id.
+   * function filterUniqueSongs(songs: Song[]) {
+    return filterUnique(songs, (any, current) => any.id === current.id)
+  }
+   */
+  static filterUnique<T extends any>(
+    array: T[],
+    where: (any: T, current: T) => boolean = (any, current) => any !== current,
+  ) {
+    return array.reduce((prev, curr) => {
+      if (prev.findIndex((s) => where(s, curr)) !== -1) {
+        return [...prev];
+      }
+      return [...prev, curr];
+    }, [] as T[]);
+  }
+
   static unique = <T extends any>(value: T[]) => value.filter(Boolean);
   static removeAtIndexes<T>(data: T[], index: number[]): T[] {
     let k = -1;

@@ -1,4 +1,4 @@
-import { merge } from "./Validator";
+import { merge } from "./merge";
 
 const default_fqdn_options = {
   require_tld: true,

@@ -3,7 +3,8 @@ export { BubleSorter } from "./BubleSorter";
 export { default as Comparator } from "./Comparator";
 export { default as StopWatch } from "./StopWatch";
 export { default as Stream } from "./Stream";
-export {default as deepCopy} from './deepCopy'
+export { default as deepCopy } from "./deepCopy";
+export { debounce } from "./debounce";
 /**
  * Doesnt allow the function to execute more than 1 before the threshold is met. like a debounce function.
  * @param fn 

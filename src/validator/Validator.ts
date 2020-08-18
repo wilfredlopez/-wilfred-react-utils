@@ -3,6 +3,11 @@ import isIP from "./isIP";
 import isPostalCode from "./isPostalCode";
 import { ArrayHelper } from "../utils";
 import { isSerializable } from "./isSerializable";
+import { isDeepEqual, isDeepEqualReact } from "./isDeepEqual";
+import { includes } from "./includes";
+import { alpha, alphanumeric, decimal } from "./constants";
+import { zip } from "./zip";
+import { merge } from "./merge";
 
 declare const $NestedValue: unique symbol;
 
@@ -38,101 +43,6 @@ export type CustomElement<TFieldValues extends FieldValues> = {
   focus?: VoidFunction;
 };
 
-export function merge<T extends {}>(obj: Partial<T> = {}, defaults: T): T {
-  for (const key in defaults)
-  {
-    if (typeof obj[key] === "undefined")
-    {
-      obj[key] = defaults[key];
-    }
-  }
-  return obj as T;
-}
-
-export const alpha = {
-  "en-US": /^[A-Z]+$/i,
-  "bg-BG": /^[А-Я]+$/i,
-  "cs-CZ": /^[A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]+$/i,
-  "da-DK": /^[A-ZÆØÅ]+$/i,
-  "de-DE": /^[A-ZÄÖÜß]+$/i,
-  "el-GR": /^[Α-ώ]+$/i,
-  "es-ES": /^[A-ZÁÉÍÑÓÚÜ]+$/i,
-  "fr-FR": /^[A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ]+$/i,
-  "it-IT": /^[A-ZÀÉÈÌÎÓÒÙ]+$/i,
-  "nb-NO": /^[A-ZÆØÅ]+$/i,
-  "nl-NL": /^[A-ZÁÉËÏÓÖÜÚ]+$/i,
-  "nn-NO": /^[A-ZÆØÅ]+$/i,
-  "hu-HU": /^[A-ZÁÉÍÓÖŐÚÜŰ]+$/i,
-  "pl-PL": /^[A-ZĄĆĘŚŁŃÓŻŹ]+$/i,
-  "pt-PT": /^[A-ZÃÁÀÂÄÇÉÊËÍÏÕÓÔÖÚÜ]+$/i,
-  "ru-RU": /^[А-ЯЁ]+$/i,
-  "sl-SI": /^[A-ZČĆĐŠŽ]+$/i,
-  "sk-SK": /^[A-ZÁČĎÉÍŇÓŠŤÚÝŽĹŔĽÄÔ]+$/i,
-  "sr-RS@latin": /^[A-ZČĆŽŠĐ]+$/i,
-  "sr-RS": /^[А-ЯЂЈЉЊЋЏ]+$/i,
-  "sv-SE": /^[A-ZÅÄÖ]+$/i,
-  "tr-TR": /^[A-ZÇĞİıÖŞÜ]+$/i,
-  "uk-UA": /^[А-ЩЬЮЯЄIЇҐі]+$/i,
-  "vi-VN":
-    /^[A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴĐÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸ]+$/i,
-  "ku-IQ": /^[ئابپتجچحخدرڕزژسشعغفڤقکگلڵمنوۆھەیێيطؤثآإأكضصةظذ]+$/i,
-  ar: /^[ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىيًٌٍَُِّْٰ]+$/,
-  he: /^[א-ת]+$/,
-  "fa-IR": /^['آابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی']+$/i,
-};
-
-export const alphanumeric = {
-  "en-US": /^[0-9A-Z]+$/i,
-  "bg-BG": /^[0-9А-Я]+$/i,
-  "cs-CZ": /^[0-9A-ZÁČĎÉĚÍŇÓŘŠŤÚŮÝŽ]+$/i,
-  "da-DK": /^[0-9A-ZÆØÅ]+$/i,
-  "de-DE": /^[0-9A-ZÄÖÜß]+$/i,
-  "el-GR": /^[0-9Α-ω]+$/i,
-  "es-ES": /^[0-9A-ZÁÉÍÑÓÚÜ]+$/i,
-  "fr-FR": /^[0-9A-ZÀÂÆÇÉÈÊËÏÎÔŒÙÛÜŸ]+$/i,
-  "it-IT": /^[0-9A-ZÀÉÈÌÎÓÒÙ]+$/i,
-  "hu-HU": /^[0-9A-ZÁÉÍÓÖŐÚÜŰ]+$/i,
-  "nb-NO": /^[0-9A-ZÆØÅ]+$/i,
-  "nl-NL": /^[0-9A-ZÁÉËÏÓÖÜÚ]+$/i,
-  "nn-NO": /^[0-9A-ZÆØÅ]+$/i,
-  "pl-PL": /^[0-9A-ZĄĆĘŚŁŃÓŻŹ]+$/i,
-  "pt-PT": /^[0-9A-ZÃÁÀÂÄÇÉÊËÍÏÕÓÔÖÚÜ]+$/i,
-  "ru-RU": /^[0-9А-ЯЁ]+$/i,
-  "sl-SI": /^[0-9A-ZČĆĐŠŽ]+$/i,
-  "sk-SK": /^[0-9A-ZÁČĎÉÍŇÓŠŤÚÝŽĹŔĽÄÔ]+$/i,
-  "sr-RS@latin": /^[0-9A-ZČĆŽŠĐ]+$/i,
-  "sr-RS": /^[0-9А-ЯЂЈЉЊЋЏ]+$/i,
-  "sv-SE": /^[0-9A-ZÅÄÖ]+$/i,
-  "tr-TR": /^[0-9A-ZÇĞİıÖŞÜ]+$/i,
-  "uk-UA": /^[0-9А-ЩЬЮЯЄIЇҐі]+$/i,
-  "ku-IQ": /^[٠١٢٣٤٥٦٧٨٩0-9ئابپتجچحخدرڕزژسشعغفڤقکگلڵمنوۆھەیێيطؤثآإأكضصةظذ]+$/i,
-  "vi-VN":
-    /^[0-9A-ZÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴĐÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸ]+$/i,
-  ar: /^[٠١٢٣٤٥٦٧٨٩0-9ءآأؤإئابةتثجحخدذرزسشصضطظعغفقكلمنهوىيًٌٍَُِّْٰ]+$/,
-  he: /^[0-9א-ת]+$/,
-  "fa-IR": /^['0-9آابپتثجچهخدذرزژسشصضطظعغفقکگلمنوهی۱۲۳۴۵۶۷۸۹۰']+$/i,
-};
-
-export const decimal = {
-  "en-US": ".",
-  ar: "٫",
-};
-
-// export const locales = Object.keys(alphanumeric);
-function zip(date: string[], format: string[]) {
-  const zippedArr = [],
-    len = Math.min(date.length, format.length);
-
-  for (let i = 0; i < len; i++)
-  {
-    zippedArr.push([date[i], format[i]]);
-  }
-
-  return zippedArr;
-}
-
-const includes = (arr: any[], val: any) => arr.some((arrVal) => val === arrVal);
-
 /**
  * Validator
  */
@@ -160,11 +70,10 @@ export class Validator {
 
     const regex = new RegExp(
       "^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2," + domainLimit +
-      "})+$",
+        "})+$",
     );
     // if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,10})+$/.test(email)) {
-    if (regex.test(email))
-    {
+    if (regex.test(email)) {
       return true;
     }
     return false;
@@ -239,8 +148,7 @@ export class Validator {
    * @param {{ignore_whitespace?:boolean }} options 
    */
   static isEmpty(str: any, options: { ignore_whitespace?: boolean } = {}) {
-    if (!Validator.isString(str))
-    {
+    if (!Validator.isString(str)) {
       return false;
     }
     const default_is_empty_options = {
@@ -257,19 +165,16 @@ export class Validator {
    * @param options 
    */
   static isJSON(str: string, options: { allow_primitives?: boolean } = {}) {
-    if (!Validator.isString(str))
-    {
+    if (!Validator.isString(str)) {
       return false;
     }
-    try
-    {
+    try {
       const default_json_options = {
         allow_primitives: false,
       };
       options = merge(options, default_json_options);
       let primitives: any[] = [];
-      if (options.allow_primitives)
-      {
+      if (options.allow_primitives) {
         primitives = [null, false, true];
       }
 
@@ -284,13 +189,11 @@ export class Validator {
    * @param locale 
    */
   static isAlpha(str: string, locale: keyof typeof alpha = "en-US") {
-    if (!Validator.isString(str))
-    {
+    if (!Validator.isString(str)) {
       return false;
     }
 
-    if (locale in alpha)
-    {
+    if (locale in alpha) {
       return alpha[locale].test(str);
     }
     throw new Error(`Invalid locale '${locale}'`);
@@ -377,18 +280,15 @@ export class Validator {
    * expect(Validator.isDate("2020/1/1", "YYYY/M/D")).toBe(true);
    */
   static isDate(input: string, format: string = "YYYY/MM/DD") {
-    if (typeof input === "string" && Validator.isValidDateFormat(format))
-    {
+    if (typeof input === "string" && Validator.isValidDateFormat(format)) {
       const splitter = /[-/]/,
         dateAndFormat = zip(
           input.split(splitter),
           format.toLowerCase().split(splitter),
         ),
         dateObj: { [key: string]: string } = {};
-      for (const [dateWord, formatWord] of dateAndFormat)
-      {
-        if (dateWord.length !== formatWord.length)
-        {
+      for (const [dateWord, formatWord] of dateAndFormat) {
+        if (dateWord.length !== formatWord.length) {
           return false;
         }
 
@@ -426,14 +326,14 @@ export class Validator {
     );
     function decimalRegExp(options: typeof default_decimal_options) {
       const regExp = new RegExp(
-        `^[-+]?([0-9]+)?(\\${decimal[options.locale]
+        `^[-+]?([0-9]+)?(\\${
+          decimal[options.locale]
         }[0-9]{${options.decimal_digits}})${options.force_decimal ? "" : "?"}$`,
       );
       return regExp;
     }
 
-    if (updatedOptions.locale in decimal)
-    {
+    if (updatedOptions.locale in decimal) {
       return !includes(blacklist, str.replace(/ /g, "")) &&
         decimalRegExp(updatedOptions).test(str);
     }
@@ -463,18 +363,18 @@ export class Validator {
       allow_protocol_relative_urls?: boolean;
       disallow_auth?: boolean;
     } = {
-        protocols: ["http", "https", "ftp"],
-        require_tld: true,
-        require_protocol: false,
-        require_host: true,
-        require_valid_protocol: true,
-        allow_underscores: false,
-        host_whitelist: false,
-        host_blacklist: false,
-        allow_trailing_dot: false,
-        allow_protocol_relative_urls: false,
-        disallow_auth: false,
-      },
+      protocols: ["http", "https", "ftp"],
+      require_tld: true,
+      require_protocol: false,
+      require_host: true,
+      require_valid_protocol: true,
+      allow_underscores: false,
+      host_whitelist: false,
+      host_blacklist: false,
+      allow_trailing_dot: false,
+      allow_protocol_relative_urls: false,
+      disallow_auth: false,
+    },
   ) {
     return isUrl.bind(this, url, options).call(this);
   }
@@ -501,15 +401,12 @@ export class Validator {
     if (!Validator.isString(str)) return false;
     let regex: RegExp;
 
-    if (Object.prototype.toString.call(pattern) !== "[object RegExp]")
-    {
+    if (Object.prototype.toString.call(pattern) !== "[object RegExp]") {
       pattern = new RegExp(pattern, flags);
     }
-    if (pattern instanceof RegExp)
-    {
+    if (pattern instanceof RegExp) {
       regex = pattern;
-    } else
-    {
+    } else {
       regex = new RegExp(pattern, flags);
     }
     return regex.test(str);
@@ -576,8 +473,7 @@ export class Validator {
    * @param {String} string string to verify
    */
   static isUppercase(string: any) {
-    if (!string || typeof string !== "string")
-    {
+    if (!string || typeof string !== "string") {
       return false;
     }
     return string === string.toUpperCase();
@@ -607,7 +503,7 @@ export class Validator {
     // leading zeroes are allowed or not.
     let regex = (
       options.hasOwnProperty("allow_leading_zeroes") &&
-        !options.allow_leading_zeroes
+      !options.allow_leading_zeroes
         ? int
         : intLeadingZeroes
     );
@@ -629,63 +525,10 @@ export class Validator {
     return Validator.isInt(port, { min: 0, max: 65535 });
   }
 
+  static isDeepEqual = isDeepEqual;
+  // static isDeepEqual = isDeepEqualWilfred
 
-
-  static isDeepEqual(val1: any, val2: any): boolean {
-    if (Validator.isRegex(val1) && Validator.isRegex(val2))
-    {
-      return Validator.isSameRegex(val1, val2)
-    }
-    //JSON Doenst work for deep Regex
-    // return JSON.stringify(val1) === JSON.stringify(val2)
-    //   if regular equality.
-    if (val1 === val2)
-    {
-      return true
-    }
-
-    if (Validator.isPrimitive(val1) && Validator.isPrimitive(val2))
-    {
-      return val1 === val2
-    }
-
-    if (Validator.isArray(val1) && Validator.isArray(val2))
-    {
-      return ArrayHelper.arraysEqual(val1, val2)
-    }
-
-    //handle object
-    if (Validator.isObject(val1) && Validator.isObject(val2))
-    {
-      const keys1 = Object.keys(val1)
-      const keys2 = Object.keys(val2)
-      if (keys1.length !== keys2.length)
-      {
-        return false
-      }
-      if (keys1.length === 0)
-      {
-        // console.log('both are empty')
-        return true
-      }
-      //handle object equality
-      let equal: boolean = true
-      while (keys1.length && keys2.length && equal)
-      {
-
-        let k1 = keys1.pop()
-        let k2 = keys2.pop()
-        equal = Validator.isDeepEqual(val1[k1 as keyof object], val2[k2 as keyof object])
-        if (!equal)
-        {
-          return false
-        }
-      }
-      return equal
-    }
-
-    return false
-  }
+  static isDeepEqualReact = isDeepEqualReact;
 
   /**
    * Check if the string is of type slug. Options allow a single hyphen between string. 
@@ -703,8 +546,7 @@ export class Validator {
    * @param {String} string string to verify
    */
   static isLowerCase(string: any) {
-    if (!string || typeof string !== "string")
-    {
+    if (!string || typeof string !== "string") {
       return false;
     }
     return string === string.toLowerCase();
@@ -718,12 +560,10 @@ export class Validator {
     locale: keyof typeof alphanumeric = "en-US",
   ) {
     //Handle called with bad arguments
-    if (!str || typeof str !== "string")
-    {
+    if (!str || typeof str !== "string") {
       return false;
     }
-    if (locale in alphanumeric)
-    {
+    if (locale in alphanumeric) {
       return alphanumeric[locale].test(str);
     }
     throw new Error(`Invalid locale '${locale}'`);
@@ -739,7 +579,7 @@ export class Validator {
     return (number & 1) === 0;
   }
 
-  static isSerializable = isSerializable
+  static isSerializable = isSerializable;
 
   static isOdd(number: number) {
     //but could also be (number % 2) !== 0
@@ -755,8 +595,7 @@ export class Validator {
   static isPositive(number: number) {
     if (!Validator.isNumber(number)) return false;
     // Zero is neither a positive nor a negative number.
-    if (number === 0)
-    {
+    if (number === 0) {
       return false;
     }
     // The most significant 32nd bit can be used to determine whether the number is positive.
@@ -772,10 +611,8 @@ export class Validator {
     if (n < 2) return false;
     if (n === 2) return true;
 
-    for (let i = 2; i < n; i++)
-    {
-      if (n % i === 0)
-      {
+    for (let i = 2; i < n; i++) {
+      if (n % i === 0) {
         return false;
       }
     }
@@ -792,4 +629,53 @@ export class Validator {
     if (number < 1) return false;
     return (number & (number - 1)) === 0;
   }
+}
+
+export function isDeepEqualWilfred(val1: any, val2: any): boolean {
+  if (Validator.isRegex(val1) && Validator.isRegex(val2)) {
+    return Validator.isSameRegex(val1, val2);
+  }
+  //JSON Doenst work for deep Regex
+  // return JSON.stringify(val1) === JSON.stringify(val2)
+  //   if regular equality.
+  if (val1 === val2) {
+    return true;
+  }
+
+  if (Validator.isPrimitive(val1) && Validator.isPrimitive(val2)) {
+    return val1 === val2;
+  }
+
+  if (Validator.isArray(val1) && Validator.isArray(val2)) {
+    return ArrayHelper.arraysEqual(val1, val2);
+  }
+
+  //handle object
+  if (Validator.isObject(val1) && Validator.isObject(val2)) {
+    const keys1 = Object.keys(val1);
+    const keys2 = Object.keys(val2);
+    if (keys1.length !== keys2.length) {
+      return false;
+    }
+    if (keys1.length === 0) {
+      // console.log('both are empty')
+      return true;
+    }
+    //handle object equality
+    let equal: boolean = true;
+    while (keys1.length && keys2.length && equal) {
+      let k1 = keys1.pop();
+      let k2 = keys2.pop();
+      equal = Validator.isDeepEqual(
+        val1[k1 as keyof object],
+        val2[k2 as keyof object],
+      );
+      if (!equal) {
+        return false;
+      }
+    }
+    return equal;
+  }
+
+  return false;
 }

@@ -1,10 +1,10 @@
-import commonjs from "@rollup/plugin-commonjs"
-import resolve from "@rollup/plugin-node-resolve"
-import babel from "@rollup/plugin-babel"
-import pkg from "./package.json"
+import commonjs from "@rollup/plugin-commonjs";
+import resolve from "@rollup/plugin-node-resolve";
+import babel from "@rollup/plugin-babel";
+import pkg from "./package.json";
 // import rollupTypescript from "@rollup/plugin-typescript"
-const extensions = [".js", ".jsx", ".ts", ".tsx"]
-const name = "ReactUtils"
+const extensions = [".js", ".jsx", ".ts", ".tsx"];
+const name = "ReactUtils";
 
 export default {
   input: "./tsbuild/index.js",
@@ -34,11 +34,8 @@ export default {
   output: [
     {
       file: pkg.main,
-      format: "umd",
+      format: "cjs",
       sourcemap: true,
-      
-      name,
-
       // https://rollupjs.org/guide/en#output-globals-g-globals
       //   globals: {
       //     fs: "require('fs')",
@@ -46,11 +43,11 @@ export default {
       //     "@babel/runtime/regenerator": "regeneratorRuntime",
       //   },
     },
-    {
-      file: "dist/index.cjs.js",
-      format: "cjs",
-      sourcemap: true,
-    },
+    // {
+    //   file: "dist/index.cjs.js",
+    //   format: "cjs",
+    //   sourcemap: true,
+    // },
     {
       file: pkg.module,
       format: "es",
@@ -58,15 +55,16 @@ export default {
     },
     {
       file: pkg.browser,
-      format: "iife",
+      // format: "iife",
+      format: "umd",
       sourcemap: true,
-      
+
       name,
       // globals: {
       //   fs: "require('fs')",
       //   regeneratorRuntime: "require('regenerator-runtime')",
       //   "@babel/runtime/regenerator": "regeneratorRuntime",
       // },
-    }
+    },
   ],
-}
+};

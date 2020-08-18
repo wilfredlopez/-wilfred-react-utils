@@ -1,22 +1,20 @@
-import {appendMethod} from '../multiuse/appendMethod'
+import { appendMethod } from "../multiuse/appendMethod";
 
 export type ResultOf<T> = {
   success: true;
   value: T;
-  error: null
+  error: null;
 } | {
   success: false;
   error: string;
-  value: null
+  value: null;
 };
 
-
-
 class NumberHelperBase {
-  [Symbol.toStringTag] = 'NumberHelper'
+  [Symbol.toStringTag] = "NumberHelper";
 
-  static toString(){
-    return `[object NumberHelper]`
+  static toString() {
+    return `[object NumberHelper]`;
   }
   /**
    * Returns true or false if the number is prime or not.
@@ -58,7 +56,7 @@ class NumberHelperBase {
       return {
         success: true,
         value: parseInt(text, radix),
-        error: null
+        error: null,
       };
     } else {
       return {
@@ -238,6 +236,13 @@ if (n <= 2) return 1;
     // return (n / 2) * (1 + n); //the same
   }
 
+  static msToTime(d: number) {
+    var seconds = Math.floor((d / 1000) % 60),
+      minutes = Math.floor((d / (1000 * 60)) % 60);
+
+    return minutes + ":" + (seconds < 10 ? `0${seconds}` : seconds);
+  }
+
   /**
    * @param {number} number
    * @return {number}
@@ -293,34 +298,30 @@ if (n <= 2) return 1;
   }
 }
 
+let NumberHelperWithMath = NumberHelperBase as Math & typeof NumberHelperBase;
+for (let key of Reflect.ownKeys(Math)) {
+  const fnOrProp = Math[key as keyof Math];
 
-
-
-let NumberHelperWithMath= NumberHelperBase as Math & typeof NumberHelperBase 
-for(let key of Reflect.ownKeys(Math)){
-    const fnOrProp = Math[key as keyof Math]
-    
-    if(typeof fnOrProp === 'function'){ 
-        NumberHelperWithMath = appendMethod(NumberHelperWithMath, fnOrProp, String(key))
-    }else{
-        //@ts-ignore
-        NumberHelperWithMath[key] = fnOrProp
-    }
+  if (typeof fnOrProp === "function") {
+    NumberHelperWithMath = appendMethod(
+      NumberHelperWithMath,
+      fnOrProp,
+      String(key),
+    );
+  } else {
+    //@ts-ignore
+    NumberHelperWithMath[key] = fnOrProp;
+  }
 }
 
-
-
-
-export const NumberHelper = NumberHelperWithMath
-
+export const NumberHelper = NumberHelperWithMath;
 
 //Asign all properties of Math to NumberHelper
 // for(let o of Reflect.ownKeys(Math)){
 //   //@ts-ignore
 //   NumberHelper[o] = Math[o  as keyof Math]
-    
-// }
 
+// }
 
 // for (let n of NumberHelper.range()) {
 //   console.log(n); // 0,2, 4, 5, 8, 10, 12, 14, 16, 18, 20
@@ -328,4 +329,3 @@ export const NumberHelper = NumberHelperWithMath
 
 // const arr = [...NumberHelper.range({ start: 0, end: 10 })];
 // console.log(arr); // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
-

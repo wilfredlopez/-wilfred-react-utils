@@ -1,13 +1,13 @@
 {
   "name": "@wilfredlopez/react-utils",
-  "version": "1.0.9",
+  "version": "2.0.0",
   "description": "Utility functions and types for React projects",
   "main": "dist/index.js",
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
   "typings": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist/"
   ],
   "scripts": {
     "build": "npm run build:ts && npm run roll2 && tsc --outDir dist --emitDeclarationOnly",

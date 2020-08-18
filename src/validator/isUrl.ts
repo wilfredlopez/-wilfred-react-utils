@@ -1,6 +1,6 @@
 import isFQDN from "./isFQDN";
 import isIP from "./isIP";
-import { merge } from "./Validator";
+import { merge } from "./merge";
 
 /*
 options for isURL method
