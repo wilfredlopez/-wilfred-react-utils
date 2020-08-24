@@ -28,6 +28,7 @@ export {
 export { downloadToFile } from "./downloadToFile";
 export { createResource, wrapPromise } from "./createResource";
 export { DateFormatter, getMonthFromInt, PrecisionTime } from "./dates";
+export { formatDate } from "./dates/formatDate";
 export * from "./multiuse";
 export { autoscroll } from "./scroll";
 export { PatternGenerator, StringHelper } from "./strings";
