@@ -5,6 +5,10 @@ export { default as StopWatch } from "./StopWatch";
 export { default as Stream } from "./Stream";
 export { default as deepCopy } from "./deepCopy";
 export { debounce } from "./debounce";
+export { throttle } from "./throttle";
+
+export const sleep = (n: number) => new Promise((r) => setTimeout(r, n));
+
 /**
  * Doesnt allow the function to execute more than 1 before the threshold is met. like a debounce function.
  * @param fn 
@@ -15,31 +19,6 @@ export { debounce } from "./debounce";
   console.log('tick');
 }, 1000));
  */
-export function throttle<T extends Function>(
-  fn: T,
-  threshhold: number = 250,
-  scope?: any,
-) {
-  threshhold || (threshhold = 250);
-  let last: number, deferTimer: NodeJS.Timeout;
-  return function () {
-    var context: Window | any = scope || window; // this was actually "this"
-
-    var now = +new Date(),
-      args = arguments;
-    if (last && now < last + threshhold) {
-      // hold on to it
-      clearTimeout(deferTimer);
-      deferTimer = setTimeout(function () {
-        last = now;
-        fn.apply(context, args);
-      }, threshhold);
-    } else {
-      last = now;
-      fn.apply(context, args);
-    }
-  };
-}
 
 export const pipe = <R>(...fns: Array<(...a: any[]) => R>) =>
   fns.reduce((prevFn, nextFn) =>
