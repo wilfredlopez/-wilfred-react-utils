@@ -25,8 +25,8 @@ class NumberHelperBase {
     //base cases
     if (n < 2) return false;
     if (n === 2) return true;
-
-    for (let i = 2; i < n; i++) {
+    let max = Math.ceil(Math.sqrt(n));
+    for (let i = 2; i <= max; i++) {
       if (n % i === 0) {
         return false;
       }
