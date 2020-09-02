@@ -1,7 +1,7 @@
 {
   "name": "@wilfredlopez/react-utils",
   "version": "3.0.1",
-  "description": "Utility functions and types for React projects",
+  "description": "Utility functions and types for Javascript projects",
   "main": "dist/index.js",
   "browser": "dist/index.umd.js",
   "module": "dist/index.es.js",
