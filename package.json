@@ -1,6 +1,6 @@
 {
   "name": "@wilfredlopez/react-utils",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "Utility functions and types for React projects",
   "main": "dist/index.js",
   "browser": "dist/index.umd.js",
@@ -113,9 +113,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/@wilfredlopez/react-utils"
   },
   "repository": {
     "type": "git",

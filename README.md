@@ -25,7 +25,7 @@ npm install @wilfredlopez/react-utils
 ###### Script Tag
 
 ```html
-<script src="https://unpkg.com/@wilfredlopez/react-utils@3.0.0/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@wilfredlopez/react-utils@latest/dist/index.umd.js"></script>
 <script type="text/javascript">
   console.log(ReactUtils.Cipher)
 </script>
