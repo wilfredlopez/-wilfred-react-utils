@@ -17,3 +17,4 @@ tsbuild
 test.html
 testhtml.js
 DEPLOY_GUIDE.md
+.circleci
