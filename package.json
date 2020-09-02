@@ -116,6 +116,9 @@
       "last 1 safari version"
     ]
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/@wilfredlopez/react-utils"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/wilfredlopez/-wilfred-react-utils.git"
