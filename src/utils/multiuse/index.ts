@@ -6,6 +6,7 @@ export { default as Stream } from "./Stream";
 export { default as deepCopy } from "./deepCopy";
 export { debounce } from "./debounce";
 export { throttle } from "./throttle";
+export { default as getTypeName } from './getTypeName'
 
 export const sleep = (n: number) => new Promise((r) => setTimeout(r, n));
 
@@ -55,10 +56,10 @@ export function compose<
   R extends any[],
   C extends any,
   B extends ReturnType<any>,
->(
-  fn1: (...a: R) => B,
-  ...fns: Array<(a: B) => C>
-) {
+  >(
+    fn1: (...a: R) => B,
+    ...fns: Array<(a: B) => C>
+  ) {
   return fns.reduceRight(
     (prevFn, nextFn) =>
       (value: B, ...rest: any[]) =>
