@@ -1,6 +1,26 @@
 import deepCopy from './deepCopy'
 
+
 describe('deepCopy', () => {
+    it('works with HTML Elements', () => {
+
+        class Test{
+            div:HTMLElement
+            divs:HTMLElement[]
+            constructor(){
+               this.div = document.createElement('div')
+               this.divs = []
+               this.divs[0] = this.div
+               this.divs[1] = this.div
+            }
+            show(){}
+        }
+        const test = new Test()
+        expect(deepCopy.bind(null,test)).not.toThrow()
+        const testCopy = deepCopy(test)
+        expect(testCopy.divs.length).toBe(2)
+    })
+
     it('makes a deepCopy of array', () => {
         const a1 = [1]
         const a2 = [2]
@@ -52,6 +72,7 @@ describe('deepCopy', () => {
         })).not.toThrow()
       
     })
+
     it('goes as deep as necesary', () => {
         const user = {
             'name': "SOMEONE"

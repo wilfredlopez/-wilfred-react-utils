@@ -6,11 +6,15 @@
  */
 export default function getTypeName(val: any): string {
     let name = typeof val;
-    if (
-        name === "object" && typeof Reflect !== 'undefined' && typeof Reflect.get !== "undefined"
-    )
-    {
-        name = Reflect.get(val, "constructor").name;
+    if(typeof val !== 'object'){
+        return typeof val
+    }else if(typeof val === 'object' && typeof Reflect !== 'undefined' && typeof Reflect.get !== "undefined"){
+
+        try {
+            name = Reflect.get(val, "constructor").name;
+        } catch (error) {
+            
+        }
     }
     return name;
 }
