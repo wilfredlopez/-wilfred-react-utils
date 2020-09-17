@@ -3,7 +3,6 @@ import deepCopy from './deepCopy'
 
 describe('deepCopy', () => {
     it('works with HTML Elements', () => {
-
         class Test{
             div:HTMLElement
             divs:HTMLElement[]
