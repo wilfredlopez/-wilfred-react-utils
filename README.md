@@ -7,7 +7,8 @@
 </div>
 <div>
 
-  <a  href="https://twitter.com/intent/follow?screen_name=wilfreddonaldlo"><img style="background:transparent;" align="right" src="https://img.shields.io/twitter/follow/wilfreddonaldlo?style=social&label=Follow%20@wilfreddonaldlo" alt="Follow on Twitter"></a>
+<a  href="https://twitter.com/intent/follow?screen_name=wilfreddonaldlo"><img style="background:transparent;" align="right" src="https://img.shields.io/twitter/follow/wilfreddonaldlo?style=social&label=Follow%20@wilfreddonaldlo" alt="Follow on Twitter"></a>
+
   </div>
 
 </div>
@@ -34,6 +35,7 @@ npm install @wilfredlopez/react-utils
 ###### ES6
 
 ## Validator
+
 ```ts
 import { Validator } from "@wilfredlopez/react-utils"
 
@@ -53,51 +55,51 @@ Validator.isURL("www.test.com")//true
 Validator.isURL("www.test.") //false
 ```
 
-
 ## memoize
+
 ```ts
-import { memoize } from "@wilfredlopez/react-utils"
+import { memoize } from '@wilfredlopez/react-utils'
 
 const fibMemo = memoize(function (n: number): number {
-  if (n <= 2) return 1;
-  return fibMemo(n - 1) + fibMemo(n - 2);
-});
+  if (n <= 2) return 1
+  return fibMemo(n - 1) + fibMemo(n - 2)
+})
 
-console.log(fibMemo(20)); //6765
-console.log(fibMemo(30)); //832040
-console.log(fibMemo(20)); //6765;
-console.log(fibMemo(100)); //354224848179262000000
+console.log(fibMemo(20)) //6765
+console.log(fibMemo(30)) //832040
+console.log(fibMemo(20)) //6765;
+console.log(fibMemo(100)) //354224848179262000000
 console.log(
-  fibMemo.cache.size, //100
-);
+  fibMemo.cache.size //100
+)
 ```
 
 ## Mapper
+
 ```ts
-import { Mapper } from "@wilfredlopez/react-utils"
+import { Mapper } from '@wilfredlopez/react-utils'
 
 const initialData = {
-  "test1": 1,
-  "test2": 2,
-};
-const dataMap = new Mapper<number, string>(initialData);
+  test1: 1,
+  test2: 2,
+}
+const dataMap = new Mapper<number, string>(initialData)
 console.log(dataMap.length) //2
-console.log(dataMap.set("test3", 3).delete("test1")); //1
-console.log(dataMap.has("test1")); //false
-console.log(dataMap.get("test2")); //2
-console.log(dataMap.isEmpty()); //false
-dataMap.map((val) => {
-  console.log(val); // 2, 3
-});
+console.log(dataMap.set('test3', 3).delete('test1')) //1
+console.log(dataMap.has('test1')) //false
+console.log(dataMap.get('test2')) //2
+console.log(dataMap.isEmpty()) //false
+dataMap.map(val => {
+  console.log(val) // 2, 3
+})
 ```
-
 
 ## StringHelper & NumberHelper
 
 ```ts
-import { StringHelper, NumberHelper } from "@wilfredlopez/react-utils"
-StringHelper.slogify("hello world") //"hello-world";
-StringHelper.toProperCase(" hello world 2") //" Hello World 2";
+import { StringHelper, NumberHelper } from '@wilfredlopez/react-utils'
+StringHelper.slogify('hello world') //"hello-world";
+StringHelper.toProperCase(' hello world 2') //" Hello World 2";
 const pg = new PatternGenerator("'WL'-XXXXX")
 
 const codes = []
@@ -105,37 +107,34 @@ console.log(pg.next) //WL-H2QDD
 while (codes.length < 50) {
   codes.push(pg.next)
 }
-console.log(codes) //[ 'WL-H2QDD', 'WL-LHCO7', 'WL-0EFK6', 'WL-SQU7W',...,'WL-9NYHX' ] 
-
+console.log(codes) //[ 'WL-H2QDD', 'WL-LHCO7', 'WL-0EFK6', 'WL-SQU7W',...,'WL-9NYHX' ]
 
 NumberHelper.formatDuration(10000) //"02:46:40";
-const arr = [...NumberHelper.range({ start: 0, end: 10 })];
-console.log(arr); // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
+const arr = [...NumberHelper.range({ start: 0, end: 10 })]
+console.log(arr) // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ];
 
-const iter = ArrayHelper.createReverseArrayIterator([1, 2, 3, 4]);
-    for (let i of iter) {
-      console.log(i);// 4,3,2,1
-    }
+const iter = ArrayHelper.createReverseArrayIterator([1, 2, 3, 4])
+for (let i of iter) {
+  console.log(i) // 4,3,2,1
+}
 console.log(NumberHelper.isPrime(7)) //true
 console.log(NumberHelper.isPrime(20)) //false
 ```
 
 # DeepCopy
-```ts
-import { deepCopy } from "@wilfredlopez/react-utils"
 
-const originalUser = {'name': "SOMEONE"};
-const original = {api: {db: {users:[
-  {user: originalUser}
-  ]}}};
+```ts
+import { deepCopy } from '@wilfredlopez/react-utils'
+
+const originalUser = { name: 'SOMEONE' }
+const original = { api: { db: { users: [{ user: originalUser }] } } }
 
 const copy = deepCopy(original)
 const regularCopy = Object.assign({}, data)
-originalUser.name = "FULANO"
+originalUser.name = 'FULANO'
 console.log(copy.api.db.users[0].user.name) // SOMEONE (DEEP COPY)
 console.log(original.api.db.users[0].user.name) // FULANO (MUTATED)
 console.log(regularCopy.api.db.users[0].user.name) // FULANO (MUTATED)
-
 ```
 
 ### Assertions
@@ -146,16 +145,16 @@ import {
   assert,
   assertIsString,
   forceString,
-} from "@wilfredlopez/react-utils"
+} from '@wilfredlopez/react-utils'
 
-const error = new AssertionError("message")
+const error = new AssertionError('message')
 
 const n = 1
 function doSomething(value) {
-  assert(typeof n === "number")
+  assert(typeof n === 'number')
   return n + 20
 }
-doSomething("string") //throws error
+doSomething('string') //throws error
 
 function sendMessage(message: any) {
   assertIsString(message) //throws error if not string
@@ -166,11 +165,11 @@ function sendMessage(message: any) {
 ## assertNever
 
 ```ts
-import { assertNever } from "@wilfredlopez/react-utils"
+import { assertNever } from '@wilfredlopez/react-utils'
 enum AppActions {
-  "SET_STATE",
-  "ADD",
-  "REMOVE",
+  'SET_STATE',
+  'ADD',
+  'REMOVE',
 }
 interface Actions {
   type: AppActions
@@ -188,10 +187,23 @@ export function myReducer(state = {}, action: Actions): {} {
         ...state,
       }
     default:
-      assertNever(action.type, "Not all actions are being handled.")
+      assertNever(action.type, 'Not all actions are being handled.')
       return state
   }
 }
+```
+
+### Random Generator (for test data)
+
+```ts
+import { RandomGenerator } from '@wilfredlopez/react-utils'
+
+const dg = new RandomGenerator({
+  animals: ['dog', 'panda', 'cat'],
+})
+
+console.log(dg.from('animals')) //cat
+console.log(dg.from('animals')) //dog
 ```
 
 #### AND MUCH MORE...
