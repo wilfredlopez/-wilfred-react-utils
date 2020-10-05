@@ -1,4 +1,4 @@
-import { ArrayHelper } from "./ArrayHelper"
+import { ArrayHelper } from './ArrayHelper'
 
 /*******************************************
  * BASIC sort algorithims
@@ -13,15 +13,15 @@ import { ArrayHelper } from "./ArrayHelper"
  */
 export function bubleSort(
   data: Array<number>,
-  type: "ASC" | "DES" = "ASC",
-  mutate: boolean = true,
+  type: 'ASC' | 'DES' = 'ASC',
+  mutate: boolean = true
 ) {
   //in order to not mutate the array. this is a performance issue but helps returning a new array
   const arr = mutate ? [...data] : data
   //this helps not go over the entire array if its already sorted should break the loop
   let noSwaps: boolean
   const compare = (j: number) => {
-    if (type === "DES") {
+    if (type === 'DES') {
       return arr[j] < arr[j + 1]
     } else {
       return arr[j] > arr[j + 1]
@@ -65,11 +65,11 @@ export function bubleSort(
  */
 export function insertionSort<T extends string | number>(
   array: T[],
-  type: "ASC" | "DES" = "ASC",
+  type: 'ASC' | 'DES' = 'ASC'
 ): T[] {
   const data = [...array]
   const compare = (j: number, start: T) => {
-    if (type === "ASC") {
+    if (type === 'ASC') {
       return data[j] > start
     } else {
       return data[j] < start
@@ -87,20 +87,85 @@ export function insertionSort<T extends string | number>(
   return [...data]
 }
 
+export function alphabeticallySort(a: string, b: string) {
+  return a.localeCompare(b)
+}
 /*******************************************
  * Intermidiate sort algorithims
  * O(n log n) //better than O(n2)
  ****************************************/
 
-export function mergeSort<T extends string | number>(data: T[]): T[] {
-  if (data.length <= 1) return data
-  //   let mid = Math.floor(data.length / 2);
-  //   let left = mergeSort(data.slice(0, mid));
-  //   let right = mergeSort(data.slice(mid));
-  const [p1, p2] = ArrayHelper.splitArray(data)
-  let left = mergeSort(p1)
-  let right = mergeSort(p2)
-  return mergeArr(left, right)
+// export function mergeSort<T extends string | number>(data: T[]): T[] {
+//   if (data.length <= 1) return data
+//   //   let mid = Math.floor(data.length / 2);
+//   //   let left = mergeSort(data.slice(0, mid));
+//   //   let right = mergeSort(data.slice(mid));
+//   const [p1, p2] = ArrayHelper.splitArray(data)
+//   let left = mergeSort(p1)
+//   let right = mergeSort(p2)
+//   return mergeArr(left, right)
+// }
+
+/**
+ * @example
+ * const testArr = [99, 4, 5, 6, 7, 5, 7, 88, 88, 33, 34]
+ * function ascSort(a: number, b: number) {
+ *   return a - b
+ * }
+ * mergeSort(testArr, ascSort) // custom function sort. (Note: that is the default sort if you dont pass the 2nd argument)
+ * mergeSort(testArr, null, true) // in place sort
+ *
+ */
+export function mergeSort<T>(
+  array: T[],
+  compare?: ((a: T, b: T) => number) | null | undefined,
+  inPlace: boolean = false
+) {
+  if (!compare || typeof compare !== 'function') {
+    compare = function (a, b) {
+      if (typeof a === 'string' && typeof b === 'string') {
+        return alphabeticallySort(a, b)
+      }
+      return (a as any) - (b as any)
+    }
+  }
+
+  if (array.length < 2) return array
+
+  const len = array.length
+  let i = 0
+  let j = 0
+  let leftIndex = Math.floor(len / 2)
+  let rightIndex = leftIndex
+
+  const leftData = mergeSort(array.slice(0, leftIndex), compare, inPlace),
+    rightData = mergeSort(array.slice(rightIndex), compare, inPlace)
+
+  let output: T[] = []
+
+  if (inPlace) {
+    array.splice(0, array.length)
+    output = array
+  }
+
+  while (i < leftData.length && j < rightData.length) {
+    if (compare(leftData[i], rightData[j]) < 0) {
+      output.push(leftData[i])
+      i += 1
+    } else {
+      output.push(rightData[j])
+      j += 1
+    }
+  }
+  while (i < leftData.length) {
+    output.push(leftData[i])
+    i += 1
+  }
+  while (j < rightData.length) {
+    output.push(rightData[j])
+    j += 1
+  }
+  return output
 }
 
 //only works with two sorted arrays
