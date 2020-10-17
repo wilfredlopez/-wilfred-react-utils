@@ -1,6 +1,6 @@
 {
   "name": "@wilfredlopez/react-utils",
-  "version": "3.0.3",
+  "version": "3.0.4",
   "description": "Utility functions and types for Javascript projects",
   "main": "dist/index.js",
   "browser": "dist/index.umd.js",
@@ -10,6 +10,7 @@
     "dist/"
   ],
   "scripts": {
+    "prepare": "npm run build",
     "build": "npm run build:ts && npm run roll2 && tsc --outDir dist --emitDeclarationOnly",
     "roll2": "rimraf dist && rollup -c rollup2.config.js",
     "build:ts": "rimraf tsbuild && tsc -p tsconfig.json --removeComments",
