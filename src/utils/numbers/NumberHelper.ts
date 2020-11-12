@@ -1,130 +1,132 @@
-import { appendMethod } from "../multiuse/appendMethod";
+import { appendMethodObject, appendValueObject } from '../multiuse/appendMethod'
+import secondsToObject from './secondsToObject'
 
-export type ResultOf<T> = {
-  success: true;
-  value: T;
-  error: null;
-} | {
-  success: false;
-  error: string;
-  value: null;
-};
+export type ResultOf<T> =
+  | {
+      success: true
+      value: T
+      error: null
+    }
+  | {
+      success: false
+      error: string
+      value: null
+    }
 
-class NumberHelperBase {
-  [Symbol.toStringTag] = "NumberHelper";
-
-  static toString() {
-    return `[object NumberHelper]`;
-  }
+const NumberHelperBase = {
+  toString() {
+    return `[object NumberHelper]`
+  },
+  secondsToObject,
   /**
    * Returns true or false if the number is prime or not.
    * @param n number to verify
    * @complexity O(log n) :)
    */
-  static isPrime(n: number) {
+  isPrime(n: number) {
     //base cases
-    if (n < 2) return false;
-    if (n === 2) return true;
-    let max = Math.ceil(Math.sqrt(n));
+    if (n < 2) return false
+    if (n === 2) return true
+    let max = Math.ceil(Math.sqrt(n))
     for (let i = 2; i <= max; i++) {
       if (n % i === 0) {
-        return false;
+        return false
       }
     }
-    return true;
-  }
+    return true
+  },
 
   /**
    * Get random integer.
    * @param from - number to start from. Defaults to 0.
    * @param upTo - number to end. Defaults to 100.
    */
-  static getRandomInt(from = 0, upTo = 100) {
-    return from + Math.floor(Math.random() * (upTo - from));
-  }
+  getRandomInt(from = 0, upTo = 100) {
+    return from + Math.floor(Math.random() * (upTo - from))
+  },
 
   /**
    * Parse text to int.
    * @param text - Text to parse to int.
    * returns {success:true, value: number} if can parse it.
    * returns {success:false, error: 'Invalid number format'} if cant parse it.
-   * @param radix - A value between 2 and 36 that specifies the base of the number in numString. If this argument is not supplied, strings with a prefix of '0x' are considered hexadecimal. 
-   * All other strings are considered decimal. DEFAULT=10. 
+   * @param radix - A value between 2 and 36 that specifies the base of the number in numString. If this argument is not supplied, strings with a prefix of '0x' are considered hexadecimal.
+   * All other strings are considered decimal. DEFAULT=10.
    */
-  static tryParseInt(text: string, radix = 10): ResultOf<number> {
+  tryParseInt(text: string, radix = 10): ResultOf<number> {
     if (/^-?\d+$/.test(text)) {
       return {
         success: true,
         value: parseInt(text, radix),
         error: null,
-      };
+      }
     } else {
       return {
         success: false,
         value: null,
-        error: "Invalid number format",
-      };
+        error: 'Invalid number format',
+      }
     }
-  }
+  },
 
   /**
    * Determines if number is power of 2
-   * @param number 
+   * @param number
    * @complexity O(1) Constant time.
    * @example
    * console.log(NumberHelper.isPowerOfTwo(16)) //true
    */
-  static isPowerOfTwo(number: number): boolean {
-    if (number < 1) return false;
-    return (number & (number - 1)) === 0;
-  }
+  isPowerOfTwo(number: number): boolean {
+    if (number < 1) return false
+    return (number & (number - 1)) === 0
+  },
 
   /**
    * Formats seconds into duration. eg. formatDuration(60000) => '00:06:00'
    * @param seconds total seconds
    */
-  static formatDuration(seconds: number) {
-    return new Date(seconds * 1000).toISOString().substr(11, 8);
-  }
+  formatDuration(seconds: number) {
+    return new Date(seconds * 1000).toISOString().substr(11, 8)
+  },
 
   /**
    * @param {number} number
    * @return {boolean}
    */
-  static isEven(number: number) {
+  isEven(number: number) {
     //could also be (number % 2) === 0
     //Using & bitwise operator.
-    return (number & 1) === 0;
-  }
+    return (number & 1) === 0
+  },
 
-  static isOdd(number: number) {
+  isOdd(number: number) {
     //but could also be (number % 2) !== 0
     //Using & instead of % here. & represents a bitwise operation.
-    return (number & 1) !== 0;
-  }
+    return (number & 1) !== 0
+  },
 
   /**
    * @param {number} number - 32-bit integer.
    * @return {boolean}
    */
-  static isPositive(number: number) {
+  isPositive(number: number) {
     // Zero is neither a positive nor a negative number.
     if (number === 0) {
-      return false;
+      return false
     }
 
     // The most significant 32nd bit can be used to determine whether the number is positive.
-    return ((number >> 31) & 1) === 0;
-  }
+    return ((number >> 31) & 1) === 0
+  },
 
   /**
    * Switch the sign of the number using "Twos Complement" approach.
    * @param {number} number
    * @return {number} number with the oposite sign. + or -
    */
-  static switchSign(number: number) {
-    return ~number + 1;
-  }
+  switchSign(number: number) {
+    return ~number + 1
+  },
 
   /**
    * Returns the digit in number at the given position.
@@ -143,22 +145,22 @@ class NumberHelperBase {
    * getDigitAt(12345, 4) // 1
    * getDigitAt(1, 4) // 0 (there's no fourth place in this case returns 0)
    */
-  static getDigitAt(number: number, position: number): number {
-    return Math.floor(Math.abs(number) / Math.pow(10, position)) % 10;
-  }
+  getDigitAt(number: number, position: number): number {
+    return Math.floor(Math.abs(number) / Math.pow(10, position)) % 10
+  },
 
   /**
    * calculate fibonacci numbers.
    * Uses Memoization for speed improvemnts.
    * @complexity O(n)
    */
-  static fibonacci(n: number) {
-    if (n <= 2) return 1;
-    let fivNums = [0, 1, 1];
+  fibonacci(n: number) {
+    if (n <= 2) return 1
+    let fivNums = [0, 1, 1]
     for (let i = 3; i <= n; i++) {
-      fivNums[i] = fivNums[i - 1] + fivNums[i - 2];
+      fivNums[i] = fivNums[i - 1] + fivNums[i - 2]
     }
-    return fivNums[n];
+    return fivNums[n]
     /* Alternative Way. might be better but need to measure
 if (n <= 2) return 1;
   return Array(n).fill([1, 0]).reduce(
@@ -166,7 +168,7 @@ if (n <= 2) return 1;
   )[0];
 
     */
-  }
+  },
 
   /**
    * Calculate fibonacci number at specific position using closed form function (Binet's formula).
@@ -175,24 +177,24 @@ if (n <= 2) return 1;
    * @param {number} position - Position number of fibonacci sequence (must be number from 1 to 75).
    * @return {number}
    */
-  static fibonacciClosedForm(position: number) {
-    const topMaxValidPosition = 70;
+  fibonacciClosedForm(position: number) {
+    const topMaxValidPosition = 70
 
     // Check that position is valid.
     if (position < 1 || position > topMaxValidPosition) {
       throw new Error(
-        `Can't handle position smaller than 1 or greater than ${topMaxValidPosition}`,
-      );
+        `Can't handle position smaller than 1 or greater than ${topMaxValidPosition}`
+      )
     }
 
     // Calculate √5 to re-use it in further formulas. (≈ 2.23606)
-    const sqrt5 = Math.sqrt(5);
+    const sqrt5 = Math.sqrt(5)
     // Calculate φ constant (≈ 1.618033).
-    const phi = (1 + sqrt5) / 2;
+    const phi = (1 + sqrt5) / 2
 
     // Calculate fibonacci number using Binet's formula.
-    return Math.floor(phi ** position / sqrt5 + 0.5);
-  }
+    return Math.floor(phi ** position / sqrt5 + 0.5)
+  },
 
   /**
    * Return a fibonacci sequence as an array.
@@ -200,69 +202,70 @@ if (n <= 2) return 1;
    * @param n
    * @return {number[]}
    */
-  static fibonacciSequence(n: number) {
-    if (n <= 1) return [1];
-    let fivNums = [0, 1, 1];
+  fibonacciSequence(n: number) {
+    if (n <= 1) return [1]
+    let fivNums = [0, 1, 1]
     for (let i = 3; i <= n; i++) {
-      fivNums[i] = fivNums[i - 1] + fivNums[i - 2];
+      fivNums[i] = fivNums[i - 1] + fivNums[i - 2]
     }
 
-    return fivNums.slice(1);
-  }
+    return fivNums.slice(1)
+  },
 
   /**
-   * 
+   *
    * @param n number to calculate.
    * @deprecated callstack can be a problem. please use NumberHelper.fibonacci
    */
-  static fibRecursive(
+  fibRecursive(
     n: number,
-    memo: { [key: string]: number } = { "0": 0, "1": 1, "2": 1 },
+    memo: { [key: string]: number } = { '0': 0, '1': 1, '2': 1 }
   ): number {
-    if (memo[n] !== undefined) return memo[n];
+    if (memo[n] !== undefined) return memo[n]
     //base case. alredy included in memo but leaving here anyways
-    if (n <= 2) return 1;
-    let res = NumberHelperWithMath.fibRecursive(n - 1, memo) +
-      NumberHelperWithMath.fibRecursive(n - 2, memo);
-    memo[n] = res;
-    return res;
-  }
+    if (n <= 2) return 1
+    let res =
+      NumberHelperWithMath.fibRecursive(n - 1, memo) +
+      NumberHelperWithMath.fibRecursive(n - 2, memo)
+    memo[n] = res
+    return res
+  },
 
-  static isNumber(arg: any): arg is number {
-    return typeof arg === "number";
-  }
-  static addUpTo(n: number) {
-    return (n * (n + 1)) / 2;
+  isNumber(arg: any): arg is number {
+    return typeof arg === 'number'
+  },
+  addUpTo(n: number) {
+    return (n * (n + 1)) / 2
     // return (n / 2) * (1 + n); //the same
-  }
+  },
 
-  static msToTime(d: number) {
+  msToTime(d: number) {
     var seconds = Math.floor((d / 1000) % 60),
-      minutes = Math.floor((d / (1000 * 60)) % 60);
+      minutes = Math.floor((d / (1000 * 60)) % 60)
 
-    return minutes + ":" + (seconds < 10 ? `0${seconds}` : seconds);
-  }
+    return minutes + ':' + (seconds < 10 ? `0${seconds}` : seconds)
+  },
 
   /**
    * @param {number} number
    * @return {number}
    * @complexity O(n)
    */
-  static factorial(number: number) {
-    let result = 1;
+  factorial(number: number) {
+    let result = 1
 
     for (let i = 2; i <= number; i += 1) {
-      result *= i;
+      result *= i
     }
 
-    return result;
-  }
+    return result
+  },
 
-  static factorialRecursive(number: number): number {
-    if (number < 1) return 0;
-    if (number === 1) return 1;
-    return number * NumberHelperWithMath.factorialRecursive(number - 1);
-  }
+  factorialRecursive(number: number): number {
+    if (number < 1) return 0
+    if (number === 1) return 1
+    return number * NumberHelperWithMath.factorialRecursive(number - 1)
+  },
 
   /**
    * Returns a generator returning the numbers from start to end.
@@ -276,56 +279,45 @@ if (n <= 2) return 1;
       const arr = [...NumberHelper.range({start: 0, end: 10})];
       console.log(arr); /
    */
-  static *range({ start = 1, end = 10, step = 1 } = {}) {
+  range: function* range({ start = 1, end = 10, step = 1 } = {}) {
     for (let i = start; i <= end; i = i + step) {
-      yield i;
+      yield i
     }
-  }
+  },
 
   /**
- * Returns a function that sums over the first parameters sum.
- * @param x at least one number but up to an infinite number arguments. (1,3,5,6...)
- * @example
- * const acc3M4 = NumberHelper.accumulator(3, -4)
- * console.log(acc3M4(1.5,5)) // 5.5
- */
-  static accumulator(...x: number[]) {
-    let sum = x.reduce((acc, curr) => acc += curr, 0);
+   * Returns a function that sums over the first parameters sum.
+   * @param x at least one number but up to an infinite number arguments. (1,3,5,6...)
+   * @example
+   * const acc3M4 = NumberHelper.accumulator(3, -4)
+   * console.log(acc3M4(1.5,5)) // 5.5
+   */
+  accumulator(...x: number[]) {
+    let sum = x.reduce((acc, curr) => (acc += curr), 0)
     return (...y: number[]) => {
-      let plus = y.reduce((acc, curr) => acc += curr, 0);
-      return sum += plus;
-    };
-  }
+      let plus = y.reduce((acc, curr) => (acc += curr), 0)
+      return (sum += plus)
+    }
+  },
 }
 
-let NumberHelperWithMath = NumberHelperBase as Math & typeof NumberHelperBase;
+let NumberHelperWithMath = NumberHelperBase as Math & typeof NumberHelperBase
 for (let key of Reflect.ownKeys(Math)) {
-  const fnOrProp = Math[key as keyof Math];
+  const fnOrProp = Math[key as keyof Math]
 
-  if (typeof fnOrProp === "function") {
-    NumberHelperWithMath = appendMethod(
+  if (typeof fnOrProp === 'function') {
+    NumberHelperWithMath = appendMethodObject(
       NumberHelperWithMath,
       fnOrProp,
-      String(key),
-    );
+      key
+    )
   } else {
-    //@ts-ignore
-    NumberHelperWithMath[key] = fnOrProp;
+    NumberHelperWithMath = appendValueObject(
+      NumberHelperWithMath,
+      fnOrProp,
+      key
+    )
   }
 }
 
-export const NumberHelper = NumberHelperWithMath;
-
-//Asign all properties of Math to NumberHelper
-// for(let o of Reflect.ownKeys(Math)){
-//   //@ts-ignore
-//   NumberHelper[o] = Math[o  as keyof Math]
-
-// }
-
-// for (let n of NumberHelper.range()) {
-//   console.log(n); // 0,2, 4, 5, 8, 10, 12, 14, 16, 18, 20
-// }
-
-// const arr = [...NumberHelper.range({ start: 0, end: 10 })];
-// console.log(arr); // [ 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 ]
+export const NumberHelper = NumberHelperWithMath
