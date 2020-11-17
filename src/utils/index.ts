@@ -1,4 +1,4 @@
-import { Validator } from "../validator";
+import { Validator } from '../validator'
 
 export {
   AssertionError,
@@ -15,7 +15,7 @@ export {
   isTypeof,
   isUndefined,
   isNullOrUndefined,
-} from "./assetion";
+} from './assetion'
 export {
   turnSecondsToFormatedMinutes,
   formatDuration,
@@ -24,15 +24,15 @@ export {
   fib,
   idGenetaror,
   NumberHelper,
-} from "./numbers";
-export { downloadToFile } from "./downloadToFile";
-export { createResource, wrapPromise } from "./createResource";
-export { DateFormatter, getMonthFromInt, PrecisionTime } from "./dates";
-export { formatDate } from "./dates/formatDate";
-export * from "./multiuse";
-export { autoscroll } from "./scroll";
-export { PatternGenerator, StringHelper } from "./strings";
-export { Cipher } from "./code";
+} from './numbers'
+export { downloadToFile } from './downloadToFile'
+export { createResource, wrapPromise } from './createResource'
+export { DateFormatter, getMonthFromInt, PrecisionTime } from './dates'
+export { formatDate } from './dates/formatDate'
+export * from './multiuse'
+export { autoscroll } from './scroll'
+export { PatternGenerator, StringHelper } from './strings'
+export { Cipher } from './code'
 export {
   bubleSort,
   insertionSort,
@@ -40,32 +40,30 @@ export {
   mergeSort,
   radixSort,
   ArrayHelper,
-} from "./arrays";
+} from './arrays'
 
-export function getAsString(
-  value: any,
-): string | undefined {
+export * from './css'
+
+export function getAsString(value: any): string | undefined {
   if (!value) {
-    return undefined;
+    return undefined
   }
   if (Array.isArray(value)) {
-    return getAsString(value[0]);
+    return getAsString(value[0])
   }
   if (Validator.isObject(value)) {
-    return undefined;
+    return undefined
   }
-  return value;
+  return value
 }
-export function getAsNumber(
-  value: any,
-): number | undefined {
-  const result = getAsString(value);
+export function getAsNumber(value: any): number | undefined {
+  const result = getAsString(value)
   if (!result) {
-    return undefined;
+    return undefined
   }
-  const num = parseInt(result);
+  const num = parseInt(result)
   if (isNaN(num)) {
-    return undefined;
+    return undefined
   }
-  return num;
+  return num
 }
