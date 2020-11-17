@@ -206,4 +206,35 @@ console.log(dg.from('animals')) //cat
 console.log(dg.from('animals')) //dog
 ```
 
+### Other Utilities
+
+- [`createGlobalStyle`] - Append styles to document's head. you can pass a string or an object with CSSProperties as arguments.
+
+```ts
+import { createGlobalStyle } from '@wilfredlopez/react-utils'
+
+/*
+Appends to document's head
+<style>
+body{
+  background-color: red;
+}
+</style>
+*/
+
+createGlobalStyle({
+  body: {
+    backgroundColor: 'red',
+  },
+})
+
+//OR
+
+createGlobalStyle(`
+  body: {
+    background: red;
+  }
+`)
+```
+
 #### AND MUCH MORE...
