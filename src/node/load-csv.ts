@@ -1,6 +1,6 @@
-import fs from "fs"
-import { dropRightWhile } from "../_lodash/dropRightWhile"
-import { organizeData } from "./orginizeData"
+import fs from 'fs'
+import { dropRightWhile } from './dropRightWhile'
+import { organizeData } from './orginizeData'
 // import { map } from "../lodash/map"
 // import { pullAt } from "../lodash/pullAt"
 
@@ -27,37 +27,33 @@ export function loadCsv(
   {
     converters,
   }: // labelColums, dataColums
-    Options = {
-      // dataColums: [],
-      // labelColums: [],
-    },
+  Options = {
+    // dataColums: [],
+    // labelColums: [],
+  }
 ) {
-  const data = fs.readFileSync(filename, { encoding: "utf-8" })
+  const data = fs.readFileSync(filename, { encoding: 'utf-8' })
 
-  let rows = data.split("\n").map((row) => {
-    return row.split(",")
+  let rows = data.split('\n').map(row => {
+    return row.split(',')
   })
-  rows = rows.map((row) => dropRightWhile(row, (val) => val === ""))
+  rows = rows.map(row => dropRightWhile(row, val => val === ''))
 
   const headers = [...rows[0]]
 
   let parsedRows = rows.map((row, index) => {
-    if (index === 0)
-    {
+    if (index === 0) {
       return row
     }
     return row.map((element, index) => {
-      if (converters && converters[headers[index]])
-      {
+      if (converters && converters[headers[index]]) {
         const converted = converters[headers[index]](element)
         return Number.isNaN(converted) ? element : converted
       }
       const num = parseFloat(element)
-      if (Number.isNaN(num))
-      {
+      if (Number.isNaN(num)) {
         return element
-      } else
-      {
+      } else {
         return num
       }
     })
@@ -67,7 +63,7 @@ export function loadCsv(
   // const rawData = extractColumns(parsedRows as any, dataColums);
   // labels.shift();
   // rawData.shift();
-  parsedRows = parsedRows.map((row) => row.filter((v) => v !== "\r"))
+  parsedRows = parsedRows.map(row => row.filter(v => v !== '\r'))
   const output = {
     labels: parsedRows[0],
     rows: parsedRows.slice(1),

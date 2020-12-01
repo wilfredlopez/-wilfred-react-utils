@@ -1,1 +1,2 @@
-export * from "./StringHelper";
+export * from './StringHelper'
+export * from './PatternGenerator'

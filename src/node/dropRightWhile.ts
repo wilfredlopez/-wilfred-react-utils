@@ -1,4 +1,4 @@
-import { baseWhile } from "./baseWhile";
+import { baseWhile } from './baseWhile'
 /**
  * Creates a slice of `array` excluding elements dropped from the end.
  * Elements are dropped until `predicate` returns falsey. The predicate is
@@ -22,9 +22,9 @@ import { baseWhile } from "./baseWhile";
  */
 export function dropRightWhile<T extends any>(
   array: T[],
-  predicate: (value: T) => boolean,
+  predicate: (value: T) => boolean
 ): T[] {
-  return (array != null && array.length)
+  return array != null && array.length
     ? baseWhile(array, predicate, true, true)
-    : [];
+    : []
 }
