@@ -70,6 +70,15 @@ const NumberHelperBase = {
   },
 
   /**
+   * Verifies if the value is a power of the second argument `powerOf`.
+   * @param value value to evaluate
+   * @param powerOf power to compare. defaults to 2
+   */
+  isPowerOf(value: number, powerOf = 2) {
+    return (Math.log(value) / Math.log(powerOf)) % 1 === 0
+  },
+
+  /**
    * Determines if number is power of 2
    * @param number
    * @complexity O(1) Constant time.
