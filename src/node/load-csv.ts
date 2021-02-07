@@ -1,8 +1,6 @@
 import fs from 'fs'
-import { dropRightWhile } from './dropRightWhile'
+import { dropRightWhile } from '@wilfredlopez/js-utils'
 import { organizeData } from './orginizeData'
-// import { map } from "../lodash/map"
-// import { pullAt } from "../lodash/pullAt"
 
 interface Options {
   converters?: { [key: string]: (val: string) => boolean }
@@ -27,10 +25,10 @@ export function loadCsv(
   {
     converters,
   }: // labelColums, dataColums
-  Options = {
-    // dataColums: [],
-    // labelColums: [],
-  }
+    Options = {
+      // dataColums: [],
+      // labelColums: [],
+    }
 ) {
   const data = fs.readFileSync(filename, { encoding: 'utf-8' })
 

@@ -2148,6 +2148,11 @@
     "@webassemblyjs/wast-parser" "1.8.5"
     "@xtuc/long" "4.2.2"
 
+"@wilfredlopez/js-utils@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@wilfredlopez/js-utils/-/js-utils-1.0.0.tgz#5f35cc46e120d51766d30b153edaeecf8565d882"
+  integrity sha512-EfsKNgg0XHZiFFlgnl93SeHliiJiEm2nLR0dboznpZ9MPC8umIE02PM3H/RCnAOItM0uq7dWE5taaUPTDsYTEA==
+
 "@xtuc/ieee754@^1.2.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@xtuc/ieee754/-/ieee754-1.2.0.tgz#eef014a3145ae477a1cbc00cd1e552336dceb790"
