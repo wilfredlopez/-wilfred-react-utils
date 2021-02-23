@@ -11,12 +11,9 @@
   ],
   "scripts": {
     "prepare": "npm run build",
-    "build": "npm run build:ts && npm run roll2 && tsc --outDir dist --emitDeclarationOnly",
-    "roll2": "rimraf dist && rollup -c rollup2.config.js",
+    "build": "npm run build:ts && npm run rollup:build && tsc --outDir dist --emitDeclarationOnly",
+    "rollup:build": "rimraf dist && rollup -c rollup.config.js",
     "build:ts": "rimraf tsbuild && tsc -p tsconfig.json --removeComments",
-    "build:rollupOld": "rimraf dist && npm run build:types && rollup -c",
-    "start": "node scripts/start.js",
-    "build:react": "node scripts/build.js",
     "test": "node scripts/test.js",
     "setup": "npm install",
     "build:wp": "rimraf dist && webpack",
@@ -149,8 +146,8 @@
     "testEnvironment": "jest-environment-jsdom-fourteen",
     "transform": {
       "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
+      "^.+\\.css$": "<rootDir>/scripts/jest/cssTransform.js",
+      "^(?!.*\\.(js|jsx|ts|tsx|css|json)$)": "<rootDir>/scripts/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|ts|tsx)$",
