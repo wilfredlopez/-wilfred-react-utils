@@ -206,6 +206,24 @@ console.log(dg.from('animals')) //cat
 console.log(dg.from('animals')) //dog
 ```
 
+### IndexDB Store
+
+```ts
+import { indexDBStore } from '@wilfredlopez/react-utils'
+const dbStore = indexDBStore.createStore('test-utils', 'react-utils')
+//Write
+dbStore('readwrite', db => {
+  db.add({ hello: 'world' }, 'hello')
+})
+
+//Read
+dbStore('readonly', db => {
+  db.get('hello').onsuccess = function () {
+    console.log({ res: this.result })
+  }
+})
+```
+
 ### Other Utilities
 
 - [`createGlobalStyle`] - Append styles to document's head. you can pass a string or an object with CSSProperties as arguments.

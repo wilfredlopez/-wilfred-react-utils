@@ -272,26 +272,26 @@ export default indexDBStore
 
 //@example use
 
-// const store = indexDBStore.createStore('W', 'W')
+const store = indexDBStore.createStore('W', 'W')
 
 
 // //read-write
-// store('readwrite', (s) => {
-//   s.add('me', 'me')
-// })
+store('readwrite', (s) => {
+  s.add('me', 'me')
+})
 
 // //read
-// store('readonly', (s) => {
-//   //normal use
-//   s.get('me').onsuccess = function () {
-//     console.log({ res: this.result })
-//   }
-//   //using promisify
-//   const p = promisifyRequest(s.get('me'))
-//   p.then((res) => {
-//     console.log({ res })
-//   })
-// })
+store('readonly', (s) => {
+  //normal use
+  s.get('me').onsuccess = function () {
+    console.log({ res: this.result })
+  }
+  //using promisify
+  const p = promisifyRequest(s.get('me'))
+  p.then((res) => {
+    console.log({ res })
+  })
+})
 
 // //utilities
 // indexDBStore.get('me', store)
