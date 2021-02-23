@@ -210,17 +210,49 @@ console.log(dg.from('animals')) //dog
 
 ```ts
 import { indexDBStore } from '@wilfredlopez/react-utils'
-const dbStore = indexDBStore.createStore('test-utils', 'react-utils')
-//Write
-dbStore('readwrite', db => {
-  db.add({ hello: 'world' }, 'hello')
+
+const store = indexDBStore.createStore('WDB', 'myStore')
+
+//write
+store.readwrite(db => {
+  db.add('react-utils', 'rutil')
+  db.add('s', 'sssss')
+})
+
+//get all entries
+store.entries().then(data => {
+  console.log({ entries: data })
+})
+
+//delete
+store.del('s')
+
+//get all values
+store.values().then(s => {
+  console.log({ s })
 })
 
 //Read
-dbStore('readonly', db => {
-  db.get('hello').onsuccess = function () {
-    console.log({ res: this.result })
+store.readonly.get('rutil').then(value => {
+  console.log('value with key rutil is: ', value)
+})
+
+//COUNT: Retrieve the number of records matching the given key
+
+//COUNT: Object API
+store.count('rutil').then(result => {
+  console.log(`count is : `, result)
+})
+//COUNT: Function API
+store('readonly', db => {
+  const request = db.count('rutil')
+  request.onsuccess = function () {
+    console.log(`count is : `, this.result)
   }
+})
+//Clear all the data in store.
+store.clear().then(() => {
+  console.log('store is cleared.')
 })
 ```
 

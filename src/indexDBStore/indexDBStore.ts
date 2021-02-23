@@ -22,6 +22,36 @@ function promisifyRequest<T = undefined>(
   })
 }
 
+
+
+function createBoundMethods(useStore_fn: UseStoreDefaultFunc): Methods {
+  return {
+    clear: clear.bind(null, useStore_fn),
+    del: (key: IDBValidKey, customStore: UseStore | UseStoreDefaultFunc = useStore_fn) => del(key, customStore),
+    entries: entries.bind(null, useStore_fn),
+    get: (key: IDBValidKey, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => get(key, customStore),
+    keys: keys.bind(null, useStore_fn),
+    getMany: (keys: IDBValidKey[], customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => getMany(keys, customStore),
+    set: (key: IDBValidKey, value: any, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => set(key, value, customStore),
+    update: <T>(key: IDBValidKey, updater: (oldValue: T | undefined) => T, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => update<T>(key, updater, customStore),
+    setMany: (entries: [IDBValidKey, any][], customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => setMany(entries, customStore),
+    values: values.bind(null, useStore_fn),
+    count: (key: IDBValidKey | IDBKeyRange, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => count(key, customStore),
+    eachCursor: (callback: (cursor: IDBCursorWithValue) => void,
+      customStore: UseStore | UseStoreDefaultFunc = useStore_fn) => eachCursor(callback, customStore)
+  }
+}
+
+function getMethod(mode: IDBTransactionMode, useStore_fn: UseStoreDefaultFunc) {
+  const _readonly = <T>(callback: (store: IDBObjectStore) => T | PromiseLike<T>) => useStore_fn(mode, callback)
+  const bindMethods = createBoundMethods(useStore_fn)
+  const readonly: UseStoreGetters[typeof mode] = Object.assign(_readonly, {
+    ...bindMethods
+  })
+
+  return readonly
+}
+
 /**
  * 
  * @param dbName name of database
@@ -33,16 +63,44 @@ function createStore(dbName: string, storeName: string): UseStore {
   request.onupgradeneeded = () => request.result.createObjectStore(storeName)
   const dbp = promisifyRequest(request)
 
-  return (txMode, callback) =>
+  const useStore_fn = <T>(txMode: IDBTransactionMode, callback: (store: IDBObjectStore) => T | PromiseLike<T>,) =>
     dbp.then((db) =>
       callback(db.transaction(storeName, txMode).objectStore(storeName)),
     )
+
+  const readonly: UseStoreGetters['readonly'] = getMethod('readonly', useStore_fn)
+  const readwrite: UseStoreGetters['readwrite'] = getMethod('readwrite', useStore_fn)
+  const versionchange: UseStoreGetters['versionchange'] = getMethod('versionchange', useStore_fn)
+  const bindMethods = createBoundMethods(useStore_fn)
+  return Object.assign(useStore_fn, {
+    readonly,
+    readwrite,
+    versionchange,
+    ...bindMethods
+  })
 }
 
-export type UseStore = <T>(
+/**
+ * @public
+ */
+export type UseStore = UseStoreDefaultFunc & UseStoreGetters
+
+type UseStoreDefaultFunc = <T>(
   txMode: IDBTransactionMode,
-  callback: (store: IDBObjectStore) => T | PromiseLike<T>,
+  callback: UseStoreCallBack<T>
 ) => Promise<T>
+
+type Methods = Omit<typeof indexDBStore, 'createStore' | 'getDefaultStore' | 'promisifyRequest'>
+
+type UseStoreCallBack<T> = (store: IDBObjectStore) => T | PromiseLike<T>
+type GetterCallBack = <T>(callback: UseStoreCallBack<T>) => Promise<T>
+export type UseStoreGetters = {
+  readonly: GetterCallBack & Methods
+  readwrite: GetterCallBack & Methods
+  versionchange: GetterCallBack & Methods
+} & Methods
+
+
 
 let getDefaultStoreFunc: UseStore | undefined
 
@@ -68,10 +126,24 @@ function getDefaultStore() {
  */
 function get<T = any>(
   key: IDBValidKey,
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<T | undefined> {
   return customStore('readonly', (store) => promisifyRequest(store.get(key)))
 }
+
+
+/**
+ * Retrieves the number of records matching the given key or key range in query.
+ * @param key 
+ * @public
+ */
+function count(
+  key: IDBValidKey | IDBKeyRange,
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
+): Promise<number> {
+  return customStore('readonly', (store) => promisifyRequest(store.count(key)))
+}
+
 
 /**
  * Set a value with a key.
@@ -84,7 +156,7 @@ function get<T = any>(
 function set(
   key: IDBValidKey,
   value: any,
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<void> {
   return customStore('readwrite', (store) => {
     store.put(value, key)
@@ -102,7 +174,7 @@ function set(
  */
 function setMany(
   entries: [IDBValidKey, any][],
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<void> {
   return customStore('readwrite', (store) => {
     entries.forEach((entry) => store.put(entry[1], entry[0]))
@@ -119,7 +191,7 @@ function setMany(
  */
 function getMany(
   keys: IDBValidKey[],
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<any[]> {
   return customStore('readonly', (store) =>
     Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
@@ -137,7 +209,7 @@ function getMany(
 function update<T = any>(
   key: IDBValidKey,
   updater: (oldValue: T | undefined) => T,
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<void> {
   return customStore(
     'readwrite',
@@ -167,7 +239,7 @@ function update<T = any>(
  */
 function del(
   key: IDBValidKey,
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<void> {
   return customStore('readwrite', (store) => {
     store.delete(key)
@@ -175,13 +247,14 @@ function del(
   })
 }
 
+
 /**
  * Clear all values in the store.
  *
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  * @public
  */
-function clear(customStore = getDefaultStore()): Promise<void> {
+function clear(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): Promise<void> {
   return customStore('readwrite', (store) => {
     store.clear()
     return promisifyRequest(store.transaction)
@@ -191,8 +264,8 @@ function clear(customStore = getDefaultStore()): Promise<void> {
 
 
 function eachCursor(
-  customStore: UseStore,
   callback: (cursor: IDBCursorWithValue) => void,
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<void> {
   return customStore('readonly', (store) => {
     // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
@@ -212,10 +285,10 @@ function eachCursor(
  * @param customStore Method to get a custom store. Use with caution (see the docs).
  * @public
  */
-function keys(customStore = getDefaultStore()): Promise<IDBValidKey[]> {
+function keys(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): Promise<IDBValidKey[]> {
   const items: IDBValidKey[] = []
 
-  return eachCursor(customStore, (cursor) => items.push(cursor.key)).then(
+  return eachCursor((cursor) => items.push(cursor.key), customStore).then(
     () => items,
   )
 }
@@ -227,11 +300,11 @@ function keys(customStore = getDefaultStore()): Promise<IDBValidKey[]> {
  * @public
  */
 function values(
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<IDBValidKey[]> {
   const items: any[] = []
 
-  return eachCursor(customStore, (cursor) => items.push(cursor.value)).then(
+  return eachCursor((cursor) => items.push(cursor.value), customStore).then(
     () => items,
   )
 }
@@ -243,12 +316,13 @@ function values(
  * @public
  */
 function entries(
-  customStore = getDefaultStore(),
+  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<[IDBValidKey, any][]> {
   const items: [IDBValidKey, any][] = []
 
-  return eachCursor(customStore, (cursor) =>
+  return eachCursor((cursor) =>
     items.push([cursor.key, cursor.value]),
+    customStore,
   ).then(() => items)
 }
 
@@ -265,46 +339,58 @@ export const indexDBStore = {
   keys,
   values,
   entries,
-  promisifyRequest
+  promisifyRequest,
+  count,
+  eachCursor
 }
 
 export default indexDBStore
 
 //@example use
 
-const store = indexDBStore.createStore('W', 'W')
+// const store = indexDBStore.createStore('WDB', 'myStore')
 
-
-// //read-write
-store('readwrite', (s) => {
-  s.add('me', 'me')
-})
-
-// //read
-store('readonly', (s) => {
-  //normal use
-  s.get('me').onsuccess = function () {
-    console.log({ res: this.result })
-  }
-  //using promisify
-  const p = promisifyRequest(s.get('me'))
-  p.then((res) => {
-    console.log({ res })
-  })
-})
-
-// //utilities
-// indexDBStore.get('me', store)
-// indexDBStore.get('me', store).then(res => {
-//   console.log(res)
+// //write
+// store.readwrite(db => {
+//   db.add('react-utils', 'rutil')
+//   db.add('s', 'sssss')
 // })
-// indexDBStore.del('s', store)
 
-// //[key, value]
-// indexDBStore.entries(store).then(data => {
+// //get all entries
+// store.entries().then(data => {
 //   console.log({ entries: data })
 // })
-// indexDBStore.values(store).then(s => {
-//   console.log({s})
+
+// //delete
+// store.del('s')
+
+// //get all values
+// store.values().then(s => {
+//   console.log({ s })
 // })
-// indexDBStore.clear(store)
+
+// //Read
+// store.readonly.get('rutil').then(value => {
+//   console.log('value with key rutil is: ', value)
+// })
+
+// //Clear all the data in store.
+// store.clear().then(() => {
+//   console.log('store is cleared.')
+// })
+
+// //COUNT: Retrieve the number of records matching the given key
+
+// //COUNT: Object API
+// store.count('rutil').then(result => {
+//   console.log(`count is : `, result)
+// })
+// //COUNT: Function API
+// store('readonly', db => {
+//   const request = db.count('rutil')
+//   request.onsuccess = function () {
+//     console.log(`count is : `, this.result)
+//   }
+// })
+
+
