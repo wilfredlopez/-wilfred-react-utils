@@ -52,15 +52,35 @@ function getMethod(mode: IDBTransactionMode, useStore_fn: UseStoreDefaultFunc) {
   return readonly
 }
 
+
+
+interface CreateStoreConfig {
+  version?: number | undefined, options?: IDBObjectStoreParameters | undefined,
+  onupgradeHandler?: (store: IDBObjectStore, request: IDBOpenDBRequest, ev: IDBVersionChangeEvent) => any
+}
+
 /**
  * 
  * @param dbName name of database
  * @param storeName name of custom store
  * @public
  */
-function createStore(dbName: string, storeName: string): UseStore {
-  const request = indexedDB.open(dbName)
-  request.onupgradeneeded = () => request.result.createObjectStore(storeName)
+function createStore(dbName: string, storeName: string, config: CreateStoreConfig = {}): UseStore {
+  const request = indexedDB.open(dbName, config.version)
+  request.onupgradeneeded = (evt) => {
+    const newVersion = evt.newVersion
+    if (newVersion) {
+      console.warn(`upgrading indexdb from version ${evt.oldVersion} to version ${newVersion}`)
+    }
+    if (request.result.objectStoreNames.contains(storeName)) {
+      request.result.deleteObjectStore(storeName)
+    }
+    const store = request.result.createObjectStore(storeName, config.options)
+
+    if (config.onupgradeHandler) {
+      config.onupgradeHandler(store, request, evt)
+    }
+  }
   const dbp = promisifyRequest(request)
 
   const useStore_fn = <T>(txMode: IDBTransactionMode, callback: (store: IDBObjectStore) => T | PromiseLike<T>,) =>
@@ -347,7 +367,14 @@ export const indexDBStore = {
 export default indexDBStore
 
 //@example use
-
+// const store = indexDBStore.createStore('WDB', 'myStore', {
+//   version: 1,
+//   onupgradeHandler: (store, request, event) => {
+//     //do transactions that can only happen on upgrade events.
+//     store.createIndex('IdIndex', 'id', {unique: true})
+//       console.log(request, event)
+//   }
+// })
 // const store = indexDBStore.createStore('WDB', 'myStore')
 
 // //write
