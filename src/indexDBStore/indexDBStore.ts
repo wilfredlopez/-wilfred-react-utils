@@ -56,15 +56,16 @@ function getMethod(mode: IDBTransactionMode, useStore_fn: UseStoreDefaultFunc) {
 
 interface CreateStoreConfig {
   version?: number | undefined, options?: IDBObjectStoreParameters | undefined,
+  deleteOnUpdate?: boolean,
   onupgradeHandler?: (store: IDBObjectStore, request: IDBOpenDBRequest, ev: IDBVersionChangeEvent) => any
 }
 
 /**
- * 
- * @param dbName name of database
- * @param storeName name of custom store
- * @public
- */
+* 
+* @param dbName name of database
+* @param storeName name of custom store
+* @public
+*/
 function createStore(dbName: string, storeName: string, config: CreateStoreConfig = {}): UseStore {
   const request = indexedDB.open(dbName, config.version)
   request.onupgradeneeded = (evt) => {
@@ -72,14 +73,35 @@ function createStore(dbName: string, storeName: string, config: CreateStoreConfi
     if (newVersion) {
       console.warn(`upgrading indexdb from version ${evt.oldVersion} to version ${newVersion}`)
     }
+    let store: IDBObjectStore
     if (request.result.objectStoreNames.contains(storeName)) {
-      request.result.deleteObjectStore(storeName)
-    }
-    const store = request.result.createObjectStore(storeName, config.options)
 
-    if (config.onupgradeHandler) {
-      config.onupgradeHandler(store, request, evt)
+      if (config.deleteOnUpdate) {
+
+        request.result.deleteObjectStore(storeName)
+        store = request.result.createObjectStore(storeName, config.options)
+
+        if (config.onupgradeHandler) {
+          config.onupgradeHandler(store, request, evt)
+        }
+      } else {
+        store = request.transaction?.objectStore(storeName)!
+        if (config.onupgradeHandler) {
+          config.onupgradeHandler(store, request, evt)
+        }
+      }
+
+
+    } else {
+
+      store = request.result.createObjectStore(storeName, config.options)
+
+      if (config.onupgradeHandler) {
+        config.onupgradeHandler(store, request, evt)
+      }
     }
+    //not needed by just for typesafety
+    return store
   }
   const dbp = promisifyRequest(request)
 
@@ -101,8 +123,8 @@ function createStore(dbName: string, storeName: string, config: CreateStoreConfi
 }
 
 /**
- * @public
- */
+* @public
+*/
 export type UseStore = UseStoreDefaultFunc & UseStoreGetters
 
 type UseStoreDefaultFunc = <T>(
@@ -138,12 +160,12 @@ function getDefaultStore() {
 }
 
 /**
- * Get a value by its key.
- *
- * @param key
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Get a value by its key.
+*
+* @param key
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function get<T = any>(
   key: IDBValidKey,
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
@@ -153,10 +175,10 @@ function get<T = any>(
 
 
 /**
- * Retrieves the number of records matching the given key or key range in query.
- * @param key 
- * @public
- */
+* Retrieves the number of records matching the given key or key range in query.
+* @param key 
+* @public
+*/
 function count(
   key: IDBValidKey | IDBKeyRange,
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
@@ -166,13 +188,13 @@ function count(
 
 
 /**
- * Set a value with a key.
- *
- * @param key
- * @param value
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Set a value with a key.
+*
+* @param key
+* @param value
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function set(
   key: IDBValidKey,
   value: any,
@@ -185,13 +207,13 @@ function set(
 }
 
 /**
- * Set multiple values at once. This is faster than calling set() multiple times.
- * It's also atomic – if one of the pairs can't be added, none will be added.
- *
- * @param entries Array of entries, where each entry is an array of `[key, value]`.
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Set multiple values at once. This is faster than calling set() multiple times.
+* It's also atomic – if one of the pairs can't be added, none will be added.
+*
+* @param entries Array of entries, where each entry is an array of `[key, value]`.
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function setMany(
   entries: [IDBValidKey, any][],
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
@@ -203,12 +225,12 @@ function setMany(
 }
 
 /**
- * Get multiple values by their keys
- *
- * @param keys
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Get multiple values by their keys
+*
+* @param keys
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function getMany(
   keys: IDBValidKey[],
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
@@ -219,13 +241,13 @@ function getMany(
 }
 
 /**
- * Update a value. This lets you see the old value and update it as an atomic operation.
- *
- * @param key
- * @param updater A callback that takes the old value and returns a new value.
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Update a value. This lets you see the old value and update it as an atomic operation.
+*
+* @param key
+* @param updater A callback that takes the old value and returns a new value.
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function update<T = any>(
   key: IDBValidKey,
   updater: (oldValue: T | undefined) => T,
@@ -251,12 +273,12 @@ function update<T = any>(
 }
 
 /**
- * Delete a particular key from the store.
- *
- * @param key
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Delete a particular key from the store.
+*
+* @param key
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function del(
   key: IDBValidKey,
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
@@ -269,11 +291,11 @@ function del(
 
 
 /**
- * Clear all values in the store.
- *
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Clear all values in the store.
+*
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function clear(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): Promise<void> {
   return customStore('readwrite', (store) => {
     store.clear()
@@ -300,11 +322,11 @@ function eachCursor(
 }
 
 /**
- * Get all keys in the store.
- *
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Get all keys in the store.
+*
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function keys(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): Promise<IDBValidKey[]> {
   const items: IDBValidKey[] = []
 
@@ -314,11 +336,11 @@ function keys(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): 
 }
 
 /**
- * Get all values in the store.
- *
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Get all values in the store.
+*
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function values(
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<IDBValidKey[]> {
@@ -330,11 +352,11 @@ function values(
 }
 
 /**
- * Get all entries in the store. Each entry is an array of `[key, value]`.
- *
- * @param customStore Method to get a custom store. Use with caution (see the docs).
- * @public
- */
+* Get all entries in the store. Each entry is an array of `[key, value]`.
+*
+* @param customStore Method to get a custom store. Use with caution (see the docs).
+* @public
+*/
 function entries(
   customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
 ): Promise<[IDBValidKey, any][]> {
