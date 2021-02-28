@@ -1,6 +1,6 @@
 {
   "name": "@wilfredlopez/react-utils",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "Utility functions and types for Javascript projects",
   "main": "dist/index.js",
   "browser": "dist/index.umd.js",
@@ -95,11 +95,11 @@
     "url-loader": "2.3.0",
     "webpack": "4.42.0",
     "webpack-cli": "^3.3.12",
-    "webpack-dev-server": "3.10.3"
+    "webpack-dev-server": "3.10.3",
+    "@wilfredlopez/js-utils": "^1.0.1",
+    "indexdb-store": "^1.0.1"
   },
-  "dependencies": {
-    "@wilfredlopez/js-utils": "^1.0.1"
-  },
+  "dependencies": {},
   "eslintConfig": {
     "extends": "react-app"
   },

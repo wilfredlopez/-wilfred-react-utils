@@ -5574,6 +5574,11 @@ indent-string@^4.0.0:
   resolved "https://registry.yarnpkg.com/indent-string/-/indent-string-4.0.0.tgz#624f8f4497d619b2d9768531d58f4122854d7251"
   integrity sha512-EdDDZu4A2OyIK7Lr/2zG+w5jmbuk1DVBnEwREQvBzspBJkCEbRa8GxU1lghYcaGJCnRWibjDXlq779X1/y5xwg==
 
+indexdb-store@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/indexdb-store/-/indexdb-store-1.0.1.tgz#a35f953e4ac41789529f691267da9c4d85acbb46"
+  integrity sha512-beHvXeLOi6ZQFimED/bh/ekPfM86qjo8xnWiYfpS2nwPiHTPTjDGJ1ClhWoaDt2s+FLWHFFg1ZwsUrEDwIzE3Q==
+
 infer-owner@^1.0.3, infer-owner@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/infer-owner/-/infer-owner-1.0.4.tgz#c4cefcaa8e51051c2a40ba2ce8a3d27295af9467"
