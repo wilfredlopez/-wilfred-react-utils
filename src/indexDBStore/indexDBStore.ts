@@ -28,17 +28,17 @@ function createBoundMethods(useStore_fn: UseStoreDefaultFunc): Methods {
   return {
     clear: clear.bind(null, useStore_fn),
     del: (key: IDBValidKey, customStore: UseStore | UseStoreDefaultFunc = useStore_fn) => del(key, customStore),
-    entries: entries.bind(null, useStore_fn),
-    get: (key: IDBValidKey, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => get(key, customStore),
+    entries: (config: GetConfigWithFilter = {}) => entries({ customStore: useStore_fn, ...config }),
+    get: (key: IDBValidKey | IDBKeyRange, config: GetConfig = {}) => get(key, { customStore: useStore_fn, ...config }),
     keys: keys.bind(null, useStore_fn),
-    getMany: (keys: IDBValidKey[], customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => getMany(keys, customStore),
+    getMany: (keys: (IDBValidKey | IDBKeyRange)[], config: GetConfig = {}) => getMany(keys, { customStore: useStore_fn, ...config }),
     set: (key: IDBValidKey, value: any, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => set(key, value, customStore),
     update: <T>(key: IDBValidKey, updater: (oldValue: T | undefined) => T, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => update<T>(key, updater, customStore),
     setMany: (entries: [IDBValidKey, any][], customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => setMany(entries, customStore),
-    values: values.bind(null, useStore_fn),
+    values: (config: GetConfigWithFilter = {}) => values({ customStore: useStore_fn, ...config }),
     count: (key: IDBValidKey | IDBKeyRange, customStore: UseStoreDefaultFunc | UseStore = useStore_fn) => count(key, customStore),
     eachCursor: (callback: (cursor: IDBCursorWithValue) => void,
-      customStore: UseStore | UseStoreDefaultFunc = useStore_fn) => eachCursor(callback, customStore)
+      config: GetConfigWithFilter = {}) => eachCursor(callback, { customStore: useStore_fn, ...config })
   }
 }
 
@@ -167,10 +167,18 @@ function getDefaultStore() {
 * @public
 */
 function get<T = any>(
-  key: IDBValidKey,
-  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
+  key: IDBValidKey | IDBKeyRange,
+  { customStore = getDefaultStore(), indexKey }: GetConfig = {}
 ): Promise<T | undefined> {
-  return customStore('readonly', (store) => promisifyRequest(store.get(key)))
+  return customStore('readonly', (store) => {
+    let getter: IDBIndex | IDBObjectStore
+    if (indexKey) {
+      getter = store.index(indexKey)
+    } else {
+      getter = store
+    }
+    return promisifyRequest(getter.get(key))
+  })
 }
 
 
@@ -224,6 +232,16 @@ function setMany(
   })
 }
 
+interface GetConfigWithFilter {
+  indexKey?: string,
+  customStore?: UseStore | UseStoreDefaultFunc
+  filter?: IDBKeyRange
+}
+interface GetConfig {
+  indexKey?: string,
+  customStore?: UseStore | UseStoreDefaultFunc
+}
+
 /**
 * Get multiple values by their keys
 *
@@ -232,11 +250,17 @@ function setMany(
 * @public
 */
 function getMany(
-  keys: IDBValidKey[],
-  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
+  keys: (IDBValidKey | IDBKeyRange)[],
+  { customStore = getDefaultStore(), indexKey }: GetConfig = {}
 ): Promise<any[]> {
   return customStore('readonly', (store) =>
-    Promise.all(keys.map((key) => promisifyRequest(store.get(key)))),
+    Promise.all(keys.map((key) => {
+      let getter: IDBIndex | IDBObjectStore = store
+      if (indexKey) {
+        getter = store.index(indexKey)
+      }
+      return promisifyRequest(getter.get(key))
+    })),
   )
 }
 
@@ -307,12 +331,16 @@ function clear(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()):
 
 function eachCursor(
   callback: (cursor: IDBCursorWithValue) => void,
-  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
+  { customStore = getDefaultStore(), indexKey, filter }: GetConfigWithFilter
 ): Promise<void> {
   return customStore('readonly', (store) => {
+    let getter: IDBObjectStore | IDBIndex = store
+    if (typeof indexKey !== 'undefined') {
+      getter = store.index(indexKey)
+    }
     // This would be store.getAllKeys(), but it isn't supported by Edge or Safari.
     // And openKeyCursor isn't supported by Safari.
-    store.openCursor().onsuccess = function () {
+    getter.openCursor(filter).onsuccess = function () {
       if (!this.result) return
       callback(this.result)
       this.result.continue()
@@ -330,7 +358,7 @@ function eachCursor(
 function keys(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): Promise<IDBValidKey[]> {
   const items: IDBValidKey[] = []
 
-  return eachCursor((cursor) => items.push(cursor.key), customStore).then(
+  return eachCursor((cursor) => items.push(cursor.key), { customStore }).then(
     () => items,
   )
 }
@@ -341,13 +369,13 @@ function keys(customStore: UseStore | UseStoreDefaultFunc = getDefaultStore()): 
 * @param customStore Method to get a custom store. Use with caution (see the docs).
 * @public
 */
-function values(
-  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
-): Promise<IDBValidKey[]> {
-  const items: any[] = []
+function values<T = IDBValidKey>(
+  config: GetConfigWithFilter = {}
+): Promise<T[]> {
+  const items: T[] = []
 
-  return eachCursor((cursor) => items.push(cursor.value), customStore).then(
-    () => items,
+  return eachCursor((cursor) => items.push(cursor.value), { customStore: getDefaultStore(), ...config }).then(
+    () => items as any,
   )
 }
 
@@ -358,13 +386,13 @@ function values(
 * @public
 */
 function entries(
-  customStore: UseStore | UseStoreDefaultFunc = getDefaultStore(),
+  config: GetConfigWithFilter = {}
 ): Promise<[IDBValidKey, any][]> {
   const items: [IDBValidKey, any][] = []
 
   return eachCursor((cursor) =>
     items.push([cursor.key, cursor.value]),
-    customStore,
+    { customStore: getDefaultStore(), ...config },
   ).then(() => items)
 }
 
@@ -388,21 +416,20 @@ export const indexDBStore = {
 
 export default indexDBStore
 
-//@example use
+// // @example use
 // const store = indexDBStore.createStore('WDB', 'myStore', {
 //   version: 1,
 //   onupgradeHandler: (store, request, event) => {
 //     //do transactions that can only happen on upgrade events.
-//     store.createIndex('IdIndex', 'id', {unique: true})
-//       console.log(request, event)
+//     store.createIndex('IdIndex', 'id', { unique: true })
+//     console.log(request, event)
 //   }
 // })
-// const store = indexDBStore.createStore('WDB', 'myStore')
 
 // //write
 // store.readwrite(db => {
-//   db.add('react-utils', 'rutil')
-//   db.add('s', 'sssss')
+//   db.add({ id: "1", name: "1 name" }, '1',)
+//   db.add({ id: "2", name: "2 name" }, '2',)
 // })
 
 // //get all entries
@@ -410,36 +437,43 @@ export default indexDBStore
 //   console.log({ entries: data })
 // })
 
-// //delete
-// store.del('s')
 
 // //get all values
-// store.values().then(s => {
-//   console.log({ s })
+// store.values().then(values => {
+//   console.log('values: ', { values })
 // })
 
 // //Read
-// store.readonly.get('rutil').then(value => {
-//   console.log('value with key rutil is: ', value)
+// store.readonly.get('2').then(value => {
+//   console.log('value with key 2 is: ', value)
 // })
 
-// //Clear all the data in store.
-// store.clear().then(() => {
-//   console.log('store is cleared.')
-// })
+
 
 // //COUNT: Retrieve the number of records matching the given key
 
 // //COUNT: Object API
-// store.count('rutil').then(result => {
+// const range = IDBKeyRange.bound('0', "2")
+// store.count(range).then(result => {
 //   console.log(`count is : `, result)
 // })
 // //COUNT: Function API
 // store('readonly', db => {
-//   const request = db.count('rutil')
+//   const request = db.count('2')
 //   request.onsuccess = function () {
 //     console.log(`count is : `, this.result)
 //   }
 // })
 
+// //delete
+// store.del('1').then(() => {
+//   console.log("Delete complete for key 1")
+// })
 
+// store.readonly.get('1').then(value => {
+//   console.log('value with key 1 is now: ', value)
+// })
+// //Clear all the data in store.
+// store.clear().then(() => {
+//   console.log('store is cleared.')
+// })

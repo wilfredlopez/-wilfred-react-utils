@@ -211,12 +211,19 @@ console.log(dg.from('animals')) //dog
 ```ts
 import { indexDBStore } from '@wilfredlopez/react-utils'
 
-const store = indexDBStore.createStore('WDB', 'myStore')
+const store = indexDBStore.createStore('WDB', 'myStore', {
+  version: 1,
+  onupgradeHandler: (store, request, event) => {
+    //do transactions that can only happen on upgrade events.
+    store.createIndex('IdIndex', 'id', { unique: true })
+    console.log(request, event)
+  },
+})
 
 //write
 store.readwrite(db => {
-  db.add('react-utils', 'rutil')
-  db.add('s', 'sssss')
+  db.add({ id: '1', name: '1 name' }, '1')
+  db.add({ id: '2', name: '2 name' }, '2')
 })
 
 //get all entries
@@ -224,31 +231,38 @@ store.entries().then(data => {
   console.log({ entries: data })
 })
 
-//delete
-store.del('s')
-
 //get all values
-store.values().then(s => {
-  console.log({ s })
+store.values().then(values => {
+  console.log('values: ', { values })
 })
 
 //Read
-store.readonly.get('rutil').then(value => {
-  console.log('value with key rutil is: ', value)
+store.readonly.get('2').then(value => {
+  console.log('value with key 2 is: ', value)
 })
 
 //COUNT: Retrieve the number of records matching the given key
 
 //COUNT: Object API
-store.count('rutil').then(result => {
+const range = IDBKeyRange.bound('0', '2')
+store.count(range).then(result => {
   console.log(`count is : `, result)
 })
 //COUNT: Function API
 store('readonly', db => {
-  const request = db.count('rutil')
+  const request = db.count('2')
   request.onsuccess = function () {
     console.log(`count is : `, this.result)
   }
+})
+
+//delete
+store.del('1').then(() => {
+  console.log('Delete complete for key 1')
+})
+
+store.readonly.get('1').then(value => {
+  console.log('value with key 1 is now: ', value)
 })
 //Clear all the data in store.
 store.clear().then(() => {
