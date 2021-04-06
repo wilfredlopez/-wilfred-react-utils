@@ -33,3 +33,21 @@ export function downloadToFile(
     }, 0)
   }
 }
+
+
+export function downloadByUrl(url: string, filename: string = '*') {
+  filename = filename !== '*' ? filename : url.substring(url.lastIndexOf("/") + 1).split("?=")[0]
+  const xhr = new XMLHttpRequest()
+  xhr.responseType = 'blob'
+  xhr.onload = function () {
+    var a = document.createElement('a')
+    a.href = window.URL.createObjectURL(xhr.response)
+    a.download = filename
+    a.style.display = 'none'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+  }
+  xhr.open('GET', url)
+  xhr.send()
+}
